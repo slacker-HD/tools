@@ -1,0 +1,163 @@
+@layer utilities {
+  .content-auto {
+    content-visibility: auto;
+  }
+
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .card-hover {
+    transition: all 0.3s ease;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
+  }
+
+  .gradient-mask {
+    mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  }
+
+  /* 以下是为eat.html添加的样式 */
+  .food-card {
+    transition: all 0.3s ease;
+  }
+
+  .food-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .food-image-container {
+    overflow: hidden;
+    border-radius: 1rem 1rem 0 0;
+  }
+
+  .food-image {
+    transition: transform 0.5s ease;
+  }
+
+  .food-card:hover .food-image {
+    transform: scale(1.05);
+  }
+
+  .nutrition-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white font-medium py-2 px-6 rounded-full transition-all duration-300 hover:bg-primary/90 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/50;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-primary border border-primary font-medium py-2 px-6 rounded-full transition-all duration-300 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-primary/50;
+  }
+
+  .nutrition-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .nutrition-item {
+    background-color: rgba(34, 197, 94, 0.1);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    text-align: center;
+  }
+
+  .nutrition-value {
+    font-weight: 700;
+    color: #166534;
+  }
+
+  .nutrition-label {
+    font-size: 0.75rem;
+    color: #4b5563;
+  }
+
+  .recipe-step {
+    counter-increment: step-counter;
+    margin-bottom: 1.5rem;
+    padding-left: 2.5rem;
+    position: relative;
+  }
+
+  .recipe-step::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: #22c55e;
+    color: white;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  /* 以下是为idcard.html添加的样式 */
+  .animate-fadeIn {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
