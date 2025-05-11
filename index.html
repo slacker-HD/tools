@@ -18,7 +18,9 @@
                             accent: '#FF7D00',
                             tool: {
                                 food: '#22C55E',
-                                idcard: '#3B82F6'
+                                idcard: '#3B82F6',
+                                fraction: '#F59E0B',
+                                color: '#F59E0B' // 添加颜色工具的颜色定义
                             }
                         },
                         fontFamily: {
@@ -28,6 +30,16 @@
                 }
             }
         </script>
+        <style type="text/tailwindcss">
+            @layer utilities {
+            .btn-primary {
+                @apply bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+            }
+        }
+    </style>
     </head>
 
     <body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
@@ -36,19 +48,21 @@
             <div class="container mx-auto px-4 py-4 flex justify-between items-center">
                 <div class="flex items-center">
                     <div class="text-primary mr-2">
-                        <i class="fa-solid fa-tools text-2xl"></i>
+                        <i class="fa-solid fa-toolbox text-2xl"></i>
                     </div>
                     <h1 class="text-xl md:text-2xl font-bold text-gray-900">工具大全</h1>
                 </div>
                 <!-- 修改返回按钮颜色为黑色 -->
-                <a href="https://www.hudi.site" class="btn-primary text-gray-900 hover:text-gray-700" target="_blank"
-                    rel="noopener noreferrer">访问我的博客</a>
+                <div class="flex space-x-4">
+                    <a href="https://www.hudi.site" class="btn-primary" target="_blank"
+                        rel="noopener noreferrer">访问我的博客</a>
+                </div>
             </div>
         </header>
 
         <!-- 主内容区 -->
         <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
-            <div class="max-w-4xl mx-auto">
+            <div class="max-w-6xl mx-auto"> <!-- 将max-w-4xl改为max-w-6xl以提供更宽的内容区域 -->
                 <!-- 介绍卡片 -->
                 <div
                     class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
@@ -66,10 +80,12 @@
                     <div class="relative z-10">
                         <h2 class="text-center text-xl font-bold text-gray-900 mb-6 flex justify-center items-center">
                             <i class="fa-solid fa-toolbox mr-2 text-primary"></i>
-                            工具推荐
+                            工具列表
                         </h2>
 
-                        <div id="tool-container" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- 修改grid-cols配置，使其在不同屏幕尺寸下显示不同数量的列 -->
+                        <div id="tool-container"
+                            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             <!-- 饮食推荐工具 -->
                             <div
                                 class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
@@ -80,6 +96,32 @@
                                     </div>
                                     <h3 class="text-3xl font-bold text-tool-food mb-2 text-center">饮食推荐</h3>
                                     <p class="text-gray-600 max-w-md mx-auto text-center">不知道吃什么喝什么？点击下方按钮，让机器帮你决定！</p>
+                                </a>
+                            </div>
+
+                            <!-- 小数转分数工具 -->
+                            <div
+                                class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                                <a href="fraction.html" target="_blank" rel="noopener noreferrer">
+                                    <div
+                                        class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-fraction/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                        <i class="fa-solid fa-calculator text-5xl"></i>
+                                    </div>
+                                    <h3 class="text-3xl font-bold text-tool-fraction mb-2 text-center">小数转分数</h3>
+                                    <p class="text-gray-600 max-w-md mx-auto text-center">输入小数，将其转换为分数形式。</p>
+                                </a>
+                            </div>
+
+                            <!-- 颜色转换工具 -->
+                            <div
+                                class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                                <a href="color.html" target="_blank" rel="noopener noreferrer">
+                                    <div
+                                        class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-color/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                        <i class="fa-solid fa-palette text-5xl"></i>
+                                    </div>
+                                    <h3 class="text-3xl font-bold text-tool-color mb-2 text-center">颜色转换</h3>
+                                    <p class="text-gray-600 max-w-md mx-auto text-center">输入一种颜色格式，快速转换为其他颜色表达方式。</p>
                                 </a>
                             </div>
                         </div>

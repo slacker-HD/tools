@@ -40,41 +40,44 @@
     </script>
     <style type="text/tailwindcss">
       @layer utilities {
-      .content-auto {
-        content-visibility: auto;
+        .content-auto {
+          content-visibility: auto;
+        }
+        .text-shadow {
+          text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+        .animate-pulse-slow {
+          animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .backdrop-blur-sm {
+          backdrop-filter: blur(4px);
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .card-hover {
+          transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
+        }
+        .gradient-mask {
+          mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+          -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+        }
+        .btn-primary {
+          @apply bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center;
+        }
       }
-      .text-shadow {
-        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      }
-      .animate-float {
-        animation: float 6s ease-in-out infinite;
-      }
-      .animate-pulse-slow {
-        animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-      }
-      .backdrop-blur-sm {
-        backdrop-filter: blur(4px);
-      }
-      .scrollbar-hide::-webkit-scrollbar {
-        display: none;
-      }
-      .scrollbar-hide {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-      .card-hover {
-        transition: all 0.3s ease;
-      }
-      .card-hover:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
-      }
-      .gradient-mask {
-        mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-        -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-      }
-    }
-  </style>
+    </style>
   </head>
 
   <body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
@@ -89,7 +92,7 @@
         </div>
         <!-- 添加返回工具箱和返回主页按钮 -->
         <div class="flex space-x-4">
-          <a href="https://tools.hudi.site" class="btn-primary">返回工具箱</a>
+          <a href="index.html" class="btn-primary">返回工具箱</a>
           <a href="https://www.hudi.site" class="btn-primary" target="_blank" rel="noopener noreferrer">访问我的博客</a>
         </div>
         <button id="mobile-menu-btn" class="md:hidden p-2 rounded-full hover:bg-gray-100 transition-colors">
