@@ -16,7 +16,8 @@
                             secondary: '#722ED1',
                             accent: '#FF7D00',
                             tool: {
-                                color: '#F59E0B'
+                                color: '#F43F5E', // Updated to match index.html
+                                fraction: '#FF5733'
                             }
                         },
                         fontFamily: {
@@ -49,16 +50,21 @@
         <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
             <div class="container mx-auto px-4 py-4 flex justify-between items-center">
                 <div class="flex items-center">
-                    <div class="text-primary mr-2">
-                        <i class="fa-solid fa-palette text-2xl"></i>
+                    <div class="text-tool-color mr-2">
+                        <i class="fa-solid fa-palette text-tool-color"></i>
                     </div>
-                    <h1 class="text-xl md:text-2xl font-bold text-gray-900">颜色转换工具</h1>
+                    <h1 class="text-xl md:text-2xl font-bold text-tool-color">颜色转换工具</h1>
                 </div>
                 <!-- 添加返回工具箱和返回主页按钮 -->
                 <div class="flex space-x-4">
-                    <a href="https://tools.hudi.site" class="btn-primary">返回工具箱</a>
-                    <a href="https://www.hudi.site" class="btn-primary" target="_blank"
-                        rel="noopener noreferrer">访问我的博客</a>
+                    <a href="https://tools.hudi.site" class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site" class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center" target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>
+                        访问我的博客
+                    </a>
                 </div>
             </div>
         </header>
@@ -81,7 +87,7 @@
                         placeholder="输入颜色（支持格式：#RRGGBB、#RRGGBBAA、rgb(r,g,b)、rgba(r,g,b,a)、hsl(h,s%,l%)、hsla(h,s%,l%,a)）">
                     <button id="convert-btn"
                         class="bg-tool-color hover:bg-tool-color/90 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
-                        <i class="fa-solid fa-arrow-right mr-2"></i>
+                        <i class="fa-solid fa-palette mr-2"></i>
                         转换颜色
                     </button>
                 </div>
@@ -94,13 +100,13 @@
 
                     <div class="relative z-10">
                         <h2 class="text-center text-xl font-bold text-gray-900 mb-6 flex justify-center items-center">
-                            <i class="fa-solid fa-palette mr-2 text-primary"></i>
+                            <i class="fa-solid fa-palette mr-2 text-tool-color"></i>
                             转换结果
                         </h2>
 
                         <div id="result-container" class="min-h-[120px]">
                             <div id="placeholder" class="text-center text-gray-400 pulse-slow py-10">
-                                <i class="fa-solid fa-palette text-5xl mb-3"></i>
+                                <i class="fa-solid fa-palette text-tool-color text-5xl mb-3"></i>
                                 <p>输入颜色并点击按钮开始转换</p>
                             </div>
 
@@ -168,9 +174,7 @@
                                                     <div class="text-sm text-gray-900" id="hex-value">#FFFFFF</div>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <button
-                                                        class="text-primary hover:text-primary/80 transition-colors duration-200 copy-btn"
-                                                        data-target="hex-value">
+                                                    <button class="text-tool-color hover:text-tool-color/80 transition-colors duration-200 copy-btn" data-target="hex-value">
                                                         <i class="fa-solid fa-copy"></i>
                                                     </button>
                                                 </td>
@@ -193,9 +197,7 @@
                                                     </div>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <button
-                                                        class="text-primary hover:text-primary/80 transition-colors duration-200 copy-btn"
-                                                        data-target="rgb-value">
+                                                    <button class="text-tool-color hover:text-tool-color/80 transition-colors duration-200 copy-btn" data-target="rgb-value">
                                                         <i class="fa-solid fa-copy"></i>
                                                     </button>
                                                 </td>
@@ -218,9 +220,7 @@
                                                         255, 1)</div>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <button
-                                                        class="text-primary hover:text-primary/80 transition-colors duration-200 copy-btn"
-                                                        data-target="rgba-value">
+                                                    <button class="text-tool-color hover:text-tool-color/80 transition-colors duration-200 copy-btn" data-target="rgba-value">
                                                         <i class="fa-solid fa-copy"></i>
                                                     </button>
                                                 </td>
@@ -243,9 +243,7 @@
                                                     </div>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <button
-                                                        class="text-primary hover:text-primary/80 transition-colors duration-200 copy-btn"
-                                                        data-target="hsl-value">
+                                                    <button class="text-tool-color hover:text-tool-color/80 transition-colors duration-200 copy-btn" data-target="hsl-value">
                                                         <i class="fa-solid fa-copy"></i>
                                                     </button>
                                                 </td>
@@ -268,9 +266,7 @@
                                                         1)</div>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <button
-                                                        class="text-primary hover:text-primary/80 transition-colors duration-200 copy-btn"
-                                                        data-target="hsla-value">
+                                                    <button class="text-tool-color hover:text-tool-color/80 transition-colors duration-200 copy-btn" data-target="hsla-value">
                                                         <i class="fa-solid fa-copy"></i>
                                                     </button>
                                                 </td>
@@ -282,7 +278,7 @@
 
                             <div id="loading" class="hidden text-center py-10">
                                 <div
-                                    class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-3">
+                                    class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-tool-color mb-3">
                                 </div>
                                 <p id="loading-text" class="text-gray-600">正在转换...</p>
                             </div>
@@ -293,7 +289,7 @@
                 <!-- 使用示例 -->
                 <div class="bg-white rounded-2xl shadow-sm p-6 mb-8">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                        <i class="fa-solid fa-lightbulb text-yellow-500 mr-2"></i>
+                        <i class="fa-solid fa-lightbulb text-tool-color mr-2"></i>
                         使用示例
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -342,8 +338,7 @@
         </footer>
 
         <!-- 复制成功提示 -->
-        <div id="copy-toast"
-            class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg transform translate-y-16 opacity-0 transition-all duration-500 flex items-center">
+        <div id="copy-toast" class="fixed bottom-4 right-4 bg-tool-color text-white px-4 py-2 rounded-lg shadow-lg transform translate-y-16 opacity-0 transition-all duration-500 flex items-center">
             <i class="fa-solid fa-check-circle mr-2"></i>
             <span>复制成功</span>
         </div>

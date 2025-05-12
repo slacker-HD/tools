@@ -1,209 +1,240 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>吃什么喝什么？</title>
+    <title>吃喝什么</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
     <link href="./css/styles.css" rel="stylesheet">
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: '#165DFF',
-              secondary: '#722ED1',
-              accent: '#FF7D00',
-              food: {
-                chinese: '#E63946',
-                western: '#F1C40F',
-                japanese: '#3498DB',
-                fast: '#E74C3C',
-                snack: '#9B59B6'
-              },
-              beverage: {
-                milk: '#F39C12',
-                coffee: '#A0522D',
-                juice: '#2ECC71',
-                tea: '#1ABC9C',
-                soda: '#3498DB'
-              }
-            },
-            fontFamily: {
-              inter: ['Inter', 'sans-serif'],
-            },
-          },
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#722ED1',
+                        accent: '#FF7D00',
+                        tool: {
+                            food: '#22C55E', // 保持与 index.html 一致
+                            fraction: '#F59E0B',
+                            color: '#F43F5E',
+                            calendar: '#8B5CF6'
+                        },
+                        food: {
+                            chinese: '#E63946',
+                            western: '#F1C40F',
+                            japanese: '#3498DB',
+                            fast: '#E74C3C',
+                            snack: '#9B59B6'
+                        },
+                        beverage: {
+                            milk: '#F39C12',
+                            coffee: '#A0522D',
+                            juice: '#2ECC71',
+                            tea: '#1ABC9C',
+                            soda: '#3498DB'
+                        }
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                },
+            }
         }
-      }
     </script>
     <style type="text/tailwindcss">
-      @layer utilities {
-        .content-auto {
-          content-visibility: auto;
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .animate-float {
+                animation: float 6s ease-in-out infinite;
+            }
+            .animate-pulse-slow {
+                animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            .backdrop-blur-sm {
+                backdrop-filter: blur(4px);
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
+            }
+            .gradient-mask {
+                mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+                -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+            }
         }
-        .text-shadow {
-          text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-        .animate-pulse-slow {
-          animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        .backdrop-blur-sm {
-          backdrop-filter: blur(4px);
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .card-hover {
-          transition: all 0.3s ease;
-        }
-        .card-hover:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
-        }
-        .gradient-mask {
-          mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-          -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-        }
-        .btn-primary {
-          @apply bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center;
-        }
-      }
     </style>
-  </head>
+    <style>
+        .btn-primary {
+            background-color: #22C55E;
+            color: white;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #1FAE54;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
 
-  <body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
     <!-- 页面头部 -->
     <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
-      <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-        <div class="flex items-center">
-          <div class="text-primary mr-2">
-            <i class="fa-solid fa-utensils text-2xl"></i>
-          </div>
-          <h1 class="text-xl md:text-2xl font-bold text-gray-900">吃喝什么</h1>
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="text-tool-food mr-2"> <!-- 修改图标颜色 -->
+                    <i class="fa-solid fa-utensils text-tool-food"></i>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold text-tool-food">吃喝什么</h1>
+            </div>
+            <!-- 添加返回工具箱和返回主页按钮 -->
+            <div class="flex space-x-4">
+                <a href="https://tools.hudi.site"
+                    class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                    <i class="fa-solid fa-arrow-left mr-2"></i>
+                    返回工具箱
+                </a>
+                <a href="https://www.hudi.site"
+                    class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                    target="_blank" rel="noopener noreferrer">
+                    <i class="fa-solid fa-blog mr-2"></i>
+                    访问我的博客
+                </a>
+            </div>
+            <button id="mobile-menu-btn" class="md:hidden p-2 rounded-full hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-bars text-gray-700"></i>
+            </button>
         </div>
-        <!-- 添加返回工具箱和返回主页按钮 -->
-        <div class="flex space-x-4">
-          <a href="https://tools.hudi.site" class="btn-primary">返回工具箱</a>
-          <a href="https://www.hudi.site" class="btn-primary" target="_blank" rel="noopener noreferrer">访问我的博客</a>
-        </div>
-        <button id="mobile-menu-btn" class="md:hidden p-2 rounded-full hover:bg-gray-100 transition-colors">
-          <i class="fa-solid fa-bars text-gray-700"></i>
-        </button>
-      </div>
 
-      <!-- 移动端菜单 -->
-      <div id="mobile-menu" class="md:hidden hidden bg-white shadow-md">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-          <button id="food-tab" class="py-2 px-4 text-primary font-medium border-b-2 border-primary">食物</button>
-          <button id="beverage-tab" class="py-2 px-4 text-gray-500 font-medium">饮品</button>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white shadow-md">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <button id="food-tab" class="py-2 px-4 text-primary font-medium border-b-2 border-primary">食物</button>
+                <button id="beverage-tab" class="py-2 px-4 text-gray-500 font-medium">饮品</button>
+            </div>
         </div>
-      </div>
     </header>
 
     <!-- 主内容区 -->
     <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
-      <div class="max-w-4xl mx-auto">
-        <!-- 介绍卡片 -->
-        <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
-          <p class="text-center text-base md:text-lg text-gray-600">
-            不知道吃什么喝什么？点击下方按钮，让机器帮你决定！
-          </p>
-        </div>
-
-        <!-- 结果显示区 -->
-        <div class="bg-white rounded-2xl shadow-card p-6 md:p-8 mb-8 relative overflow-hidden min-h-[350px]">
-          <!-- 装饰元素 -->
-          <div class="absolute -right-16 -top-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
-          <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-secondary/5 rounded-full blur-3xl"></div>
-
-          <div class="relative z-10">
-            <h2 class="text-center text-xl font-bold text-gray-900 mb-6 flex justify-center items-center">
-              <i class="fa-solid fa-dice-five mr-2 text-primary"></i>
-              今天推荐
-            </h2>
-
-            <div id="result-container" class="min-h-[120px] flex flex-col items-center justify-center">
-              <div id="placeholder" class="text-center text-gray-400 animate-pulse-slow">
-                <i class="fa-solid fa-utensils text-5xl mb-3"></i>
-                <p>点击下方按钮开始随机选择</p>
-              </div>
-
-              <div id="result" class="hidden text-center">
-                <div id="food-icon"
-                  class="mb-4 w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
-                  <i id="food-icon-element" class="text-4xl"></i>
-                </div>
-                <h3 id="food-name" class="text-2xl md:text-3xl font-bold mb-2"></h3>
-                <p id="food-desc" class="text-gray-600 max-w-md mx-auto"></p>
-
-                <div id="beverage-container" class="mt-6 hidden">
-                  <div class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm">
-                    <h4 class="font-semibold mb-2 flex items-center justify-center">
-                      <i class="fa-solid fa-mug-hot mr-2"></i>搭配饮品
-                    </h4>
-                    <p id="beverage-name" class="text-lg font-medium text-center"></p>
-                    <p id="beverage-desc" class="text-sm text-gray-600 text-center"></p>
-                  </div>
-                </div>
-              </div>
-
-              <div id="loading" class="hidden text-center">
-                <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-3"></div>
-                <p id="loading-text" class="text-gray-600">正在思考吃什么...</p>
-              </div>
+        <div class="max-w-4xl mx-auto">
+            <!-- 介绍卡片 -->
+            <div
+                class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                <p class="text-center text-base md:text-lg text-gray-600">
+                    不知道吃喝什么？点击下方按钮，让机器帮你决定！
+                </p>
             </div>
-          </div>
-        </div>
 
-        <!-- 控制按钮 -->
-        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-          <button id="random-btn"
-            class="bg-food-chinese hover:bg-food-chinese/90 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
-            <i class="fa-solid fa-utensils mr-2"></i>
-            随机选择吃什么
-          </button>
-          <button id="beverage-btn"
-            class="bg-beverage-coffee hover:bg-beverage-coffee/90 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
-            <i class="fa-solid fa-mug-hot mr-2"></i>
-            随机选择喝什么
-          </button>
+            <!-- 结果显示区 -->
+            <div
+                class="bg-white rounded-2xl shadow-card p-6 md:p-8 mb-8 relative overflow-hidden min-h-[350px]">
+                <!-- 装饰元素 -->
+                <div class="absolute -right-16 -top-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
+                <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-secondary/5 rounded-full blur-3xl"></div>
+
+                <div class="relative z-10">
+                    <h2 class="text-center text-xl font-bold text-gray-900 mb-6 flex justify-center items-center">
+                        <i class="fa-solid fa-dice-five mr-2 text-tool-food"></i> <!-- 修改图标颜色 -->
+                        今天推荐
+                    </h2>
+
+                    <div id="result-container" class="min-h-[120px] flex flex-col items-center justify-center">
+                        <div id="placeholder" class="text-center text-gray-400 animate-pulse-slow">
+                            <i class="fa-solid fa-utensils text-5xl mb-3"></i>
+                            <p>点击下方按钮开始随机选择</p>
+                        </div>
+
+                        <div id="result" class="hidden text-center">
+                            <div id="food-icon"
+                                class="mb-4 w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                <i id="food-icon-element" class="text-4xl"></i>
+                            </div>
+                            <h3 id="food-name" class="text-2xl md:text-3xl font-bold mb-2"></h3>
+                            <p id="food-desc" class="text-gray-600 max-w-md mx-auto"></p>
+
+                            <div id="beverage-container" class="mt-6 hidden">
+                                <div
+                                    class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm">
+                                    <h4 class="font-semibold mb-2 flex items-center justify-center">
+                                        <i class="fa-solid fa-mug-hot mr-2"></i>搭配饮品
+                                    </h4>
+                                    <p id="beverage-name" class="text-lg font-medium text-center"></p>
+                                    <p id="beverage-desc" class="text-sm text-gray-600 text-center"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="loading" class="hidden text-center">
+                            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-tool-food mb-3"></div>
+                            <p id="loading-text" class="text-gray-600">正在转换...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 控制按钮 -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                <button id="random-btn" class="bg-tool-food hover:bg-tool-food/90 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                    <i class="fa-solid fa-utensils mr-2 text-white"></i>
+                    随机选择吃什么
+                </button>
+                <button id="beverage-btn" class="bg-tool-food hover:bg-tool-food/90 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                    <i class="fa-solid fa-mug-hot mr-2 text-white"></i>
+                    随机选择喝什么
+                </button>
+            </div>
         </div>
-      </div>
     </main>
 
     <!-- 页脚 -->
     <footer class="bg-gray-900 text-white py-6">
-      <div class="container mx-auto px-4 text-center">
-        <p>吃什么喝什么随机选择器 &copy; 2025</p>
-        <p class="text-sm text-gray-400 mt-1">让每天的吃喝选择不再纠结</p>
+        <div class="container mx-auto px-4 text-center">
+            <p>吃喝什么随机选择器 &copy; 2025</p>
+            <p class="text-sm text-gray-400 mt-1">让每天的吃喝选择不再纠结</p>
 
-        <!-- 不蒜子统计 -->
-        <div class="mt-2 text-xs text-gray-500">
-          <span id="busuanzi_container_site_uv">
-            <i class="fa-solid fa-user mr-1"></i>
-            <span id="busuanzi_value_site_uv"></span> 访客
-          </span>
-          &nbsp;&nbsp;|&nbsp;&nbsp;
-          <span id="busuanzi_container_site_pv">
-            <i class="fa-solid fa-eye mr-1"></i>
-            <span id="busuanzi_value_site_pv"></span> 访问
-          </span>
+            <!-- 不蒜子统计 -->
+            <div class="mt-2 text-xs text-gray-500">
+                <span id="busuanzi_container_site_uv">
+                    <i class="fa-solid fa-user mr-1"></i>
+                    <span id="busuanzi_value_site_uv"></span> 访客
+                </span>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <span id="busuanzi_container_site_pv">
+                    <i class="fa-solid fa-eye mr-1"></i>
+                    <span id="busuanzi_value_site_pv"></span> 访问
+                </span>
+            </div>
         </div>
-      </div>
     </footer>
 
     <!-- 不蒜子统计脚本 -->
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     <script src="./js/eat.js"></script>
-  </body>
+</body>
 
 </html>

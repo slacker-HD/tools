@@ -63,6 +63,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 500);
   });
 
+  // Added event listener to trigger conversion on Enter key press
+  if (inputColor && convertBtn) {
+    inputColor.addEventListener('keypress', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        convertBtn.click();
+      }
+    });
+  }
+
   // 复制按钮点击事件
   document.querySelectorAll('.copy-btn').forEach(btn => {
     btn.addEventListener('click', function () {
@@ -238,4 +248,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
     return color;
   }
-});    
+});

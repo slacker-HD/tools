@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>小数转分数</title>
+        <title>打工人老黄历</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
         <link href="./css/styles.css" rel="stylesheet">
@@ -17,7 +17,10 @@
                             secondary: '#722ED1',
                             accent: '#FF7D00',
                             tool: {
-                                fraction: '#F59E0B'
+                                fraction: '#F59E0B',
+                                food: '#22C55E',
+                                color: '#F43F5E',
+                                calendar: '#8B5CF6' // 保持与 index.html 一致
                             }
                         },
                         fontFamily: {
@@ -27,11 +30,22 @@
                 }
             }
         </script>
-        <style type="text/tailwindcss">
-            @layer utilities {
-                .btn-primary {
-                    @apply bg-tool-fraction hover:bg-tool-fraction/90 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center;
-                }
+        <style>
+            .btn-primary {
+                background-color: #8B5CF6;
+                color: white;
+                font-weight: bold;
+                padding: 0.5rem 1rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s;
+            }
+            .btn-primary:hover {
+                background-color: #7A4CE0;
+                box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
             }
         </style>
     </head>
@@ -41,13 +55,13 @@
         <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
             <div class="container mx-auto px-4 py-4 flex justify-between items-center">
                 <div class="flex items-center">
-                    <div class="text-tool-fraction mr-2">
-                        <i class="fa-solid fa-calculator text-tool-fraction"></i>
+                    <div class="text-tool-calendar mr-2"> <!-- 修改图标颜色 -->
+                        <i class="fa-solid fa-calendar-days text-2xl"></i>
                     </div>
-                    <h1 class="text-xl md:text-2xl font-bold text-tool-fraction">小数转分数</h1>
+                    <h1 class="text-xl md:text-2xl font-bold text-tool-calendar">打工人老黄历</h1> <!-- 修改标题颜色 -->
                 </div>
-                <!-- 添加返回工具箱和返回主页按钮 -->
-                <div class="flex space-x-4">
+                <!-- 统一按钮样式 -->
+                <div class="flex space-x-3">
                     <a href="https://tools.hudi.site" class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
                         <i class="fa-solid fa-arrow-left mr-2"></i>
                         返回工具箱
@@ -67,23 +81,8 @@
                 <div
                     class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
                     <p class="text-center text-base md:text-lg text-gray-600">
-                        输入一个小数和可选的误差范围，点击按钮将其转换为分数形式。
+                        快来看看今天打工人的运势吧！点击下方按钮获取今日运势，或刷新查看不同结果。
                     </p>
-                </div>
-
-                <!-- 控制按钮 -->
-                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-                    <input type="number" id="decimal-input" step="any"
-                        class="bg-white border border-gray-300 rounded-lg py-3 px-6 focus:outline-none focus:ring-primary focus:border-primary"
-                        placeholder="输入小数">
-                    <input type="number" id="eps-input" step="any"
-                        class="bg-white border border-gray-300 rounded-lg py-3 px-6 focus:outline-none focus:ring-primary focus:border-primary"
-                        placeholder="可选：输入误差范围（默认 1e-10）">
-                    <button id="convert-btn"
-                        class="bg-tool-fraction hover:bg-tool-fraction/90 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
-                        <i class="fa-solid fa-calculator mr-2"></i>
-                        转换分数
-                    </button>
                 </div>
 
                 <!-- 结果显示区 -->
@@ -94,49 +93,37 @@
 
                     <div class="relative z-10">
                         <h2 class="text-center text-xl font-bold text-gray-900 mb-6 flex justify-center items-center">
-                            <i class="fa-solid fa-calculator mr-2 text-tool-fraction"></i>
-                            转换结果
+                            <i class="fa-solid fa-calendar-days mr-2 text-tool-calendar"></i> <!-- 修改图标颜色 -->
+                            今日运势
                         </h2>
 
                         <div id="result-container" class="min-h-[120px] flex flex-col items-center justify-center">
                             <div id="placeholder" class="text-center text-gray-400 animate-pulse-slow">
-                                <i class="fa-solid fa-calculator text-5xl mb-3"></i>
-                                <p>输入小数并点击按钮开始转换</p>
+                                <i class="fa-solid fa-calendar-days text-5xl mb-3"></i>
+                                <p>点击下方按钮获取今日运势</p>
                             </div>
 
                             <div id="result" class="hidden text-center">
-                                <h3 id="fraction-result" class="text-2xl md:text-3xl font-bold mb-2"></h3>
+                                <h3 id="fortune-result" class="text-2xl md:text-3xl font-bold mb-2"></h3>
+                                <p id="fortune-desc" class="text-gray-600 max-w-md mx-auto"></p>
                             </div>
 
                             <div id="loading" class="hidden text-center">
-                                <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-tool-fraction mb-3"></div>
-                                <p id="loading-text" class="text-gray-600">正在转换...</p>
+                                <div
+                                    class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-tool-calendar mb-3"> <!-- 修改加载动画颜色 -->
+                                </div>
+                                <p id="loading-text" class="text-gray-600">正在加载...</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 算法介绍 -->
-                <div
-                    class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
-                    <h2 class="text-center text-xl font-bold text-gray-900 mb-4">算法介绍</h2>
-                    <p class="text-base md:text-lg text-gray-600">
-                        此算法使用连分数的思想来将小数转换为分数。具体步骤如下：
-                    <ol class="list-decimal list-inside">
-                        <li>首先，分离出小数的整数部分。</li>
-                        <li>然后，通过不断地在上下界之间取中间分数，并与小数进行比较，缩小范围。</li>
-                        <li>当中间分数与小数的差值在误差范围内时，该中间分数即为所求的分数。</li>
-                    </ol>
-                    </p>
-                    <p class="text-base md:text-lg text-gray-600">
-                        误差范围（默认为1e-10）决定了转换结果的精度。误差范围越小，结果越精确，但计算时间可能会增加。
-                    </p>
-                    <p class="text-base md:text-lg text-gray-600">
-                        为了提高性能，建议在不需要极高精度的情况下，使用默认值即可。
-                    </p>
-                    <p class="text-base md:text-lg text-gray-600">
-                        输入的小数位数应超过误差范围的位数，以确保转换结果的准确性。
-                    </p>
+                <!-- 刷新按钮 - 样式优化 -->
+                <div class="flex justify-center mt-6">
+                    <button id="refresh-btn" class="btn-primary"> <!-- 修改按钮颜色 -->
+                        <i class="fa-solid fa-refresh mr-2"></i>
+                        <span>获取今日运势</span>
+                    </button>
                 </div>
             </div>
         </main>
@@ -144,8 +131,8 @@
         <!-- 页脚 -->
         <footer class="bg-gray-900 text-white py-6">
             <div class="container mx-auto px-4 text-center">
-                <p>小数转分数工具 &copy; 2025</p>
-                <p class="text-sm text-gray-400 mt-1">让小数转换不再困难</p>
+                <p>打工人老黄历 &copy; 2025</p>
+                <p class="text-sm text-gray-400 mt-1">让打工人的日子更有方向</p>
 
                 <!-- 不蒜子统计 -->
                 <div class="mt-2 text-xs text-gray-500">
@@ -164,7 +151,7 @@
 
         <!-- 不蒜子统计脚本 -->
         <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-        <script src="./js/fraction.js"></script>
+        <script src="./js/calendar.js"></script>
     </body>
 
 </html>

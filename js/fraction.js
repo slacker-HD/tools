@@ -85,4 +85,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 1000);
         }, 1500);
     });
+
+    decimalInput.addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            convertBtn.click();
+        }
+    });
 });
