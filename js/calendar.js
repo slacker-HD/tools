@@ -710,13 +710,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // 隐藏加载状态
             hideLoading();
 
-            // 获取当前日期，使同一天的运势保持一致
-            const today = new Date();
-            const dateKey = today.getFullYear() + '-' + today.getMonth() + '-' + today.getDate();
-
-            // 使用日期作为种子生成伪随机数
-            const seed = dateKey.split('-').reduce((acc, part) => acc + parseInt(part, 10), 0);
-            const randomIndex = seed % fortunes.length;
+            // 使用随机数生成器获取随机运势
+            const randomIndex = Math.floor(Math.random() * fortunes.length);
 
             // 获取运势
             const fortune = fortunes[randomIndex];
@@ -736,7 +731,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const fortuneDesc = document.getElementById('fortune-desc');
             fortuneDesc.innerHTML = `${fortune.description}<br><br><span class="font-medium">工作建议：</span>${workAdvice}`;
 
-            // 添加图标
+            // 移除之前的图标
+            const existingIcon = resultContainer.querySelector('i');
+            if (existingIcon) {
+                existingIcon.remove();
+            }
+
+            // 添加新的图标
             const iconElement = document.createElement('i');
             iconElement.className = `fa-solid ${fortune.icon} text-6xl mb-4`;
             iconElement.style.color = fortune.color;
