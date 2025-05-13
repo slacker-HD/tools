@@ -20,7 +20,8 @@
                                 food: '#22C55E',
                                 fraction: '#F59E0B',
                                 color: '#F43F5E',
-                                calendar: '#8B5CF6'
+                                calendar: '#8B5CF6',
+                                convert: '#065F46' // 添加 convert 颜色
                             }
                         },
                         fontFamily: {
@@ -43,13 +44,16 @@
                 justify-content: center;
                 transition: all 0.3s;
             }
+
             .btn-primary:hover {
                 background-color: #144ECC;
                 box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
             }
+
             .card-hover {
                 transition: all 0.3s;
             }
+
             .card-hover:hover {
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                 transform: translateY(-0.25rem);
@@ -68,7 +72,9 @@
                     <h1 class="text-xl md:text-2xl font-bold text-gray-900">工具大全</h1>
                 </div>
                 <div class="flex space-x-4">
-                    <a href="https://www.hudi.site" class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.hudi.site"
+                        class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                        target="_blank" rel="noopener noreferrer">
                         <i class="fa-solid fa-blog mr-2"></i>
                         访问我的博客
                     </a>
@@ -151,6 +157,20 @@
                                     <h3 class="text-3xl font-bold text-tool-calendar mb-2 text-center">打工人老黄历</h3>
                                     <p class="text-gray-600 max-w-md mx-auto text-center">
                                         快来看看今天打工人的运势吧！点击下方按钮获取今日运势，或刷新查看不同结果。</p>
+                                </a>
+                            </div>
+
+                            <!-- 字符编码查看工具 -->
+                            <div
+                                class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                                <a href="convert.html" target="_blank" rel="noopener noreferrer">
+                                    <div
+                                        class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-convert/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                        <i class="fa-solid fa-code text-5xl text-tool-convert"></i>
+                                    </div>
+                                    <h3 class="text-3xl font-bold text-tool-convert mb-2 text-center">字符编码查看</h3>
+                                    <p class="text-gray-600 max-w-md mx-auto text-center">这个工具可以帮助你查看文本在不同编码格式下的表现形式。
+                                    </p>
                                 </a>
                             </div>
                         </div>

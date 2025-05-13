@@ -160,4 +160,109 @@
       transform: translateY(0);
     }
   }
+
+  /* 以下是为convert.html添加的样式 */
+  .toast-success {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #22c55e;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  /* Toast for copy success */
+  #copyToast {
+    position: fixed;
+    bottom: 6rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+    background-color: #22c55e;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+  }
+
+  /* Loading overlay */
+  #loadingOverlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+  }
+
+  #loadingOverlay .loading-spinner {
+    animation: spin 1s linear infinite;
+    border: 4px solid transparent;
+    border-top-color: #065F46;
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .shadow-card {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+  }
+
+  .btn-primary {
+    @apply bg-tool-convert hover:bg-tool-convert/90 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center;
+  }
+
+  .card-hover {
+    transition: all 0.3s;
+  }
+
+  .card-hover:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transform: translateY(-0.25rem);
+  }
+
+  .gradient-bg {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  }
+  
+  .warning-card {
+    @apply bg-amber-50 border-l-4 border-tool-convert text-tool-convert rounded-r-lg shadow-sm;
+  }
+  
+  .input-container {
+    @apply bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-2xl shadow-sm p-6 md:p-8 relative overflow-hidden;
+  }
+  
+  .result-container {
+    @apply bg-white/90 backdrop-blur-sm border border-neutral-200 rounded-2xl shadow-sm p-6 md:p-8 relative overflow-hidden;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-tool-convert border border-tool-convert font-bold py-2 px-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center;
+  }
+  
+  .copy-btn {
+    @apply text-tool-convert hover:text-tool-convert/80 transition-all duration-300;
+  }
 }

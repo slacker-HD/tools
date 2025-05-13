@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>字符编码查看工具</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="./css/styles.css">
+        <script src="./js/convert.js" defer></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: '#165DFF',
+                            secondary: '#722ED1',
+                            accent: '#FF7D00',
+                            tool: {
+                                convert: '#065F46', // 主色调：深绿色
+                                warning: '#C2410C', // 警告色：橙色
+                                success: '#065F46', // 成功色：绿色
+                                info: '#0369A1',    // 信息色：蓝色
+                                neutral: '#4B5563', // 中性色：深灰色
+                                eat: '#FF7D00'      // 新增色：橙色
+                            },
+                            neutral: {
+                                100: '#F3F4F6',
+                                200: '#E5E7EB',
+                                300: '#D1D5DB',
+                                400: '#9CA3AF',
+                                500: '#6B7280',
+                                600: '#4B5563',
+                                700: '#374151',
+                                800: '#1F2937',
+                                900: '#111827'
+                            }
+                        },
+                        fontFamily: {
+                            inter: ['Inter', 'sans-serif'],
+                        },
+                    }
+                }
+            }
+        </script>
+        <style type="text/tailwindcss">
+            @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+
+            .pulse-slow {
+                animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+
+            .shadow-card {
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+            }
+
+            .btn-primary {
+                @apply bg-tool-convert hover:bg-tool-convert/90 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center;
+            }
+
+            .card-hover {
+                transition: all 0.3s;
+            }
+
+            .card-hover:hover {
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transform: translateY(-0.25rem);
+            }
+
+            .gradient-bg {
+                background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+            }
+
+            .warning-card {
+                @apply bg-amber-50 border-l-4 border-tool-convert text-tool-convert rounded-r-lg shadow-sm;
+            }
+
+            .input-container {
+                @apply bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-2xl shadow-sm p-6 md:p-8 relative overflow-hidden;
+            }
+
+            .result-container {
+                @apply bg-white/90 backdrop-blur-sm border border-neutral-200 rounded-2xl shadow-sm p-6 md:p-8 relative overflow-hidden;
+            }
+
+            .btn-secondary {
+                @apply bg-white text-tool-convert border border-tool-convert font-bold py-2 px-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center;
+            }
+
+            .copy-btn {
+                @apply text-tool-convert hover:text-tool-convert/80 transition-all duration-300;
+            }
+        }
+    </style>
+    </head>
+
+    <body class="font-inter bg-neutral-100 text-neutral-800 min-h-screen flex flex-col">
+        <!-- 页面头部 -->
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="text-tool-convert mr-2">
+                        <i class="fa-solid fa-code text-2xl"></i>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-bold text-tool-convert">字符编码查看工具</h1>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="https://tools.hudi.site"
+                        class="bg-tool-color hover:bg-tool-color/90 text-tool-color font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site"
+                        class="bg-tool-color hover:bg-tool-color/90 text-tool-color font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>
+                        访问我的博客
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+            <div class="max-w-4xl mx-auto">
+                <!-- 介绍卡片 -->
+                <div
+                    class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                    <p class="text-center text-base md:text-lg text-neutral-600">
+                        这个工具可以帮助你查看文本在不同编码格式下的表现形式。支持的编码包括：GB2312、BIG5、GBK、GB18030、Unicode、UTF-8、UTF-16BE和UTF-16LE。输入文本后，点击"转换"按钮即可查看结果。
+                    </p>
+                    <!-- 警告提示 - 新配色方案 -->
+                    <div class="mt-4 p-3 warning-card">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 pt-0.5">
+                                <i class="fa fa-exclamation-triangle text-lg text-tool-convert"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium"><strong>注意:</strong>
+                                    GB2312、BIG5、GBK和GB18030编码需要通过服务器处理，可能需要等待片刻。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 输入区域 -->
+                <div class="input-container mb-8">
+                    <!-- 装饰元素 -->
+                    <div class="absolute -right-16 -top-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
+                    <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-secondary/5 rounded-full blur-3xl"></div>
+
+                    <div class="relative z-10">
+                        <h2
+                            class="text-center text-xl font-bold text-neutral-900 mb-6 flex justify-center items-center">
+                            <i class="fa-solid fa-keyboard mr-2 text-tool-convert"></i>
+                            输入文本
+                        </h2>
+
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                            <textarea id="inputText"
+                                class="bg-white border border-neutral-300 rounded-lg py-3 px-6 focus:outline-none focus:ring-tool-convert focus:border-tool-convert flex-grow shadow-sm"
+                                placeholder="请输入要转换的文本..."></textarea>
+                            <div class="flex flex-col justify-center items-center">
+                                <button id="convertBtn" class="btn-primary">
+                                    <i class="fa-solid fa-exchange mr-2"></i>
+                                    转换
+                                </button>
+                                <button id="clearBtn"
+                                    class="mt-3 text-neutral-600 hover:text-neutral-800 transition-all duration-300 flex items-center">
+                                    <i class="fa-solid fa-trash mr-1"></i>
+                                    清空
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 编码结果区域 -->
+                <div class="result-container mb-8">
+                    <!-- 装饰元素 -->
+                    <div class="absolute -right-16 -top-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
+                    <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-secondary/5 rounded-full blur-3xl"></div>
+
+                    <div class="relative z-10">
+                        <h2
+                            class="text-center text-xl font-bold text-neutral-900 mb-6 flex justify-center items-center">
+                            <i class="fa-solid fa-code mr-2 text-tool-convert"></i>
+                            转换结果
+                        </h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- GB2312编码结果 -->
+                            <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                                <h3 class="text-lg font-bold text-neutral-800 mb-3 flex items-center">
+                                    <i class="fa fa-code text-tool-convert mr-2"></i>GB2312 编码
+                                </h3>
+                                <div class="relative">
+                                    <div id="gb2312Result"
+                                        class="p-3 bg-neutral-50 rounded-lg min-h-24 overflow-auto text-neutral-700 break-all">
+                                    </div>
+                                    <button
+                                        class="copy-btn absolute top-2 right-2 text-neutral-500 hover:text-neutral-700 transition-all duration-300"
+                                        data-target="gb2312Result">
+                                        <i class="fa fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- BIG5编码结果 -->
+                            <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                                <h3 class="text-lg font-bold text-neutral-800 mb-3 flex items-center">
+                                    <i class="fa fa-code text-tool-convert mr-2"></i>BIG5 编码
+                                </h3>
+                                <div class="relative">
+                                    <div id="big5Result"
+                                        class="p-3 bg-neutral-50 rounded-lg min-h-24 overflow-auto text-neutral-700 break-all">
+                                    </div>
+                                    <button
+                                        class="copy-btn absolute top-2 right-2 text-neutral-500 hover:text-neutral-700 transition-all duration-300"
+                                        data-target="big5Result">
+                                        <i class="fa fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- GBK编码结果 -->
+                            <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                                <h3 class="text-lg font-bold text-neutral-800 mb-3 flex items-center">
+                                    <i class="fa fa-code text-tool-convert mr-2"></i>GBK 编码
+                                </h3>
+                                <div class="relative">
+                                    <div id="gbkResult"
+                                        class="p-3 bg-neutral-50 rounded-lg min-h-24 overflow-auto text-neutral-700 break-all">
+                                    </div>
+                                    <button
+                                        class="copy-btn absolute top-2 right-2 text-neutral-500 hover:text-neutral-700 transition-all duration-300"
+                                        data-target="gbkResult">
+                                        <i class="fa fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- GB18030编码结果 -->
+                            <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                                <h3 class="text-lg font-bold text-neutral-800 mb-3 flex items-center">
+                                    <i class="fa fa-code text-tool-convert mr-2"></i>GB18030 编码
+                                </h3>
+                                <div class="relative">
+                                    <div id="gb18030Result"
+                                        class="p-3 bg-neutral-50 rounded-lg min-h-24 overflow-auto text-neutral-700 break-all">
+                                    </div>
+                                    <button
+                                        class="copy-btn absolute top-2 right-2 text-neutral-500 hover:text-neutral-700 transition-all duration-300"
+                                        data-target="gb18030Result">
+                                        <i class="fa fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Unicode编码结果 -->
+                            <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                                <h3 class="text-lg font-bold text-neutral-800 mb-3 flex items-center">
+                                    <i class="fa fa-code text-tool-convert mr-2"></i>Unicode 编码
+                                </h3>
+                                <div class="relative">
+                                    <div id="unicodeResult"
+                                        class="p-3 bg-neutral-50 rounded-lg min-h-24 overflow-auto text-neutral-700 break-all">
+                                    </div>
+                                    <button
+                                        class="copy-btn absolute top-2 right-2 text-neutral-500 hover:text-neutral-700 transition-all duration-300"
+                                        data-target="unicodeResult">
+                                        <i class="fa fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- UTF-8编码结果 -->
+                            <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                                <h3 class="text-lg font-bold text-neutral-800 mb-3 flex items-center">
+                                    <i class="fa fa-code text-tool-convert mr-2"></i>UTF-8 编码
+                                </h3>
+                                <div class="relative">
+                                    <div id="utf8Result"
+                                        class="p-3 bg-neutral-50 rounded-lg min-h-24 overflow-auto text-neutral-700 break-all">
+                                    </div>
+                                    <button
+                                        class="copy-btn absolute top-2 right-2 text-neutral-500 hover:text-neutral-700 transition-all duration-300"
+                                        data-target="utf8Result">
+                                        <i class="fa fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- UTF-16BE编码结果 -->
+                            <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                                <h3 class="text-lg font-bold text-neutral-800 mb-3 flex items-center">
+                                    <i class="fa fa-code text-tool-convert mr-2"></i>UTF-16BE 编码
+                                </h3>
+                                <div class="relative">
+                                    <div id="utf16beResult"
+                                        class="p-3 bg-neutral-50 rounded-lg min-h-24 overflow-auto text-neutral-700 break-all">
+                                    </div>
+                                    <button
+                                        class="copy-btn absolute top-2 right-2 text-neutral-500 hover:text-neutral-700 transition-all duration-300"
+                                        data-target="utf16beResult">
+                                        <i class="fa fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- UTF-16LE编码结果 -->
+                            <div class="bg-white rounded-xl shadow-sm p-6 card-hover">
+                                <h3 class="text-lg font-bold text-neutral-800 mb-3 flex items-center">
+                                    <i class="fa fa-code text-tool-convert mr-2"></i>UTF-16LE 编码
+                                </h3>
+                                <div class="relative">
+                                    <div id="utf16leResult"
+                                        class="p-3 bg-neutral-50 rounded-lg min-h-24 overflow-auto text-neutral-700 break-all">
+                                    </div>
+                                    <button
+                                        class="copy-btn absolute top-2 right-2 text-neutral-500 hover:text-neutral-700 transition-all duration-300"
+                                        data-target="utf16leResult">
+                                        <i class="fa fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 页脚 -->
+        <footer class="bg-neutral-900 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p>字符编码查看工具 &copy; 2025</p>
+                <p class="text-sm text-neutral-400 mt-1">让编码查看更便捷</p>
+
+                <!-- 不蒜子统计 -->
+                <div class="mt-2 text-xs text-neutral-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+            </div>
+        </footer>
+
+        <!-- 加载提示元素 -->
+        <div id="loadingOverlay" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white p-6 rounded-lg shadow-xl flex items-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-tool-convert mr-4"></div>
+                <span class="text-lg font-medium text-neutral-800">正在进行编码转换，请稍候...</span>
+            </div>
+        </div>
+
+        <!-- 复制提示元素 -->
+        <div id="copyToast"
+            class="fixed bottom-6 left-1/2 transform -translate-x-1/2 translate-y-20 opacity-0 transition-all duration-300 bg-tool-success text-white py-2 px-6 rounded-lg shadow-lg flex items-center">
+            <i class="fa fa-check mr-2"></i>
+            <span>复制成功！</span>
+        </div>
+
+        <!-- 不蒜子统计脚本 -->
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    </body>
+
+</html>
