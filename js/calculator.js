@@ -27,9 +27,8 @@ class MathCalculator {
         // 内置函数列表
         this.builtinFunctions = [
             'sin', 'cos', 'tan', 'asin', 'acos', 'atan',
-            'log', 'ln', 'exp', 'sqrt', 'abs', 'factorial',
-            'conj', 'arg', 're', 'im', 'add', 'subtract',
-            'multiply', 'divide', 'pow'
+            'log', 'exp', 'sqrt', 'abs', 'factorial',
+            'conj', 'arg', 're', 'im', 'pow', 'sinh', 'cosh', 'tanh'
         ];
 
         // 上一次计算结果
@@ -125,15 +124,11 @@ class MathCalculator {
         });
 
         // 添加更多数学函数和常量
-        this.math.import(math.evaluate('{sin, cos, tan, asin, acos, atan, log, ln, exp, sqrt, abs, factorial, conj, arg, re, im}'));
+        this.math.import(math.evaluate('{sin, cos, tan, asin, acos, atan, log, exp, sqrt, abs, factorial, conj, arg, re, im, pow, sinh, cosh, tanh}'));
         this.math.import({ pi: Math.PI, e: Math.E, i: math.complex(0, 1) });
 
         // 自定义函数处理复数转换问题
         this.math.import({
-            add: (a, b) => this.math.add(this.ensureComplex(a), this.ensureComplex(b)),
-            subtract: (a, b) => this.math.subtract(this.ensureComplex(a), this.ensureComplex(b)),
-            multiply: (a, b) => this.math.multiply(this.ensureComplex(a), this.ensureComplex(b)),
-            divide: (a, b) => this.math.divide(this.ensureComplex(a), this.ensureComplex(b)),
             pow: (a, b) => this.math.pow(this.ensureComplex(a), this.ensureComplex(b))
         }, { override: true });
     }
@@ -470,8 +465,8 @@ class MathCalculator {
     // 复制输出内容
     copyOutput() {
         const text = Array.from(this.outputArea.children)
-            .map(el => el.textContent)
-            .join('\n');
+           .map(el => el.textContent)
+           .join('\n');
 
         navigator.clipboard.writeText(text).then(() => {
             // 显示复制成功提示
@@ -671,34 +666,34 @@ class MathCalculator {
         this.customItemsList.appendChild(item);
     }
 
- // 删除自定义项目
-deleteCustomItem(name, type) {
-    try {
-        // 从 DOM 中移除该项
-        const items = Array.from(this.customItemsList.children);
-        for (const item of items) {
-            if (item.dataset.name === name && item.dataset.type === type) {
-                item.remove();
+    // 删除自定义项目
+    deleteCustomItem(name, type) {
+        try {
+            // 从 DOM 中移除该项
+            const items = Array.from(this.customItemsList.children);
+            for (const item of items) {
+                if (item.dataset.name === name && item.dataset.type === type) {
+                    item.remove();
+                }
             }
+
+            // 重新初始化 math.js 环境
+            this.math = math.create(math.all, {
+                number: 'Complex' // 使用复数类型
+            });
+
+            // 重新设置数学环境
+            this.setupMathEnvironment();
+
+            this.addOutputLine(`>>> ${type === 'function' ? '函数' : '变量'} ${name} 已删除`);
+            this.scrollToBottom();
+        } catch (e) {
+            console.error(`删除 ${name} 时出错:`, e);
         }
-
-        // 重新初始化 math.js 环境
-        this.math = math.create(math.all, {
-            number: 'Complex' // 使用复数类型
-        });
-
-        // 重新设置数学环境
-        this.setupMathEnvironment();
-
-        this.addOutputLine(`>>> ${type === 'function' ? '函数' : '变量'} ${name} 已删除`);
-        this.scrollToBottom();
-    } catch (e) {
-        console.error(`删除 ${name} 时出错:`, e);
     }
 }
-}
 
-// 初始化计算器
+// 创建计算器实例
 document.addEventListener('DOMContentLoaded', () => {
     const calculator = new MathCalculator();
 });

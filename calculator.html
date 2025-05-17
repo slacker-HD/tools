@@ -225,58 +225,12 @@
             </div>
             
             <!-- 基本数学函数 -->
-            <div class="mb-8">
+            <div class="mb-8" id="basic-functions">
                 <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
                     <i class="fa fa-function mr-2"></i> 基本数学函数
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                        <div class="w-20 font-mono font-bold text-primary">sqrt(x)</div>
-                        <div class="flex-1">
-                            <p class="text-sm">计算x的平方根。</p>
-                            <p class="text-xs text-gray-500 mt-1">示例: sqrt(4) 返回 2</p>
-                        </div>
-                    </div>
-                    
-                    <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                        <div class="w-20 font-mono font-bold text-primary">sin(x)</div>
-                        <div class="flex-1">
-                            <p class="text-sm">计算x的正弦值（弧度）。</p>
-                            <p class="text-xs text-gray-500 mt-1">示例: sin(pi/2) 返回 1</p>
-                        </div>
-                    </div>
-                    
-                    <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                        <div class="w-20 font-mono font-bold text-primary">cos(x)</div>
-                        <div class="flex-1">
-                            <p class="text-sm">计算x的余弦值（弧度）。</p>
-                            <p class="text-xs text-gray-500 mt-1">示例: cos(pi) 返回 -1</p>
-                        </div>
-                    </div>
-                    
-                    <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                        <div class="w-20 font-mono font-bold text-primary">tan(x)</div>
-                        <div class="flex-1">
-                            <p class="text-sm">计算x的正切值（弧度）。</p>
-                            <p class="text-xs text-gray-500 mt-1">示例: tan(pi/4) 返回 1</p>
-                        </div>
-                    </div>
-                    
-                    <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                        <div class="w-20 font-mono font-bold text-primary">log(x)</div>
-                        <div class="flex-1">
-                            <p class="text-sm">计算x的自然对数（以e为底）。</p>
-                            <p class="text-xs text-gray-500 mt-1">示例: log(e) 返回 1</p>
-                        </div>
-                    </div>
-                    
-                    <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                        <div class="w-20 font-mono font-bold text-primary">exp(x)</div>
-                        <div class="flex-1">
-                            <p class="text-sm">计算e的x次幂。</p>
-                            <p class="text-xs text-gray-500 mt-1">示例: exp(1) 返回 e</p>
-                        </div>
-                    </div>
+                    <!-- 函数列表将动态生成 -->
                 </div>
             </div>
             
@@ -390,5 +344,172 @@
     </footer>
 
     <script src="./js/calculator.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const builtinFunctions = [
+                'sin', 'cos', 'tan', 'asin', 'acos', 'atan',
+                'log', 'exp', 'sqrt', 'abs', 'factorial',
+                'conj', 'arg', 're', 'im', 'pow', 'sinh', 'cosh', 'tanh'
+            ];
+
+            const basicFunctionsContainer = document.querySelector('#basic-functions .grid');
+
+            builtinFunctions.forEach(func => {
+                const item = document.createElement('div');
+                item.className = 'reference-item bg-gray-50 p-3 rounded-lg flex items-center';
+
+                const funcNameDiv = document.createElement('div');
+                funcNameDiv.className = 'w-24 font-mono font-bold text-primary'; // 增加宽度以避免重叠
+                let funcParams = '';
+                switch (func) {
+                    case 'pow':
+                        funcParams = '(x, y)';
+                        break;
+                    default:
+                        funcParams = '(x)';
+                }
+                funcNameDiv.textContent = `${func}${funcParams}`;
+
+                const descriptionDiv = document.createElement('div');
+                descriptionDiv.className = 'flex-1';
+
+                const descriptionP = document.createElement('p');
+                descriptionP.className = 'text-sm';
+                switch (func) {
+                    case 'sin':
+                        descriptionP.textContent = '计算x的正弦值（弧度）。';
+                        break;
+                    case 'cos':
+                        descriptionP.textContent = '计算x的余弦值（弧度）。';
+                        break;
+                    case 'tan':
+                        descriptionP.textContent = '计算x的正切值（弧度）。';
+                        break;
+                    case 'asin':
+                        descriptionP.textContent = '计算x的反正弦值（弧度）。';
+                        break;
+                    case 'acos':
+                        descriptionP.textContent = '计算x的反余弦值（弧度）。';
+                        break;
+                    case 'atan':
+                        descriptionP.textContent = '计算x的反正切值（弧度）。';
+                        break;
+                    case 'log':
+                        descriptionP.textContent = '计算x的自然对数（以e为底）。';
+                        break;
+                    case 'exp':
+                        descriptionP.textContent = '计算e的x次幂。';
+                        break;
+                    case 'sqrt':
+                        descriptionP.textContent = '计算x的平方根。';
+                        break;
+                    case 'abs':
+                        descriptionP.textContent = '计算x的绝对值。';
+                        break;
+                    case 'factorial':
+                        descriptionP.textContent = '计算x的阶乘。';
+                        break;
+                    case 'conj':
+                        descriptionP.textContent = '计算复数x的共轭。';
+                        break;
+                    case 'arg':
+                        descriptionP.textContent = '计算复数x的辐角（主值）。';
+                        break;
+                    case 're':
+                        descriptionP.textContent = '提取复数x的实部。';
+                        break;
+                    case 'im':
+                        descriptionP.textContent = '提取复数x的虚部。';
+                        break;
+                    case 'pow':
+                        descriptionP.textContent = '执行幂运算。';
+                        break;
+                    case 'sinh':
+                        descriptionP.textContent = '计算x的双曲正弦值。';
+                        break;
+                    case 'cosh':
+                        descriptionP.textContent = '计算x的双曲余弦值。';
+                        break;
+                    case 'tanh':
+                        descriptionP.textContent = '计算x的双曲正切值。';
+                        break;
+                    default:
+                        descriptionP.textContent = '未知函数。';
+                }
+
+                const exampleP = document.createElement('p');
+                exampleP.className = 'text-xs text-gray-500 mt-1';
+                switch (func) {
+                    case 'sin':
+                        exampleP.textContent = '示例: sin(pi/2) 返回 1';
+                        break;
+                    case 'cos':
+                        exampleP.textContent = '示例: cos(pi) 返回 -1';
+                        break;
+                    case 'tan':
+                        exampleP.textContent = '示例: tan(pi/4) 返回 1';
+                        break;
+                    case 'asin':
+                        exampleP.textContent = '示例: asin(1) 返回 pi/2';
+                        break;
+                    case 'acos':
+                        exampleP.textContent = '示例: acos(-1) 返回 pi';
+                        break;
+                    case 'atan':
+                        exampleP.textContent = '示例: atan(1) 返回 pi/4';
+                        break;
+                    case 'log':
+                        exampleP.textContent = '示例: log(e) 返回 1';
+                        break;
+                    case 'exp':
+                        exampleP.textContent = '示例: exp(1) 返回 e';
+                        break;
+                    case 'sqrt':
+                        exampleP.textContent = '示例: sqrt(4) 返回 2';
+                        break;
+                    case 'abs':
+                        exampleP.textContent = '示例: abs(-5) 返回 5';
+                        break;
+                    case 'factorial':
+                        exampleP.textContent = '示例: factorial(5) 返回 120';
+                        break;
+                    case 'conj':
+                        exampleP.textContent = '示例: conj(2+3i) 返回 2-3i';
+                        break;
+                    case 'arg':
+                        exampleP.textContent = '示例: arg(1+i) 返回 pi/4';
+                        break;
+                    case 're':
+                        exampleP.textContent = '示例: re(2+3i) 返回 2';
+                        break;
+                    case 'im':
+                        exampleP.textContent = '示例: im(2+3i) 返回 3';
+                        break;
+                    case 'pow':
+                        exampleP.textContent = '示例: pow(2, 3) 返回 8';
+                        break;
+                    case 'sinh':
+                        exampleP.textContent = '示例: sinh(0) 返回 0';
+                        break;
+                    case 'cosh':
+                        exampleP.textContent = '示例: cosh(0) 返回 1';
+                        break;
+                    case 'tanh':
+                        exampleP.textContent = '示例: tanh(0) 返回 0';
+                        break;
+                    default:
+                        exampleP.textContent = '暂无示例。';
+                }
+
+                descriptionDiv.appendChild(descriptionP);
+                descriptionDiv.appendChild(exampleP);
+
+                item.appendChild(funcNameDiv);
+                item.appendChild(descriptionDiv);
+
+                basicFunctionsContainer.appendChild(item);
+            });
+        });
+    </script>
 </body>
 </html>
