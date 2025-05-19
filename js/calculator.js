@@ -13,6 +13,19 @@ class MathCalculator {
         this.epsReference = document.getElementById('eps-reference');
         this.initPrecision = document.getElementById('init-precision');
         this.customItemsList = document.getElementById('custom-items-list');
+        // 修复：如果页面没有 custom-items-list 元素，则创建一个并插入到页面
+        if (!this.customItemsList) {
+            this.customItemsList = document.createElement('div');
+            this.customItemsList.id = 'custom-items-list';
+            // 尝试插入到自定义变量和函数区域
+            const customSection = document.getElementById('custom-variables-functions');
+            if (customSection) {
+                customSection.appendChild(this.customItemsList);
+            } else {
+                // 如果没有找到合适区域，插入到body末尾
+                document.body.appendChild(this.customItemsList);
+            }
+        }
         this.functionsReference = document.getElementById('functions-reference');
 
         // 历史记录
@@ -28,7 +41,12 @@ class MathCalculator {
         this.builtinFunctions = [
             'sin', 'cos', 'tan', 'asin', 'acos', 'atan',
             'log', 'exp', 'sqrt', 'abs', 'factorial',
-            'conj', 'arg', 're', 'im', 'pow', 'sinh', 'cosh', 'tanh'
+            'conj', 'arg', 're', 'im', 'pow', 'sinh', 'cosh', 'tanh',
+            'cot', 'acot', 'coth', 'acoth',
+            'arrangement', 'combination', 'gamma',
+            'avg', 'median', 'sum', 'prod', 'var', 'std',
+            // 新增 math.js 常用函数
+            'min', 'max', 'mode', 'mean', 'mad', 'floor', 'ceil', 'round', 'sign', 'gcd', 'lcm', 'hypot', 'random', 'randomInt', 'mod', 'not', 'and', 'or', 'xor'
         ];
 
         // 上一次计算结果
@@ -47,10 +65,8 @@ class MathCalculator {
         // 默认主题
         this.darkMode = false;
 
-        // 显示欢迎信息
-        this.addOutputLine('>>> 欢迎使用网页版数学计算器');
-        this.addOutputLine('>>> 支持基本数学运算、函数、变量和复数运算');
-        this.addOutputLine(`>>> 使用滑块调整计算精度 (eps = ${this.formatEps()})`);
+        // 清空输出区域并显示欢迎信息（只显示一次）
+        this.clearOutput();
     }
 
     // 设置事件监听器
@@ -116,21 +132,127 @@ class MathCalculator {
 
     // 设置数学环境
     setupMathEnvironment() {
-        // 添加自定义函数和变量
-        this.math.import({
-            // ans 作为变量，初始为 null
-            ans: this.lastResult,
-            eps: Math.pow(10, -this.precision)
-        });
+        try {
+            // 添加自定义函数和变量
+            this.math.import({
+                // ans 作为变量，初始为 null
+                ans: this.lastResult,
+                eps: Math.pow(10, -this.precision)
+            });
 
-        // 添加更多数学函数和常量
-        this.math.import(math.evaluate('{sin, cos, tan, asin, acos, atan, log, exp, sqrt, abs, factorial, conj, arg, re, im, pow, sinh, cosh, tanh}'));
-        this.math.import({ pi: Math.PI, e: Math.E, i: math.complex(0, 1) });
+            // 添加更多数学函数和常量
+            this.math.import(math.evaluate('{sin, cos, tan, asin, acos, atan, log, exp, sqrt, abs, factorial, conj, arg, re, im, pow, sinh, cosh, tanh}'));
+            this.math.import({ pi: Math.PI, e: Math.E, i: math.complex(0, 1) });
 
-        // 自定义函数处理复数转换问题
-        this.math.import({
-            pow: (a, b) => this.math.pow(this.ensureComplex(a), this.ensureComplex(b))
-        }, { override: true });
+            // 新增函数
+            this.math.import({
+                cot: (x) => 1 / this.math.tan(x),
+                acot: (x) => this.math.atan(1 / x),
+                coth: (x) => 1 / this.math.tanh(x),
+                acoth: (x) => 0.5 * this.math.log((x + 1) / (x - 1))
+            });
+
+            // 自定义函数处理复数转换问题
+            this.math.import({
+                pow: (a, b) => this.math.pow(this.ensureComplex(a), this.ensureComplex(b))
+            }, { override: true });
+
+            // 概率函数实现
+            this.math.import({
+                arrangement: function(n, m) {
+                    n = Number(n); m = Number(m);
+                    if (n < 0 || m < 0 || m > n) throw new Error('参数错误');
+                    return math.factorial(n) / math.factorial(n - m);
+                },
+                combination: function(n, m) {
+                    n = Number(n); m = Number(m);
+                    if (n < 0 || m < 0 || m > n) throw new Error('参数错误');
+                    return math.factorial(n) / (math.factorial(m) * math.factorial(n - m));
+                },
+                gamma: function(x) {
+                    // mathjs 已有 gamma
+                    return math.gamma(x);
+                }
+            }, { override: true });
+
+            // 统计函数实现
+            const statsFunctions = {
+                mean: function() {
+                    let arr;
+                    if (arguments.length === 1 && Array.isArray(arguments[0])) {
+                        arr = arguments[0];
+                    } else {
+                        arr = Array.from(arguments);
+                    }
+                    arr = arr.map(Number).filter(x => !isNaN(x));
+                    if (arr.length === 0) throw new Error('mean: 请输入至少一个数字');
+                    return math.mean(arr);
+                },
+                median: function() {
+                    if (arguments.length === 1 && Array.isArray(arguments[0])) {
+                        return math.median(arguments[0]);
+                    }
+                    return math.median(Array.from(arguments));
+                },
+                sum: function() {
+                    if (arguments.length === 1 && Array.isArray(arguments[0])) {
+                        return math.sum(arguments[0]);
+                    }
+                    return math.sum(Array.from(arguments));
+                },
+                prod: function() {
+                    if (arguments.length === 1 && Array.isArray(arguments[0])) {
+                        return math.prod(arguments[0]);
+                    }
+                    return math.prod(Array.from(arguments));
+                },
+                var: function() {
+                    if (arguments.length === 1 && Array.isArray(arguments[0])) {
+                        return math.variance(arguments[0]);
+                    }
+                    return math.variance(Array.from(arguments));
+                },
+                std: function() {
+                    if (arguments.length === 1 && Array.isArray(arguments[0])) {
+                        return math.std(arguments[0]);
+                    }
+                    return math.std(Array.from(arguments));
+                },
+                // 新增 math.js 常用统计函数
+                mode: function() {
+                    if (arguments.length === 1 && Array.isArray(arguments[0])) {
+                        return math.mode(arguments[0]);
+                    }
+                    return math.mode(Array.from(arguments));
+                },
+                min: function() {
+                    if (arguments.length === 1 && Array.isArray(arguments[0])) {
+                        return math.min(arguments[0]);
+                    }
+                    return math.min(Array.from(arguments));
+                },
+                max: function() {
+                    if (arguments.length === 1 && Array.isArray(arguments[0])) {
+                        return math.max(arguments[0]);
+                    }
+                    return math.max(Array.from(arguments));
+                },
+                // 其它可选：quantileSeq, mad, etc.
+                mad: function() {
+                    if (arguments.length === 1 && Array.isArray(arguments[0])) {
+                        return math.mad(arguments[0]);
+                    }
+                    return math.mad(Array.from(arguments));
+                }
+            };
+
+            this.math.import(statsFunctions, { override: true });
+
+            // 检查 avg 函数是否导入成功
+            console.log('avg 函数是否导入成功:', typeof this.math.avg === 'function');
+        } catch (error) {
+            console.error('设置数学环境时出错:', error);
+        }
     }
 
     // 确保值是复数
@@ -421,7 +543,12 @@ class MathCalculator {
         if (isResult) {
             line.innerHTML = `<span class="text-gray-400">&nbsp;&nbsp;&nbsp;</span><span class="ml-2">${text}</span>`;
         } else {
-            line.textContent = text;
+            // >>> 提示符绿色
+            if (typeof text === 'string' && text.startsWith('>>>')) {
+                line.innerHTML = `<span class="text-green-400">&gt;&gt;&gt;</span><span class="ml-2">${text.slice(3).trim()}</span>`;
+            } else {
+                line.textContent = text;
+            }
         }
 
         this.outputArea.appendChild(line);
@@ -610,34 +737,41 @@ class MathCalculator {
 
     // 添加自定义项目到列表
     addCustomItem(name, value, type) {
+        // 保证 customItemsList 有合适的样式和结构
+        this.customItemsList.classList.add('flex', 'flex-col', 'gap-2', 'w-full');
+
+        // 外层item
         const item = document.createElement('div');
-        item.className = 'flex items-center justify-between bg-gray-50 p-3 rounded-lg mb-2 transition-all duration-200 hover:shadow-md';
+        item.className = 'flex flex-row items-center justify-between bg-gray-50 p-3 rounded-lg mb-2 transition-all duration-200 hover:shadow-md w-full';
         item.dataset.name = name;
         item.dataset.type = type;
 
+        // 左侧：图标+名称+值
         const info = document.createElement('div');
-        info.className = 'flex items-center';
+        info.className = 'flex flex-row items-center flex-1 min-w-0';
 
         const icon = document.createElement('i');
-        icon.className = type === 'function' ? 'fa fa-calculator mr-2 text-primary' : 'fa fa-variable mr-2 text-primary';
+        icon.className = type === 'function'
+            ? 'fa fa-calculator mr-2 text-primary'
+            : 'fa fa-variable mr-2 text-primary';
         info.appendChild(icon);
 
         const nameText = document.createElement('span');
-        nameText.className = 'font-mono font-bold mr-2';
+        nameText.className = 'font-mono font-bold mr-2 break-all';
         nameText.textContent = name;
-        nameText.style.color = this.darkMode ? '#3b82f6' : '#3b82f6';
         info.appendChild(nameText);
 
         const valueText = document.createElement('span');
-        valueText.className = 'text-sm';
+        valueText.className = 'text-sm ml-2 text-gray-700 break-all truncate';
+        valueText.style.maxWidth = '16rem';
         valueText.textContent = value;
-        valueText.style.color = this.darkMode ? '#e5e7eb' : '#4b5563';
         info.appendChild(valueText);
 
         item.appendChild(info);
 
+        // 删除按钮
         const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-btn flex items-center text-white bg-red-500 hover:bg-red-600 px-2 py-1 rounded ml-4 transition-colors';
+        deleteBtn.className = 'delete-btn flex items-center text-white bg-red-500 hover:bg-red-600 px-2 py-1 rounded ml-4 transition-colors flex-shrink-0';
         deleteBtn.innerHTML = '<i class="fa fa-trash-o mr-1"></i><span>删除</span>';
         deleteBtn.addEventListener('click', async () => {
             const itemType = type === 'function' ? '函数' : '变量';
@@ -662,7 +796,7 @@ class MathCalculator {
         });
         item.appendChild(deleteBtn);
 
-        // 添加到列表
+        // 插入
         this.customItemsList.appendChild(item);
     }
 
@@ -693,7 +827,5 @@ class MathCalculator {
     }
 }
 
-// 创建计算器实例
-document.addEventListener('DOMContentLoaded', () => {
-    const calculator = new MathCalculator();
-});
+// 初始化计算器
+const calculator = new MathCalculator();
