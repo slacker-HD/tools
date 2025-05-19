@@ -738,41 +738,43 @@ class MathCalculator {
     // 添加自定义项目到列表
     addCustomItem(name, value, type) {
         // 保证 customItemsList 有合适的样式和结构
-        this.customItemsList.classList.add('flex', 'flex-col', 'gap-2', 'w-full');
+        this.customItemsList.classList.add('flex', 'flex-col', 'gap-2', 'w-full', 'mt-2');
 
-        // 外层item
+        // 外层item，参考 reference-item 样式
         const item = document.createElement('div');
-        item.className = 'flex flex-row items-center justify-between bg-gray-50 p-3 rounded-lg mb-2 transition-all duration-200 hover:shadow-md w-full';
+        item.className = 'reference-item bg-white border border-gray-200 shadow-sm p-3 rounded-xl mb-2 flex items-center transition-all duration-200 hover:shadow-lg hover:border-primary';
         item.dataset.name = name;
         item.dataset.type = type;
 
-        // 左侧：图标+名称+值
-        const info = document.createElement('div');
-        info.className = 'flex flex-row items-center flex-1 min-w-0';
+        // 左侧图标和名称
+        const left = document.createElement('div');
+        left.className = 'flex items-center min-w-0';
 
         const icon = document.createElement('i');
         icon.className = type === 'function'
-            ? 'fa fa-calculator mr-2 text-primary'
-            : 'fa fa-variable mr-2 text-primary';
-        info.appendChild(icon);
+            ? 'fa fa-calculator mr-2 text-blue-500'
+            : 'fa fa-variable mr-2 text-green-500';
+        left.appendChild(icon);
 
         const nameText = document.createElement('span');
-        nameText.className = 'font-mono font-bold mr-2 break-all';
+        nameText.className = 'font-mono font-bold text-primary text-base truncate';
+        nameText.style.maxWidth = '10rem';
         nameText.textContent = name;
-        info.appendChild(nameText);
+        left.appendChild(nameText);
 
+        item.appendChild(left);
+
+        // 中间值
         const valueText = document.createElement('span');
-        valueText.className = 'text-sm ml-2 text-gray-700 break-all truncate';
-        valueText.style.maxWidth = '16rem';
+        valueText.className = 'ml-4 text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded break-all flex-1';
+        valueText.style.minWidth = '0';
         valueText.textContent = value;
-        info.appendChild(valueText);
-
-        item.appendChild(info);
+        item.appendChild(valueText);
 
         // 删除按钮
         const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-btn flex items-center text-white bg-red-500 hover:bg-red-600 px-2 py-1 rounded ml-4 transition-colors flex-shrink-0';
-        deleteBtn.innerHTML = '<i class="fa fa-trash-o mr-1"></i><span>删除</span>';
+        deleteBtn.className = 'ml-4 flex items-center text-white bg-red-500 hover:bg-red-600 px-2 py-1 rounded transition-colors text-xs shadow';
+        deleteBtn.innerHTML = '<i class="fa fa-trash-o mr-1"></i>删除';
         deleteBtn.addEventListener('click', async () => {
             const itemType = type === 'function' ? '函数' : '变量';
             const confirmDelete = await this.showConfirmDialog(
@@ -796,7 +798,29 @@ class MathCalculator {
         });
         item.appendChild(deleteBtn);
 
-        // 插入
+        // 插入到“自定义函数和变量”分组
+        // 如果 customItemsList 不在 #custom-variables-functions 区域，则插入
+        let customSection = document.getElementById('custom-variables-functions');
+        if (!customSection) {
+            // 在函数参考区末尾插入
+            const ref = document.getElementById('functions-reference');
+            customSection = document.createElement('div');
+            customSection.id = 'custom-variables-functions';
+            // 标题
+            const title = document.createElement('h3');
+            title.className = 'text-lg font-semibold text-secondary mb-4 flex items-center mt-8';
+            title.innerHTML = '<i class="fa fa-user mr-2"></i> 自定义函数和变量';
+            customSection.appendChild(title);
+            // 列表容器
+            this.customItemsList.classList.add('mb-4');
+            customSection.appendChild(this.customItemsList);
+            if (ref) {
+                ref.appendChild(customSection);
+            } else {
+                document.body.appendChild(customSection);
+            }
+        }
+        // 添加到 customItemsList
         this.customItemsList.appendChild(item);
     }
 
