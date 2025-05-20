@@ -537,20 +537,16 @@ class MathCalculator {
     // 添加输出行
     addOutputLine(text, isResult = false, isError = false) {
         const line = document.createElement('div');
-        line.className = `output-line ${isResult ? 'text-green-400' : isError ? 'text-red-400' : ''}`;
+        line.className = 'output-line' +
+            (isResult ? ' text-primary' : isError ? ' text-red-400' : '');
 
-        // 如果是结果行，添加额外的缩进
         if (isResult) {
             line.innerHTML = `<span class="text-gray-400">&nbsp;&nbsp;&nbsp;</span><span class="ml-2">${text}</span>`;
+        } else if (typeof text === 'string' && text.startsWith('>>>')) {
+            line.innerHTML = `<span class="text-primary">&gt;&gt;&gt;</span><span class="ml-2">${text.slice(3).trim()}</span>`;
         } else {
-            // >>> 提示符绿色
-            if (typeof text === 'string' && text.startsWith('>>>')) {
-                line.innerHTML = `<span class="text-green-400">&gt;&gt;&gt;</span><span class="ml-2">${text.slice(3).trim()}</span>`;
-            } else {
-                line.textContent = text;
-            }
+            line.textContent = text;
         }
-
         this.outputArea.appendChild(line);
     }
 
@@ -628,7 +624,6 @@ class MathCalculator {
             body.classList.remove('bg-gradient-to-br', 'from-light', 'to-blue-50');
             body.classList.add('bg-dark');
 
-            calculator.classList.remove('bg-white');
             calculator.classList.add('bg-gray-900');
 
             outputArea.classList.remove('bg-output');
@@ -658,8 +653,12 @@ class MathCalculator {
                         p.classList.remove('text-gray-700', 'text-gray-500');
                         p.classList.add('text-gray-300', 'text-gray-400');
                     });
-                    card.querySelector('div.w-20').classList.remove('text-primary');
-                    card.querySelector('div.w-20').classList.add('text-blue-400');
+                    // 适配宽度类名
+                    let symbolDiv = card.querySelector('div.min-w-[11rem]');
+                    if (symbolDiv) {
+                        symbolDiv.classList.remove('text-primary');
+                        symbolDiv.classList.add('text-lime-400'); // 浅绿色，区分主色和黑色
+                    }
                 });
             }
 
@@ -667,8 +666,11 @@ class MathCalculator {
                 customItemsList.querySelectorAll('div').forEach(item => {
                     item.classList.remove('bg-gray-50');
                     item.classList.add('bg-gray-800');
-                    item.querySelector('.text-gray-700').classList.remove('text-gray-700');
-                    item.querySelector('.text-gray-700').classList.add('text-gray-300');
+                    let valueSpan = item.querySelector('.text-gray-700');
+                    if (valueSpan) {
+                        valueSpan.classList.remove('text-gray-700');
+                        valueSpan.classList.add('text-gray-300');
+                    }
                 });
             }
 
@@ -737,43 +739,41 @@ class MathCalculator {
 
     // 添加自定义项目到列表
     addCustomItem(name, value, type) {
-        // 保证 customItemsList 有合适的样式和结构
         this.customItemsList.classList.add('flex', 'flex-col', 'gap-2', 'w-full', 'mt-2');
 
         // 外层item，参考 reference-item 样式
         const item = document.createElement('div');
-        item.className = 'reference-item bg-white border border-gray-200 shadow-sm p-3 rounded-xl mb-2 flex items-center transition-all duration-200 hover:shadow-lg hover:border-primary';
+        item.className = 'reference-item bg-gray-50 p-3 rounded-lg flex items-center mb-2';
         item.dataset.name = name;
         item.dataset.type = type;
 
-        // 左侧图标和名称
-        const left = document.createElement('div');
-        left.className = 'flex items-center min-w-0';
+        // 左侧名称，参考 reference-item
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center';
+        nameDiv.textContent = name;
+        item.appendChild(nameDiv);
 
-        const icon = document.createElement('i');
-        icon.className = type === 'function'
-            ? 'fa fa-calculator mr-2 text-blue-500'
-            : 'fa fa-variable mr-2 text-green-500';
-        left.appendChild(icon);
+        // 右侧内容
+        const rightDiv = document.createElement('div');
+        rightDiv.className = 'flex-1';
 
-        const nameText = document.createElement('span');
-        nameText.className = 'font-mono font-bold text-primary text-base truncate';
-        nameText.style.maxWidth = '10rem';
-        nameText.textContent = name;
-        left.appendChild(nameText);
+        // 类型描述
+        const desc = document.createElement('p');
+        desc.className = 'text-sm';
+        desc.textContent = type === 'function' ? '自定义函数' : '自定义变量';
+        rightDiv.appendChild(desc);
 
-        item.appendChild(left);
+        // 值
+        const valueP = document.createElement('p');
+        valueP.className = 'text-xs text-gray-500 mt-1 break-all';
+        valueP.textContent = value;
+        rightDiv.appendChild(valueP);
 
-        // 中间值
-        const valueText = document.createElement('span');
-        valueText.className = 'ml-4 text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded break-all flex-1';
-        valueText.style.minWidth = '0';
-        valueText.textContent = value;
-        item.appendChild(valueText);
+        item.appendChild(rightDiv);
 
-        // 删除按钮
+        // 删除按钮，红色背景更显眼
         const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'ml-4 flex items-center text-white bg-red-500 hover:bg-red-600 px-2 py-1 rounded transition-colors text-xs shadow';
+        deleteBtn.className = 'bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center ml-4 text-xs';
         deleteBtn.innerHTML = '<i class="fa fa-trash-o mr-1"></i>删除';
         deleteBtn.addEventListener('click', async () => {
             const itemType = type === 'function' ? '函数' : '变量';
@@ -799,19 +799,15 @@ class MathCalculator {
         item.appendChild(deleteBtn);
 
         // 插入到“自定义函数和变量”分组
-        // 如果 customItemsList 不在 #custom-variables-functions 区域，则插入
         let customSection = document.getElementById('custom-variables-functions');
         if (!customSection) {
-            // 在函数参考区末尾插入
             const ref = document.getElementById('functions-reference');
             customSection = document.createElement('div');
             customSection.id = 'custom-variables-functions';
-            // 标题
             const title = document.createElement('h3');
             title.className = 'text-lg font-semibold text-secondary mb-4 flex items-center mt-8';
             title.innerHTML = '<i class="fa fa-user mr-2"></i> 自定义函数和变量';
             customSection.appendChild(title);
-            // 列表容器
             this.customItemsList.classList.add('mb-4');
             customSection.appendChild(this.customItemsList);
             if (ref) {
@@ -820,7 +816,6 @@ class MathCalculator {
                 document.body.appendChild(customSection);
             }
         }
-        // 添加到 customItemsList
         this.customItemsList.appendChild(item);
     }
 

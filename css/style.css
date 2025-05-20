@@ -1,0 +1,19 @@
+/* 精简后的自定义样式 */
+.content-auto { content-visibility: auto; }
+.editor-shadow { box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+.blink-cursor { animation: blink 1s step-end infinite; }
+@keyframes blink { from, to { opacity: 1; } 50% { opacity: 0; } }
+.output-line { transition: all 0.2s ease-out; }
+.output-line:hover { background-color: rgba(255,255,255,0.05); }
+.function-card { transition: all 0.3s ease; }
+.function-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.reference-item { transition: all 0.2s ease; }
+.reference-item:hover { background-color: rgba(0,0,0,0.03); transform: translateX(5px); }
+.slider-thumb {
+    appearance: none;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #3B82F6; cursor: pointer; transition: all 0.15s ease;
+}
+.slider-thumb:hover { box-shadow: 0 0 0 8px rgba(59,130,246,0.1); }
+.quick-input-item { transition: all 0.2s ease; }
+.quick-input-item:hover { background-color: rgba(59,130,246,0.1); transform: translateX(2px); }
