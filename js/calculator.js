@@ -345,6 +345,15 @@ class MathCalculator {
                             return;
                         }
 
+                        // 再次校验新定义
+                        try {
+                            // 用0填充参数测试
+                            func(...paramList.map(() => 0));
+                        } catch (e) {
+                            this.addOutputLine(`错误: 新函数定义有误，${e.message}`, false, true);
+                            return;
+                        }
+
                         // 更新现有项
                         const icon = existingItem.querySelector('i');
                         icon.className = 'fa fa-calculator mr-2 text-primary';
@@ -782,10 +791,10 @@ class MathCalculator {
 
         item.appendChild(rightDiv);
 
-        // 删除按钮，红色背景更显眼
+        // 删除按钮，无图标
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center ml-4 text-xs';
-        deleteBtn.innerHTML = '<i class="fa fa-trash-o mr-1"></i>删除';
+        deleteBtn.textContent = '删除';
         deleteBtn.addEventListener('click', async () => {
             const itemType = type === 'function' ? '函数' : '变量';
             const confirmDelete = await this.showConfirmDialog(
