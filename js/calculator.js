@@ -270,7 +270,7 @@ class MathCalculator {
     }
 
     // 计算表达式
-    evaluateExpression() {
+    async evaluateExpression() {
         const expression = this.inputField.value.trim();
 
         if (!expression) return;
@@ -317,11 +317,23 @@ class MathCalculator {
                         return name === funcName;
                     });
 
+                    // 函数正确性校验
+                    let func;
+                    try {
+                        func = new Function(...paramList, `return this.math.evaluate('${varExpr}', {${paramList.join(',')}});`).bind(this);
+                        // 尝试用0填充参数测试
+                        const testArgs = paramList.map(() => 0);
+                        func(...testArgs);
+                    } catch (e) {
+                        this.addOutputLine(`错误: 函数定义有误，${e.message}`, false, true);
+                        return;
+                    }
+
                     if (existingItem) {
                         const itemType = existingItem.querySelector('i').classList.contains('fa-calculator') ? '函数' : '变量';
 
                         // 显示确认对话框
-                        const confirmUpdate = this.showConfirmDialog(
+                        const confirmUpdate = await this.showConfirmDialog(
                             '函数重定义确认',
                             `名称 ${funcName} 已存在，当前为${itemType}，是否要更新为函数？`,
                             '确认',
@@ -347,7 +359,6 @@ class MathCalculator {
                     }
 
                     // 创建函数
-                    const func = new Function(...paramList, `return this.math.evaluate('${varExpr}', {${paramList.join(',')}});`).bind(this);
                     this.math.import({ [funcName]: func }, { override: true });
                 } else {
                     // 检查名称是否与常量冲突
