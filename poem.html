@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>每日诗词</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="./css/styles.css">
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: '#165DFF',
+                            secondary: '#722ED1',
+                            accent: '#FF7D00',
+                            tool: {
+                                poem: '#D97706'  // 从紫色改为金色 (amber-600)
+                            }
+                        },
+                        fontFamily: {
+                            inter: ['Inter', 'sans-serif'],
+                        },
+                    }
+                }
+            }
+        </script>
+    </head>
+
+    <body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+        <!-- 页面头部 -->
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="text-tool-poem mr-2">
+                        <i class="fa-solid fa-book-open text-2xl"></i>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-bold text-tool-poem">每日诗词</h1>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="https://tools.hudi.site"
+                        class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site"
+                        class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>
+                        访问我的主页
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+            <div class="max-w-4xl mx-auto">
+                <!-- 介绍卡片 -->
+                <div
+                    class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                    <p class="text-center text-base md:text-lg text-gray-600">
+                        点击诗句展开详情，品味诗词之美
+                    </p>
+                </div>
+
+                <!-- 诗词显示区 -->
+                <div
+                    class="bg-white rounded-2xl shadow-card p-6 md:p-8 mb-8 relative overflow-hidden transition-[height] duration-500 ease-in-out min-h-[200px]">
+                    <div class="relative z-10">
+                        <h2 class="text-center text-xl font-bold text-gray-900 mb-6 flex justify-center items-center">
+                            <i class="fa-solid fa-book-open mr-2 text-tool-poem"></i>
+                            今日诗词
+                        </h2>
+
+                        <div id="result-container" class="flex flex-col items-center justify-center space-y-6">
+                            <!-- 单句展示 - 可点击区域 -->
+                            <div id="poem-single"
+                                class="text-2xl text-gray-800 cursor-pointer hover:text-tool-poem transition-colors duration-300 group flex items-center">
+                                <span></span>
+                                <i
+                                    class="fa-solid fa-chevron-down ml-2 text-sm opacity-50 group-hover:opacity-100 transition-all duration-300"></i>
+                            </div>
+
+                            <!-- 完整诗词信息 -->
+                            <div id="poem-detail"
+                                class="w-full text-center space-y-4 opacity-0 max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
+                                <h3 id="poem-title" class="text-xl font-bold text-tool-poem"></h3>
+                                <p class="text-gray-600 text-lg space-x-2">
+                                    <span id="poem-dynasty" class="mr-2"></span>
+                                    <span id="poem-author"></span>
+                                </p>
+                                <!-- 完整诗句 -->
+                                <div id="poem-content" class="text-lg leading-relaxed space-y-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                    <!-- 数据来源 - 移到折叠区域外部 -->
+                    <div class="text-sm text-gray-500 mt-8 flex items-center justify-center space-x-2">
+                        <span class="font-medium">数据来源：</span>
+                        <a href="https://www.jinrishici.com" target="_blank"
+                            class="text-tool-poem hover:text-tool-poem/80 underline decoration-dotted">今日诗词</a>
+                    </div>
+            </div>
+        </main>
+
+        <!-- 页脚 -->
+        <footer class="bg-gray-900 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-sm text-gray-400 mt-1">让诗词点亮生活
+
+                </p>
+
+                <!-- 不蒜子统计 -->
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn"
+                    one-link-mark="yes">皖ICP备18002386号-1</a>
+            </div>
+        </footer>
+
+        <!-- 不蒜子统计脚本 -->
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        <!-- 今日诗词SDK -->
+        <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+
+        <!-- 自定义脚本 -->
+        <script src="./js/poem.js"></script>
+    </body>
+
+</html>

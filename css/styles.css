@@ -8,11 +8,6 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
 /* 通用组件样式 */
 .card-hover {
     transition: all 0.3s ease;
@@ -22,48 +17,7 @@
     box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
 }
 
-/* 按钮样式 */
-.btn-primary {
-    @apply bg-primary text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center;
-}
-
-.btn-secondary {
-    @apply bg-white border border-gray-300 font-bold py-2 px-4 rounded-lg shadow-sm hover:shadow transition-all duration-300 flex items-center justify-center;
-}
-
-/* 容器样式 */
-.input-container,
-.result-container {
-    @apply bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-sm p-6 md:p-8 relative overflow-hidden;
-}
-
-/* Vim相关样式 */
-.keyboard-key {
-    @apply inline-block px-2 py-1 m-1 text-xs font-semibold bg-gray-100 rounded-md border border-gray-200 shadow-sm;
-}
-
-.section-header {
-    @apply relative py-3 mb-6 border-b border-gray-200;
-}
-.section-header::after {
-    content: '';
-    @apply absolute bottom-0 left-0 w-16 h-0.5 bg-tool-vim;
-}
-
-/* Toast样式 */
-.toast-success {
-    @apply fixed bottom-8 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50;
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-/* 食物卡片相关样式 */
-.food-card {
-    @apply bg-white rounded-xl shadow-sm transition-all duration-300;
-}
-.food-card:hover {
-    @apply shadow-lg -translate-y-2;
-}
-
-.nutrition-badge {
-    @apply inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide;
+/* 诗词工具动画 */
+.animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
