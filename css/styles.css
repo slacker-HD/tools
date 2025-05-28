@@ -2,338 +2,68 @@
 .content-auto { 
     content-visibility: auto; 
 }
-.editor-shadow { 
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15); 
-}
-.blink-cursor { 
-    animation: blink 1s step-end infinite; 
-}
-@keyframes blink { 
-    from, to { opacity: 1; } 
-    50% { opacity: 0; } 
-}
-.output-line { 
-    transition: all 0.2s ease-out; 
-}
-.output-line:hover { 
-    background-color: rgba(255,255,255,0.05); 
-}
-.function-card { 
-    transition: all 0.3s ease; 
-}
-.function-card:hover { 
-    transform: translateY(-5px); 
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
-}
-.reference-item { 
-    transition: all 0.2s ease; 
-}
-.reference-item:hover { 
-    background-color: rgba(0,0,0,0.03); 
-    transform: translateX(5px); 
-}
-.slider-thumb {
-    appearance: none;
-    width: 20px; 
-    height: 20px; 
-    border-radius: 50%;
-    background: #3B82F6; 
-    cursor: pointer; 
-    transition: all 0.15s ease;
-}
-.slider-thumb:hover { 
-    box-shadow: 0 0 0 8px rgba(59,130,246,0.1); 
-}
-.quick-input-item { 
-    transition: all 0.2s ease; 
-}
-.quick-input-item:hover { 
-    background-color: rgba(59,130,246,0.1); 
-    transform: translateX(2px); 
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-@layer utilities {
-  .text-shadow {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
 
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-
-  .animate-pulse-slow {
-    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  .backdrop-blur-sm {
-    backdrop-filter: blur(4px);
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .card-hover {
+/* 通用组件样式 */
+.card-hover {
     transition: all 0.3s ease;
-  }
-
-  .card-hover:hover {
+}
+.card-hover:hover {
     transform: translateY(-5px);
     box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
-  }
+}
 
-  .gradient-mask {
-    mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-  }
+/* 按钮样式 */
+.btn-primary {
+    @apply bg-primary text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center;
+}
 
-  /* 以下是为eat.html添加的样式 */
-  .food-card {
-    transition: all 0.3s ease;
-  }
+.btn-secondary {
+    @apply bg-white border border-gray-300 font-bold py-2 px-4 rounded-lg shadow-sm hover:shadow transition-all duration-300 flex items-center justify-center;
+}
 
-  .food-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-  }
+/* 容器样式 */
+.input-container,
+.result-container {
+    @apply bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-sm p-6 md:p-8 relative overflow-hidden;
+}
 
-  .food-image-container {
-    overflow: hidden;
-    border-radius: 1rem 1rem 0 0;
-  }
-
-  .food-image {
-    transition: transform 0.5s ease;
-  }
-
-  .food-card:hover .food-image {
-    transform: scale(1.05);
-  }
-
-  .nutrition-badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .btn-primary {
-    @apply bg-primary text-white font-medium py-2 px-6 rounded-full transition-all duration-300 hover:bg-primary/90 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/50;
-  }
-
-  .btn-secondary {
-    @apply bg-white text-primary border border-primary font-medium py-2 px-6 rounded-full transition-all duration-300 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-primary/50;
-  }
-
-  .nutrition-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 0.5rem;
-  }
-
-  .nutrition-item {
-    background-color: rgba(34, 197, 94, 0.1);
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    text-align: center;
-  }
-
-  .nutrition-value {
-    font-weight: 700;
-    color: #166534;
-  }
-
-  .nutrition-label {
-    font-size: 0.75rem;
-    color: #4b5563;
-  }
-
-  .recipe-step {
-    counter-increment: step-counter;
-    margin-bottom: 1.5rem;
-    padding-left: 2.5rem;
-    position: relative;
-  }
-
-  .recipe-step::before {
-    content: counter(step-counter);
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 1.5rem;
-    height: 1.5rem;
-    background-color: #22c55e;
-    color: white;
-    font-weight: bold;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.875rem;
-  }
-
-  @keyframes float {
-    0% {
-      transform: translateY(0px);
-    }
-
-    50% {
-      transform: translateY(-10px);
-    }
-
-    100% {
-      transform: translateY(0px);
-    }
-  }
-
-  /* 以下是为idcard.html添加的样式 */
-  .animate-fadeIn {
-    animation: fadeIn 0.5s ease-in-out;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* 以下是为convert.html添加的样式 */
-  .toast-success {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #22c55e;
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 50;
-    animation: fadeIn 0.5s ease-in-out;
-  }
-
-  /* Toast for copy success */
-  #copyToast {
-    position: fixed;
-    bottom: 6rem;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    opacity: 0;
-    transition: all 0.3s ease-in-out;
-    background-color: #22c55e;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 50;
-  }
-
-  /* Loading overlay */
-  #loadingOverlay {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 50;
-  }
-
-  #loadingOverlay .loading-spinner {
-    animation: spin 1s linear infinite;
-    border: 4px solid transparent;
-    border-top-color: #065F46;
-    border-radius: 50%;
-    width: 3rem;
-    height: 3rem;
-  }
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .pulse-slow {
-    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  .shadow-card {
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
-  }
-
-  .btn-primary {
-    @apply bg-tool-convert hover:bg-tool-convert/90 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center;
-  }
-
-  .card-hover {
-    transition: all 0.3s;
-  }
-
-  .card-hover:hover {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transform: translateY(-0.25rem);
-  }
-
-  .gradient-bg {
-    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-  }
-  
-  .warning-card {
-    @apply bg-amber-50 border-l-4 border-tool-convert text-tool-convert rounded-r-lg shadow-sm;
-  }
-  
-  .input-container {
-    @apply bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-2xl shadow-sm p-6 md:p-8 relative overflow-hidden;
-  }
-  
-  .result-container {
-    @apply bg-white/90 backdrop-blur-sm border border-neutral-200 rounded-2xl shadow-sm p-6 md:p-8 relative overflow-hidden;
-  }
-  
-  .btn-secondary {
-    @apply bg-white text-tool-convert border border-tool-convert font-bold py-2 px-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center;
-  }
-  
-  .copy-btn {
-    @apply text-tool-convert hover:text-tool-convert/80 transition-all duration-300;
-  }
-
-  .keyboard-key {
+/* Vim相关样式 */
+.keyboard-key {
     @apply inline-block px-2 py-1 m-1 text-xs font-semibold bg-gray-100 rounded-md border border-gray-200 shadow-sm;
-  }
+}
 
-  .section-header {
+.section-header {
     @apply relative py-3 mb-6 border-b border-gray-200;
-  }
-
-  .section-header::after {
+}
+.section-header::after {
     content: '';
     @apply absolute bottom-0 left-0 w-16 h-0.5 bg-tool-vim;
-  }
+}
 
-  .category-active {
-    @apply bg-tool-vim/5 border-l-4 border-tool-vim;
-  }
+/* Toast样式 */
+.toast-success {
+    @apply fixed bottom-8 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50;
+    animation: fadeIn 0.5s ease-in-out;
+}
 
-  .key-highlight {
-    @apply bg-yellow-100 transition-all duration-300;
-  }
+/* 食物卡片相关样式 */
+.food-card {
+    @apply bg-white rounded-xl shadow-sm transition-all duration-300;
+}
+.food-card:hover {
+    @apply shadow-lg -translate-y-2;
+}
+
+.nutrition-badge {
+    @apply inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide;
 }
