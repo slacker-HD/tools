@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vim 快捷键参考</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#722ED1',
+                        accent: '#FF7D00',
+                        tool: {
+                            vim: '#165DFF',
+                            food: '#22C55E',
+                            color: '#F43F5E',
+                            calendar: '#8B5CF6',
+                            convert: '#065F46'
+                        }
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .btn-primary {
+                @apply bg-tool-vim hover:bg-tool-vim/90 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center;
+            }
+
+            .card-hover {
+                transition: all 0.3s;
+            }
+
+            .card-hover:hover {
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transform: translateY(-0.25rem);
+            }
+
+            .loading-spinner {
+                animation: spin 1s linear infinite;
+                border: 4px solid transparent;
+                border-top-color: #065F46;
+                border-radius: 50%;
+                width: 3rem;
+                height: 3rem;
+            }
+
+            .keyboard-key {
+                @apply inline-block px-2 py-1 m-1 text-xs font-semibold bg-gray-100 rounded-md border border-gray-200 shadow-sm;
+            }
+
+            .section-header {
+                @apply relative py-3 mb-6 border-b border-gray-200;
+            }
+
+            .section-header::after {
+                content: '';
+                @apply absolute bottom-0 left-0 w-16 h-0.5 bg-tool-vim;
+            }
+
+            .category-active {
+                @apply bg-tool-vim/5 border-l-4 border-tool-vim;
+            }
+
+            .key-highlight {
+                @apply bg-yellow-100 transition-all duration-300;
+            }
+
+            @keyframes spin {
+                from {
+                    transform: rotate(0deg);
+                }
+
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        }
+    </style>
+</head>
+
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- 页面头部 -->
+    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="text-tool-vim mr-2">
+                    <i class="fa-solid fa-keyboard text-2xl"></i>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold text-tool-vim">Vim 快捷键参考</h1>
+            </div>
+            <div class="flex space-x-4">
+                <a href="https://tools.hudi.site"
+                    class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                    <i class="fa-solid fa-arrow-left mr-2"></i>
+                    返回工具箱
+                </a>
+                <a href="https://www.hudi.site"
+                    class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                    target="_blank" rel="noopener noreferrer">
+                    <i class="fa-solid fa-blog mr-2"></i>
+                    访问我的主页
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+        <div class="max-w-5xl mx-auto">
+            <!-- 介绍卡片 -->
+            <div
+                class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                <p class="text-center text-base md:text-lg text-gray-600">
+                    提升你的 Vim 使用效率，快速掌握常用快捷键
+                </p>
+            </div>
+            <!-- 快捷键分类卡片 -->
+            <!-- 已按要求删除内容 -->
+
+            <!-- 工具展示区 -->
+            <div class="bg-white rounded-2xl shadow-card p-6 md:p-8 mb-8 relative overflow-hidden">
+                <!-- 装饰元素 -->
+                <div class="absolute -right-16 -top-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
+                <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-secondary/5 rounded-full blur-3xl"></div>
+
+                <!-- Vim 快捷键参考内容 -->
+                <div id="key-reference-content">
+                    <!-- 移动快捷键 -->
+                    <div class="key-section" id="movement-section">
+                        <button type="button"
+                            class="w-full flex justify-between items-center text-2xl font-bold text-tool-vim mb-6 section-header focus:outline-none"
+                            onclick="toggleSection('movement-table')">
+                            光标移动
+                            <span id="icon-movement-table" class="transition-transform duration-200 text-tool-vim">&#9660;</span>
+                        </button>
+                        <div id="movement-table">
+                            <div class="overflow-x-auto">
+                                <table class="w-full min-w-[600px] mx-auto text-base text-gray-800 text-center table-fixed border-separate border-spacing-y-1">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col"
+                                                class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                快捷键</th>
+                                            <th scope="col"
+                                                class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                描述</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white">
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">h</span>
+                                            </td>
+                                            <td class="px-6 py-4">向左移动一个字符</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">j</span>
+                                            </td>
+                                            <td class="px-6 py-4">向下移动一行</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">k</span>
+                                            </td>
+                                            <td class="px-6 py-4">向上移动一行</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">l</span>
+                                            </td>
+                                            <td class="px-6 py-4">向右移动一个字符</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">w</span>
+                                            </td>
+                                            <td class="px-6 py-4">移动到下一个单词的开头</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">b</span>
+                                            </td>
+                                            <td class="px-6 py-4">移动到上一个单词的开头</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">e</span>
+                                            </td>
+                                            <td class="px-6 py-4">移动到下一个单词的结尾</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">ge</span>
+                                            </td>
+                                            <td class="px-6 py-4">移动到上一个单词的结尾</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">0</span>
+                                            </td>
+                                            <td class="px-6 py-4">移动到行首</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">$</span>
+                                            </td>
+                                            <td class="px-6 py-4">移动到行尾</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">^</span>
+                                            </td>
+                                            <td class="px-6 py-4">移动到行首的第一个非空白字符</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">gg</span>
+                                            </td>
+                                            <td class="px-6 py-4">移动到文件开头</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">G</span>
+                                            </td>
+                                            <td class="px-6 py-4">移动到文件结尾</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">H</span>
+                                            </td>
+                                            <td class="px-6 py-4">移动到屏幕顶部</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">M</span>
+                                            </td>
+                                            <td class="px-6 py-4">移动到屏幕中间</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">L</span>
+                                            </td>
+                                            <td class="px-6 py-4">移动到屏幕底部</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">Ctrl</span>+<span
+                                                    class="keyboard-key">f</span>
+                                            </td>
+                                            <td class="px-6 py-4">向前翻一页</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">Ctrl</span>+<span
+                                                    class="keyboard-key">b</span>
+                                            </td>
+                                            <td class="px-6 py-4">向后翻一页</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">Ctrl</span>+<span
+                                                    class="keyboard-key">d</span>
+                                            </td>
+                                            <td class="px-6 py-4">向下翻半页</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">Ctrl</span>+<span
+                                                    class="keyboard-key">u</span>
+                                            </td>
+                                            <td class="px-6 py-4">向上翻半页</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">%</span>
+                                            </td>
+                                            <td class="px-6 py-4">跳转到匹配的括号</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">H</span>
+                                            </td>
+                                            <td class="px-6 py-4">移动到屏幕顶部</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">M</span>
+                                            </td>
+                                            <td class="px-6 py-4">移动到屏幕中间</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">L</span>
+                                            </td>
+                                            <td class="px-6 py-4">移动到屏幕底部</td>
+                                        </tr>
+                                        <!-- 新增常用移动快捷键 -->
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">f{char}</span>
+                                            </td>
+                                            <td class="px-6 py-4">向右查找本行下一个{char}字符</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">F{char}</span>
+                                            </td>
+                                            <td class="px-6 py-4">向左查找本行上一个{char}字符</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">t{char}</span>
+                                            </td>
+                                            <td class="px-6 py-4">向右移动到{char}字符前</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">T{char}</span>
+                                            </td>
+                                            <td class="px-6 py-4">向左移动到{char}字符后</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">;</span>
+                                            </td>
+                                            <td class="px-6 py-4">重复上一次f/t/F/T命令</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">,</span>
+                                            </td>
+                                            <td class="px-6 py-4">反向重复上一次f/t/F/T命令</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">}</span>
+                                            </td>
+                                            <td class="px-6 py-4">跳到下一段落开头</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">{</span>
+                                            </td>
+                                            <td class="px-6 py-4">跳到上一段落开头</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">nG</span>
+                                            </td>
+                                            <td class="px-6 py-4">跳转到第n行</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="keyboard-key">:n</span>
+                                            </td>
+                                            <td class="px-6 py-4">跳转到第n行（命令模式）</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 插入模式快捷键 -->
+                        <div class="key-section" id="insert-section">
+                            <button type="button"
+                                class="w-full flex justify-between items-center text-2xl font-bold text-tool-vim mb-6 section-header focus:outline-none"
+                                onclick="toggleSection('insert-table')">
+                                插入模式
+                                <span id="icon-insert-table" class="transition-transform duration-200 text-tool-vim">&#9660;</span>
+                            </button>
+                            <div id="insert-table">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full min-w-[600px] mx-auto text-base text-gray-800 text-center table-fixed border-separate border-spacing-y-1">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    快捷键</th>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    描述</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white">
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">i</span>
+                                                </td>
+                                                <td class="px-6 py-4">在当前光标位置前插入</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">I</span>
+                                                </td>
+                                                <td class="px-6 py-4">在当前行首插入</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">a</span>
+                                                </td>
+                                                <td class="px-6 py-4">在当前光标位置后插入</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">A</span>
+                                                </td>
+                                                <td class="px-6 py-4">在当前行尾插入</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">o</span>
+                                                </td>
+                                                <td class="px-6 py-4">在当前行下方插入新行</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">O</span>
+                                                </td>
+                                                <td class="px-6 py-4">在当前行上方插入新行</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">s</span>
+                                                </td>
+                                                <td class="px-6 py-4">删除当前字符并进入插入模式</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">S</span>
+                                                </td>
+                                                <td class="px-6 py-4">删除当前行并进入插入模式</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">r</span>
+                                                </td>
+                                                <td class="px-6 py-4">替换当前字符（不进入插入模式）</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">R</span>
+                                                </td>
+                                                <td class="px-6 py-4">进入替换模式</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">C</span>
+                                                </td>
+                                                <td class="px-6 py-4">删除从光标到行尾的内容并进入插入模式</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">cc</span>
+                                                </td>
+                                                <td class="px-6 py-4">删除整行并进入插入模式</td>
+                                            </tr>
+                                            <!-- 新增常用插入模式快捷键 -->
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">gi</span>
+                                                </td>
+                                                <td class="px-6 py-4">跳转到上次插入模式离开的位置并进入插入模式</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">Ctrl</span>+<span class="keyboard-key">o</span>
+                                                </td>
+                                                <td class="px-6 py-4">插入模式下临时执行普通模式命令</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">Ctrl</span>+<span class="keyboard-key">r</span>
+                                                </td>
+                                                <td class="px-6 py-4">插入寄存器内容</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 编辑快捷键 -->
+                        <div class="key-section" id="editing-section">
+                            <button type="button"
+                                class="w-full flex justify-between items-center text-2xl font-bold text-tool-vim mb-6 section-header focus:outline-none"
+                                onclick="toggleSection('editing-table')">
+                                编辑操作
+                                <span id="icon-editing-table" class="transition-transform duration-200 text-tool-vim">&#9660;</span>
+                            </button>
+                            <div id="editing-table">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full min-w-[600px] mx-auto text-base text-gray-800 text-center table-fixed border-separate border-spacing-y-1">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    快捷键</th>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    描述</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white">
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">u</span>
+                                                </td>
+                                                <td class="px-6 py-4">撤销上一步操作</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">Ctrl</span>+<span
+                                                        class="keyboard-key">r</span>
+                                                </td>
+                                                <td class="px-6 py-4">重做上一步撤销的操作</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">yy</span>
+                                                </td>
+                                                <td class="px-6 py-4">复制当前行</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">dd</span>
+                                                </td>
+                                                <td class="px-6 py-4">删除当前行（剪切）</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">p</span>
+                                                </td>
+                                                <td class="px-6 py-4">在光标后粘贴</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">P</span>
+                                                </td>
+                                                <td class="px-6 py-4">在光标前粘贴</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">x</span>
+                                                </td>
+                                                <td class="px-6 py-4">删除当前字符</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">X</span>
+                                                </td>
+                                                <td class="px-6 py-4">删除前一个字符</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">dw</span>
+                                                </td>
+                                                <td class="px-6 py-4">删除到下一个单词开头</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">d$</span>
+                                                </td>
+                                                <td class="px-6 py-4">删除到行尾</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">d0</span>
+                                                </td>
+                                                <td class="px-6 py-4">删除到行首</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">J</span>
+                                                </td>
+                                                <td class="px-6 py-4">将下一行与当前行合并</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">~</span>
+                                                </td>
+                                                <td class="px-6 py-4">切换当前字符大小写</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">gU</span>+<span
+                                                        class="keyboard-key">motion</span>
+                                                </td>
+                                                <td class="px-6 py-4">将指定区域转为大写</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">gu</span>+<span
+                                                        class="keyboard-key">motion</span>
+                                                </td>
+                                                <td class="px-6 py-4">将指定区域转为小写</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">g~</span>+<span
+                                                        class="keyboard-key">motion</span>
+                                                </td>
+                                                <td class="px-6 py-4">切换指定区域字符大小写</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">>>></span>
+                                                </td>
+                                                <td class="px-6 py-4">增加当前行缩进</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">
+                                                        <<< /span>
+                                                </td>
+                                                <td class="px-6 py-4">减少当前行缩进</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">.></span>
+                                                </td>
+                                                <td class="px-6 py-4">重复上一次的缩进操作</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">>>[n]j</span>
+                                                </td>
+                                                <td class="px-6 py-4">增加当前行及下面n行的缩进</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">>>[n]k</span>
+                                                </td>
+                                                <td class="px-6 py-4">增加当前行及上面n行的缩进</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:[n],[m]></span>
+                                                </td>
+                                                <td class="px-6 py-4">增加第n行到第m行的缩进</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">v</span>+<span
+                                                        class="keyboard-key">移动键</span>+<span class="keyboard-key">></span>
+                                                </td>
+                                                <td class="px-6 py-4">对选中区域增加缩进</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">v</span>+<span
+                                                        class="keyboard-key">移动键</span>+<span class="keyboard-key">
+                                                        << /span>
+                                                </td>
+                                                <td class="px-6 py-4">对选中区域减少缩进</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">gg</span>+<span
+                                                        class="keyboard-key">G</span>+<span class="keyboard-key">></span>
+                                                </td>
+                                                <td class="px-6 py-4">对整个文件增加缩进</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">gg</span>+<span
+                                                        class="keyboard-key">G</span>+<span class="keyboard-key">
+                                                        << /span>
+                                                </td>
+                                                <td class="px-6 py-4">对整个文件减少缩进</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 搜索和替换快捷键 -->
+                        <div class="key-section" id="search-section">
+                            <button type="button"
+                                class="w-full flex justify-between items-center text-2xl font-bold text-tool-vim mb-6 section-header focus:outline-none"
+                                onclick="toggleSection('search-table')">
+                                搜索和替换
+                                <span id="icon-search-table" class="transition-transform duration-200 text-tool-vim">&#9660;</span>
+                            </button>
+                            <div id="search-table">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full min-w-[600px] mx-auto text-base text-gray-800 text-center table-fixed border-separate border-spacing-y-1">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    快捷键</th>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    描述</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white">
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">/pattern</span>
+                                                </td>
+                                                <td class="px-6 py-4">向前搜索指定模式</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">?pattern</span>
+                                                </td>
+                                                <td class="px-6 py-4">向后搜索指定模式</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">n</span>
+                                                </td>
+                                                <td class="px-6 py-4">继续向前搜索</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">N</span>
+                                                </td>
+                                                <td class="px-6 py-4">继续向后搜索</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:set hls</span>
+                                                </td>
+                                                <td class="px-6 py-4">高亮显示搜索结果</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:set nohls</span>
+                                                </td>
+                                                <td class="px-6 py-4">取消高亮显示搜索结果</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:nohlsearch</span>
+                                                </td>
+                                                <td class="px-6 py-4">临时取消高亮显示</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:s/old/new</span>
+                                                </td>
+                                                <td class="px-6 py-4">替换当前行的第一个匹配项</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:s/old/new/g</span>
+                                                </td>
+                                                <td class="px-6 py-4">替换当前行的所有匹配项</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:%s/old/new/g</span>
+                                                </td>
+                                                <td class="px-6 py-4">替换整个文件的所有匹配项</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 标记和跳转快捷键 -->
+                        <div class="key-section" id="marks-section">
+                            <button type="button"
+                                class="w-full flex justify-between items-center text-2xl font-bold text-tool-vim mb-6 section-header focus:outline-none"
+                                onclick="toggleSection('marks-table')">
+                                标记和跳转
+                                <span id="icon-marks-table" class="transition-transform duration-200 text-tool-vim">&#9660;</span>
+                            </button>
+                            <div id="marks-table">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full min-w-[600px] mx-auto text-base text-gray-800 text-center table-fixed border-separate border-spacing-y-1">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    快捷键</th>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    描述</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white">
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">ma</span>
+                                                </td>
+                                                <td class="px-6 py-4">在当前位置设置标记a</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">`a</span>
+                                                </td>
+                                                <td class="px-6 py-4">跳转到标记a的位置</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">A-Z</span>
+                                                </td>
+                                                <td class="px-6 py-4">设置全局标记（可在不同文件间跳转）</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">``</span>
+                                                </td>
+                                                <td class="px-6 py-4">跳转到上一次编辑的位置</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">`.</span>
+                                                </td>
+                                                <td class="px-6 py-4">跳转到最后一次修改的位置</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">`"</span>
+                                                </td>
+                                                <td class="px-6 py-4">跳转到最后一次退出文件的位置</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">`[</span>
+                                                </td>
+                                                <td class="px-6 py-4">跳转到上一次修改的起始位置</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">`:</span>
+                                                </td>
+                                                <td class="px-6 py-4">跳转到上一次执行命令的位置</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 文件操作快捷键 -->
+                        <div class="key-section" id="files-section">
+                            <button type="button"
+                                class="w-full flex justify-between items-center text-2xl font-bold text-tool-vim mb-6 section-header focus:outline-none"
+                                onclick="toggleSection('files-table')">
+                                文件操作
+                                <span id="icon-files-table" class="transition-transform duration-200 text-tool-vim">&#9660;</span>
+                            </button>
+                            <div id="files-table">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full min-w-[600px] mx-auto text-base text-gray-800 text-center table-fixed border-separate border-spacing-y-1">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    快捷键</th>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    描述</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white">
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:w</span>
+                                                </td>
+                                                <td class="px-6 py-4">保存文件</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:wq</span>
+                                                </td>
+                                                <td class="px-6 py-4">保存并退出</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:x</span>
+                                                </td>
+                                                <td class="px-6 py-4">保存并退出（与:wq相同）</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:q</span>
+                                                </td>
+                                                <td class="px-6 py-4">退出（如果文件未修改）</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:q!</span>
+                                                </td>
+                                                <td class="px-6 py-4">强制退出（不保存修改）</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:w newfile</span>
+                                                </td>
+                                                <td class="px-6 py-4">另存为新文件</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:saveas newfile</span>
+                                                </td>
+                                                <td class="px-6 py-4">另存为新文件</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:r filename</span>
+                                                </td>
+                                                <td class="px-6 py-4">在当前位置插入文件内容</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:r !command</span>
+                                                </td>
+                                                <td class="px-6 py-4">在当前位置插入命令输出</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:e filename</span>
+                                                </td>
+                                                <td class="px-6 py-4">编辑新文件</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:e!</span>
+                                                </td>
+                                                <td class="px-6 py-4">重新加载当前文件（丢弃修改）</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:f filename</span>
+                                                </td>
+                                                <td class="px-6 py-4">重命名当前文件</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 缓冲区操作快捷键 -->
+                        <div class="key-section" id="buffers-section">
+                            <button type="button"
+                                class="w-full flex justify-between items-center text-2xl font-bold text-tool-vim mb-6 section-header focus:outline-none"
+                                onclick="toggleSection('buffers-table')">
+                                缓冲区操作
+                                <span id="icon-buffers-table" class="transition-transform duration-200 text-tool-vim">&#9660;</span>
+                            </button>
+                            <div id="buffers-table">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full min-w-[600px] mx-auto text-base text-gray-800 text-center table-fixed border-separate border-spacing-y-1">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    快捷键</th>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    描述</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white">
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:buffers</span>
+                                                </td>
+                                                <td class="px-6 py-4">列出所有缓冲区</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:bnext</span>
+                                                </td>
+                                                <td class="px-6 py-4">切换到下一个缓冲区</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:bprev</span>
+                                                </td>
+                                                <td class="px-6 py-4">切换到上一个缓冲区</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:bfirst</span>
+                                                </td>
+                                                <td class="px-6 py-4">切换到第一个缓冲区</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:blast</span>
+                                                </td>
+                                                <td class="px-6 py-4">切换到最后一个缓冲区</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:bdelete</span>
+                                                </td>
+                                                <td class="px-6 py-4">删除当前缓冲区</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:bd!</span>
+                                                </td>
+                                                <td class="px-6 py-4">强制删除当前缓冲区</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:windo</span>
+                                                </td>
+                                                <td class="px-6 py-4">对所有窗口执行命令</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 窗口操作快捷键 -->
+                        <div class="key-section" id="windows-section">
+                            <button type="button"
+                                class="w-full flex justify-between items-center text-2xl font-bold text-tool-vim mb-6 section-header focus:outline-none"
+                                onclick="toggleSection('windows-table')">
+                                窗口操作
+                                <span id="icon-windows-table" class="transition-transform duration-200 text-tool-vim">&#9660;</span>
+                            </button>
+                            <div id="windows-table">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full min-w-[600px] mx-auto text-base text-gray-800 text-center table-fixed border-separate border-spacing-y-1">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    快捷键</th>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    描述</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white">
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:split</span>
+                                                </td>
+                                                <td class="px-6 py-4">水平分割窗口</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:vsplit</span>
+                                                </td>
+                                                <td class="px-6 py-4">垂直分割窗口</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">Ctrl</span>+<span class="keyboard-key">w</span>+<span class="keyboard-key">s</span>
+                                                </td>
+                                                <td class="px-6 py-4">向下分割窗口</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">Ctrl</span>+<span class="keyboard-key">w</span>+<span class="keyboard-key">v</span>
+                                                </td>
+                                                <td class="px-6 py-4">向右分割窗口</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">Ctrl</span>+<span class="keyboard-key">w</span>+<span class="keyboard-key">h</span>
+                                                </td>
+                                                <td class="px-6 py-4">切换到左侧窗口</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">Ctrl</span>+<span class="keyboard-key">w</span>+<span class="keyboard-key">j</span>
+                                                </td>
+                                                <td class="px-6 py-4">切换到下方窗口</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">Ctrl</span>+<span class="keyboard-key">w</span>+<span class="keyboard-key">k</span>
+                                                </td>
+                                                <td class="px-6 py-4">切换到上方窗口</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">Ctrl</span>+<span class="keyboard-key">w</span>+<span class="keyboard-key">l</span>
+                                                </td>
+                                                <td class="px-6 py-4">切换到右侧窗口</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">Ctrl</span>+<span class="keyboard-key">w</span>+<span class="keyboard-key">c</span>
+                                                </td>
+                                                <td class="px-6 py-4">关闭当前窗口</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">Ctrl</span>+<span class="keyboard-key">w</span>+<span class="keyboard-key">o</span>
+                                                </td>
+                                                <td class="px-6 py-4">只保留当前窗口</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 标签页操作快捷键 -->
+                        <div class="key-section" id="tabs-section">
+                            <button type="button"
+                                class="w-full flex justify-between items-center text-2xl font-bold text-tool-vim mb-6 section-header focus:outline-none"
+                                onclick="toggleSection('tabs-table')">
+                                标签页操作
+                                <span id="icon-tabs-table" class="transition-transform duration-200 text-tool-vim">&#9660;</span>
+                            </button>
+                            <div id="tabs-table">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full min-w-[600px] mx-auto text-base text-gray-800 text-center table-fixed border-separate border-spacing-y-1">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    快捷键</th>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    描述</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white">
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:tabnew</span>
+                                                </td>
+                                                <td class="px-6 py-4">新建标签页</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:tabclose</span>
+                                                </td>
+                                                <td class="px-6 py-4">关闭当前标签页</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:tabnext</span>
+                                                </td>
+                                                <td class="px-6 py-4">切换到下一个标签页</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:tabprev</span>
+                                                </td>
+                                                <td class="px-6 py-4">切换到上一个标签页</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:tabfirst</span>
+                                                </td>
+                                                <td class="px-6 py-4">切换到第一个标签页</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:tablast</span>
+                                                </td>
+                                                <td class="px-6 py-4">切换到最后一个标签页</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:tabmove</span>
+                                                </td>
+                                                <td class="px-6 py-4">移动当前标签页</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 帮助快捷键 -->
+                        <div class="key-section" id="help-section">
+                            <button type="button"
+                                class="w-full flex justify-between items-center text-2xl font-bold text-tool-vim mb-6 section-header focus:outline-none"
+                                onclick="toggleSection('help-table')">
+                                帮助
+                                <span id="icon-help-table" class="transition-transform duration-200 text-tool-vim">&#9660;</span>
+                            </button>
+                            <div id="help-table">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full min-w-[600px] mx-auto text-base text-gray-800 text-center table-fixed border-separate border-spacing-y-1">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    快捷键</th>
+                                                <th scope="col"
+                                                    class="px-6 py-3 font-medium text-gray-500 uppercase tracking-wider text-center">
+                                                    描述</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white">
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:help</span>
+                                                </td>
+                                                <td class="px-6 py-4">打开帮助文档</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">Ctrl</span>+<span
+                                                        class="keyboard-key">c</span>
+                                                </td>
+                                                <td class="px-6 py-4">在帮助文档中关闭当前窗口</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">Ctrl</span>+<span
+                                                        class="keyboard-key">d</span>
+                                                </td>
+                                                <td class="px-6 py-4">在帮助文档中向下滚动</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">Ctrl</span>+<span
+                                                        class="keyboard-key">u</span>
+                                                </td>
+                                                <td class="px-6 py-4">在帮助文档中向上滚动</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">Ctrl</span>+<span class="keyboard-key">f</span>
+                                                </td>
+                                                <td class="px-6 py-4">在帮助文档中查找</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="keyboard-key">:q</span>
+                                                </td>
+                                                <td class="px-6 py-4">退出帮助文档</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 页面底部 -->
+        <footer class="bg-gray-900 text-white py-6 mt-10">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-sm text-gray-400 mt-1">让 Vim 更高效</p>
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn" one-link-mark="yes">皖ICP备18002386号-1</a>
+            </div>
+        </footer>
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <script src="./js/vim.js"></script>
+    </body>
+
+</html>
