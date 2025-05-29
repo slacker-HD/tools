@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>智能桌面守护</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="./css/styles.css">
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            tool: {
+                                monitor: '#E11D48'  // rose-600 警戒红色
+                            }
+                        },
+                        fontFamily: {
+                            sans: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                        },
+                    }
+                }
+            }
+        </script>
+    </head>
+
+    <body class="font-sans bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+        <!-- 页面头部 -->
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="text-tool-monitor mr-2">
+                        <i class="fa-solid fa-camera text-2xl"></i>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-bold text-tool-monitor">智能桌面守护</h1>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="https://tools.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>
+                        访问我的主页
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+            <div class="max-w-4xl mx-auto">
+                <!-- 介绍卡片 -->
+                <div
+                    class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                    <p class="text-center text-base md:text-lg text-gray-600">
+                        智能守护您的桌面安全，当有人靠近时自动记录
+                    </p>
+                </div>
+
+                <!-- 监控区域 -->
+                <div class="bg-white rounded-2xl shadow-card p-6 md:p-8 mb-8 relative overflow-hidden">
+                    <div class="relative z-10">
+                        <!-- 控制按钮 -->
+                        <div class="flex justify-center gap-4 mb-6">
+                            <button id="start-btn"
+                                class="bg-tool-monitor hover:bg-tool-monitor/90 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center">
+                                <i class="fa-solid fa-play mr-2"></i>
+                                开始监控
+                            </button>
+                            <button id="stop-btn" disabled
+                                class="bg-gray-200 text-gray-500 font-bold py-2 px-6 rounded-lg shadow-md hover:bg-gray-300 transition-all duration-300 flex items-center disabled:opacity-50">
+                                <i class="fa-solid fa-stop mr-2"></i>
+                                停止监控
+                            </button>
+                        </div>
+
+                        <!-- 视频和参数区域 -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- 视频区域 -->
+                            <div class="lg:col-span-2">
+                                <div class="relative overflow-hidden rounded-lg aspect-video bg-black">
+                                    <video id="video" class="w-full h-full object-contain" playsinline></video>
+                                    <canvas id="canvas" class="absolute inset-0 w-full h-full"></canvas>
+                                    <div id="loading"
+                                        class="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                        <div class="text-white text-center">
+                                            <div
+                                                class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-white border-t-transparent">
+                                            </div>
+                                            <p class="mt-2">正在连接摄像头...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 状态信息 -->
+                                <div class="mt-4 flex justify-between items-center text-sm">
+                                    <span id="status-text" class="text-gray-600">准备就绪</span>
+                                    <div class="flex items-center space-x-4">
+                                        <span id="fps-counter">FPS: 0</span>
+                                        <span id="motion-status" class="px-2 py-1 rounded-full bg-gray-100">无运动</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 参数设置 -->
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">灵敏度</label>
+                                    <input type="range" id="sensitivity" min="1" max="100" value="50"
+                                        class="w-full accent-tool-monitor">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">检测区域</label>
+                                    <select id="detection-area" class="w-full px-3 py-2 border rounded-lg">
+                                        <option value="full">全屏</option>
+                                        <option value="center">中心区域</option>
+                                        <option value="bottom">底部区域</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">拍摄间隔 (秒)</label>
+                                    <input type="number" id="capture-delay" min="0" max="60" value="5"
+                                        class="w-full px-3 py-2 border rounded-lg">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 图片列表 -->
+                        <div id="photos-container" class="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            <!-- 动态添加的图片 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+
+        <!-- 页脚 -->
+        <footer class="bg-gray-900 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-sm text-gray-400 mt-1">守护每一个瞬间，保护您的隐私安全</p>
+
+                <!-- 不蒜子统计 -->
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn"
+                    one-link-mark="yes">皖ICP备18002386号-1</a>
+            </div>
+        </footer>
+
+        <!-- 通知组件 -->
+        <div id="notification"
+            class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-4 max-w-sm transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center space-x-3">
+            <div class="flex-shrink-0">
+                <i id="notification-icon" class="fa-solid fa-circle-info text-2xl text-tool-monitor"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p id="notification-text" class="text-sm text-gray-600"></p>
+            </div>
+        </div>
+
+        <script src="./js/monitor.js"></script>
+    </body>
+
+</html>
