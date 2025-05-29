@@ -1,603 +1,715 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>数学计算器</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.9.1/lib/browser/math.js"></script>
-    <link href="./css/styles.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#1E3A8A', // 统一主色为深蓝
-                        secondary: '#1E3A8A',
-                        accent: '#1E3A8A',
-                        dark: '#1F2937',
-                        light: '#F9FAFB',
-                        editor: '#0F172A',
-                        output: '#1E293B',
-                    },
-                    fontFamily: {
-                        mono: ['JetBrains Mono', 'monospace'],
-                                                    inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
 
-                    },
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>数学计算器</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/mathjs@11.9.1/lib/browser/math.js"></script>
+        <link href="./css/styles.css" rel="stylesheet">
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: '#1E3A8A', // 统一主色为深蓝
+                            secondary: '#1E3A8A',
+                            accent: '#1E3A8A',
+                            dark: '#1F2937',
+                            light: '#F9FAFB',
+                            editor: '#0F172A',
+                            output: '#1E293B',
+                        },
+                        fontFamily: {
+                            mono: ['JetBrains Mono', 'monospace'],
+                            inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+
+                        },
+                    }
                 }
             }
-        }
-    </script>
-</head>
+        </script>
+    </head>
+
     <body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
-    <!-- 页面头部 -->
-    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center">
-                <div class="text-primary mr-2">
-                    <i class="fa-solid fa-calculator text-primary"></i>
+        <!-- 页面头部 -->
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="text-primary mr-2">
+                        <i class="fa-solid fa-calculator text-primary"></i>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-bold text-primary">数学计算器</h1>
                 </div>
-                <h1 class="text-xl md:text-2xl font-bold text-primary">数学计算器</h1>
-            </div>
-            <div class="flex space-x-4">
-                <a href="https://tools.hudi.site"
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
-                    <i class="fa-solid fa-arrow-left mr-2"></i>
-                    返回工具箱
-                </a>
-                <a href="https://www.hudi.site"
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
-                    target="_blank" rel="noopener noreferrer">
-                    <i class="fa-solid fa-blog mr-2"></i>
-                    访问我的主页
-                </a>
-            </div>
-        </div>
-    </header>
-
-    <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
-        <div class="max-w-4xl mx-auto">
-            <!-- 介绍卡片 -->
-            <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
-                <p class="text-center text-base md:text-lg text-gray-600">
-                    输入数学表达式，点击按钮进行计算。支持函数、变量定义和复数运算。
-                </p>
-            </div>
-
-            <!-- 计算器主体 -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-lg mb-10">
-                <!-- 工具栏删除，按钮移动到精度设置栏 -->
-                <div class="bg-gray-100 p-3 border-b border-gray-200 flex flex-col md:flex-row items-center justify-between">
-                    <div class="flex items-center mb-2 md:mb-0">
-                        <label for="eps-slider" class="text-sm font-medium mr-3">计算精度 (eps):</label>
-                        <input type="range" id="eps-slider" min="1" max="15" value="6" 
-                            class="w-40 h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer">
-                        <span id="eps-value" class="ml-3 text-sm font-medium">1e-6</span>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <div class="text-xs text-gray-500">
-                            当前设置: 结果将显示到 <span id="precision-value">6</span> 位小数
-                        </div>
-                        <div class="flex space-x-3 ml-4">
-                            <button id="clear-btn" class="text-primary hover:text-primary transition-colors">
-                                <i class="fa fa-trash-o"></i>
-                            </button>
-                            <button id="copy-btn" class="text-primary hover:text-primary transition-colors">
-                                <i class="fa fa-copy"></i>
-                            </button>
-                            <button id="theme-toggle" class="text-primary hover:text-primary transition-colors">
-                                <i class="fa fa-moon-o"></i>
-                            </button>
-                            <button id="help-btn" class="text-primary hover:text-primary transition-colors">
-                                <i class="fa fa-question-circle"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <!-- 编辑器和输出区域 -->
-                <div class="flex flex-col h-[550px]">
-                    <!-- 输出区域 -->
-                    <div id="output-area" class="flex-1 bg-gray-50 text-gray-800 p-4 overflow-y-auto">
-                        <div class="output-line">
-                            <span class="text-primary font-bold text-lg">&gt;&gt;&gt;</span> 
-                            <span class="ml-2">欢迎使用网页版数学计算器</span>
-                        </div>
-                        <div class="output-line">
-                            <span class="text-primary font-bold text-lg">&gt;&gt;&gt;</span> 
-                            <span class="ml-2">支持基本数学运算、函数、变量和复数运算</span>
-                        </div>
-                        <div class="output-line">
-                            <span class="text-primary font-bold text-lg">&gt;&gt;&gt;</span> 
-                            <span class="ml-2">使用滑块调整计算精度 (eps = 1e-<span id="init-precision">6</span>)</span>
-                        </div>
-                    </div>
-                    <!-- 输入区域 -->
-                    <div class="bg-gray-100 text-gray-800 p-4 border-t border-gray-300">
-                        <div class="flex items-start">
-                            <span class="text-accent font-bold text-lg">&gt;&gt;&gt;</span>
-                            <input type="text" id="input-field" class="bg-transparent border-none outline-none ml-2 flex-1 min-h-[24px] text-gray-800 font-mono" placeholder="输入数学表达式...">
-                        </div>
-                    </div>
+                <div class="flex space-x-4">
+                    <a href="https://tools.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>
+                        访问我的主页
+                    </a>
                 </div>
             </div>
+        </header>
 
-            <!-- 函数和运算符参考 -->
-            <div id="functions-reference" class="bg-white rounded-2xl p-6 md:p-8 calculator-shadow">
-                <h2 class="text-xl font-bold text-primary mb-6">函数和运算符参考</h2>
-                
-                <!-- 自定义函数和变量展示区域，移到最前 -->
-                <div id="custom-vars-funcs" class="mb-8">
-                    <!-- JS填充如下结构，每个自定义项一条 -->
-                    <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center mb-2">
-                        <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">f(x,y)</div>
-                        <div class="flex-1">
-                            <p class="text-sm">自定义函数</p>
-                            <p class="text-xs text-gray-500 mt-1">输入f(x,y)=x+y可定义函数f(x,y)供后续使用</p>
-                        </div>
-                    </div>
-                    <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center mb-2">
-                        <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">x</div>
-                        <div class="flex-1">
-                            <p class="text-sm">自定义变量</p>
-                            <p class="text-xs text-gray-500 mt-1">输入x=3可定义变量x供后续使用</p>
-                        </div>
-                    </div>
+        <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+            <div class="max-w-4xl mx-auto">
+                <!-- 介绍卡片 -->
+                <div
+                    class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                    <p class="text-center text-base md:text-lg text-gray-600">
+                        输入数学表达式，点击按钮进行计算。支持函数、变量定义和复数运算。
+                    </p>
                 </div>
-                
-                <!-- 算术运算符 -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
-                        算术运算符
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <!-- 基本运算符 -->
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">+</div>
-                            <div class="flex-1">
-                                <p class="text-sm">加法运算。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: 2+3 或 (2+3i)+(4-5i)</p>
-                            </div>
+
+                <!-- 计算器主体 -->
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg mb-10">
+                    <!-- 工具栏删除，按钮移动到精度设置栏 -->
+                    <div
+                        class="bg-gray-100 p-3 border-b border-gray-200 flex flex-col md:flex-row items-center justify-between">
+                        <div class="flex items-center mb-2 md:mb-0">
+                            <label for="eps-slider" class="text-sm font-medium mr-3">计算精度 (eps):</label>
+                            <input type="range" id="eps-slider" min="1" max="15" value="6"
+                                class="w-40 h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer">
+                            <span id="eps-value" class="ml-3 text-sm font-medium">1e-6</span>
                         </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">-</div>
-                            <div class="flex-1">
-                                <p class="text-sm">减法运算或取负。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: 5-3 或 -(2+3i)</p>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-xs text-gray-500">
+                                当前设置: 结果将显示到 <span id="precision-value">6</span> 位小数
                             </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">*</div>
-                            <div class="flex-1">
-                                <p class="text-sm">乘法运算。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: 2*3 或 (2+3i)*(4-5i)</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">/</div>
-                            <div class="flex-1">
-                                <p class="text-sm">除法运算。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: 6/3 或 (2+3i)/(4-5i)</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">^</div>
-                            <div class="flex-1">
-                                <p class="text-sm">幂运算。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: 2^3 或 (2+3i)^2</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">=</div>
-                            <div class="flex-1">
-                                <p class="text-sm">变量赋值。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: a=5 或 z=2+3i</p>
+                            <div class="flex space-x-3 ml-4">
+                                <button id="clear-btn" class="text-primary hover:text-primary transition-colors">
+                                    <i class="fa fa-trash-o"></i>
+                                </button>
+                                <button id="copy-btn" class="text-primary hover:text-primary transition-colors">
+                                    <i class="fa fa-copy"></i>
+                                </button>
+                                <button id="theme-toggle" class="text-primary hover:text-primary transition-colors">
+                                    <i class="fa fa-moon-o"></i>
+                                </button>
+                                <button id="help-btn" class="text-primary hover:text-primary transition-colors">
+                                    <i class="fa fa-question-circle"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- 幂/根/对数/指数函数 -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
-                        幂/根/对数/指数函数
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">pow(x,y)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的y次幂。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: pow(2,3) 返回 8</p>
+                    <!-- 编辑器和输出区域 -->
+                    <div class="flex flex-col h-[550px]">
+                        <!-- 输出区域 -->
+                        <div id="output-area" class="flex-1 bg-gray-50 text-gray-800 p-4 overflow-y-auto">
+                            <div class="output-line">
+                                <span class="text-primary font-bold text-lg">&gt;&gt;&gt;</span>
+                                <span class="ml-2">欢迎使用网页版数学计算器</span>
+                            </div>
+                            <div class="output-line">
+                                <span class="text-primary font-bold text-lg">&gt;&gt;&gt;</span>
+                                <span class="ml-2">支持基本数学运算、函数、变量和复数运算</span>
+                            </div>
+                            <div class="output-line">
+                                <span class="text-primary font-bold text-lg">&gt;&gt;&gt;</span>
+                                <span class="ml-2">使用滑块调整计算精度 (eps = 1e-<span id="init-precision">6</span>)</span>
                             </div>
                         </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">sqrt(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的平方根。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: sqrt(4) 返回 2</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">log(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的自然对数（以e为底）。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: log(e) 返回 1</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">exp(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算e的x次幂。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: exp(1) 返回 e</p>
+                        <!-- 输入区域 -->
+                        <div class="bg-gray-100 text-gray-800 p-4 border-t border-gray-300">
+                            <div class="flex items-start">
+                                <span class="text-accent font-bold text-lg">&gt;&gt;&gt;</span>
+                                <input type="text" id="input-field"
+                                    class="bg-transparent border-none outline-none ml-2 flex-1 min-h-[24px] text-gray-800 font-mono"
+                                    placeholder="输入数学表达式...">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 三角函数与反三角函数 -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
-                        三角函数与反三角函数
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <!-- 基本三角 -->
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">sin(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的正弦值（弧度）。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: sin(pi/2) 返回 1</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">cos(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的余弦值（弧度）。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: cos(pi) 返回 -1</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">tan(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的正切值（弧度）。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: tan(pi/4) 返回 1</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">cot(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的余切值（弧度），定义为1/tan(x)。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: cot(pi/4) 返回 1</p>
-                            </div>
-                        </div>
-                        <!-- 反三角 -->
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">asin(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的反正弦值（弧度）。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: asin(1) 返回 pi/2</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">acos(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的反余弦值（弧度）。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: acos(-1) 返回 pi</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">atan(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的反正切值（弧度）。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: atan(1) 返回 pi/4</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">acot(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的反余切值（弧度），定义为atan(1/x)。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: acot(1) 返回 pi/4</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- 函数和运算符参考 -->
+                <div id="functions-reference" class="bg-white rounded-2xl p-6 md:p-8 calculator-shadow">
+                    <h2 class="text-xl font-bold text-primary mb-6">函数和运算符参考</h2>
 
-                <!-- 双曲线函数与反双曲线函数 -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
-                        双曲线函数与反双曲线函数
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <!-- 基本双曲 -->
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">sinh(x)</div>
+                    <!-- 自定义函数和变量展示区域，移到最前 -->
+                    <div id="custom-vars-funcs" class="mb-8">
+                        <!-- JS填充如下结构，每个自定义项一条 -->
+                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center mb-2">
+                            <div
+                                class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                f(x,y)</div>
                             <div class="flex-1">
-                                <p class="text-sm">计算x的双曲正弦值。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: sinh(0) 返回 0</p>
+                                <p class="text-sm">自定义函数</p>
+                                <p class="text-xs text-gray-500 mt-1">输入f(x,y)=x+y可定义函数f(x,y)供后续使用</p>
                             </div>
                         </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">cosh(x)</div>
+                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center mb-2">
+                            <div
+                                class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                x</div>
                             <div class="flex-1">
-                                <p class="text-sm">计算x的双曲余弦值。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: cosh(0) 返回 1</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">tanh(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的双曲正切值。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: tanh(0) 返回 0</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">coth(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的双曲余切值，定义为1/tanh(x)。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: coth(1) 返回约1.313035</p>
-                            </div>
-                        </div>
-                        <!-- 反双曲 -->
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">asinh(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的反双曲正弦值。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: asinh(0) 返回 0</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">acosh(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的反双曲余弦值。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: acosh(1) 返回 0</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">atanh(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的反双曲正切值。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: atanh(0) 返回 0</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">acoth(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算x的反双曲余切值，定义为0.5*log((x+1)/(x-1))。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: acoth(2) 返回约0.549306</p>
+                                <p class="text-sm">自定义变量</p>
+                                <p class="text-xs text-gray-500 mt-1">输入x=3可定义变量x供后续使用</p>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- 概率函数 -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
-                        概率函数
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">factorial(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">x的阶乘。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: factorial(5) 返回 120</p>
+                    <!-- 算术运算符 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
+                            算术运算符
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <!-- 基本运算符 -->
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    +</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">加法运算。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: 2+3 或 (2+3i)+(4-5i)</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">gamma(x)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">x的伽玛函数值。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: gamma(6) 返回 120</p>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    -</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">减法运算或取负。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: 5-3 或 -(2+3i)</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">arrangement(n,m)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">n个数中取m的排列。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: arrangement(5,2) 返回 20</p>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    *</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">乘法运算。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: 2*3 或 (2+3i)*(4-5i)</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">combination(n,m)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">n个数中取m的组合。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: combination(5,2) 返回 10</p>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    /</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">除法运算。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: 6/3 或 (2+3i)/(4-5i)</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    ^</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">幂运算。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: 2^3 或 (2+3i)^2</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    =</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">变量赋值。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: a=5 或 z=2+3i</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- 统计函数 -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
-                        统计函数
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">mean(a,b,c...)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">一组数的平均数。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: mean(1,2,3,4) 返回 2.5</p>
+                    <!-- 幂/根/对数/指数函数 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
+                            幂/根/对数/指数函数
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    pow(x,y)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的y次幂。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: pow(2,3) 返回 8</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">median(a,b,c...)</div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm">一组数的中位数。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: median(1,2,3,4,5) 返回 3</p>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    sqrt(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的平方根。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: sqrt(4) 返回 2</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">mode(a,b,c...)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">一组数的众数。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: mode(1,2,2,3,4) 返回 2</p>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    log(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的自然对数（以e为底）。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: log(e) 返回 1</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">sum(a,b,c...)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">一组数的和。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: sum(1,2,3,4) 返回 10</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">prod(a,b,c...)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">一组数的连乘积。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: prod(1,2,3,4) 返回 24</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">min(a,b,c...)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">一组数的最小值。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: min(1,2,3,4) 返回 1</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">max(a,b,c...)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">一组数的最大值。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: max(1,2,3,4) 返回 4</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">var(a,b,c...)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">一组数的方差。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: var(1,2,3,4) 返回 1.25</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">std(a,b,c...)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">一组数的标准差。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: std(1,2,3,4) 返回 1.118034</p>
-                            </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">mad(a,b,c...)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">一组数的绝对中位差。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: mad(1,1,2,2,4,6,9) 返回 1</p>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    exp(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算e的x次幂。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: exp(1) 返回 e</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- 复数函数 -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
-                        复数函数
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">abs(z)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算复数z的模（绝对值）。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: abs(3+4i) 返回 5</p>
+                    <!-- 三角函数与反三角函数 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
+                            三角函数与反三角函数
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <!-- 基本三角 -->
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    sin(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的正弦值（弧度）。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: sin(pi/2) 返回 1</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">conj(z)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算复数z的共轭。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: conj(2+3i) 返回 2-3i</p>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    cos(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的余弦值（弧度）。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: cos(pi) 返回 -1</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">arg(z)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">计算复数z的辐角（主值）。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: arg(1+i) 返回 pi/4</p>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    tan(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的正切值（弧度）。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: tan(pi/4) 返回 1</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">re(z)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">提取复数z的实部。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: re(2+3i) 返回 2</p>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    cot(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的余切值（弧度），定义为1/tan(x)。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: cot(pi/4) 返回 1</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">im(z)</div>
-                            <div class="flex-1">
-                                <p class="text-sm">提取复数z的虚部。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: im(2+3i) 返回 3</p>
+                            <!-- 反三角 -->
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    asin(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的反正弦值（弧度）。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: asin(1) 返回 pi/2</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">eps</div>
-                            <div class="flex-1">
-                                <p class="text-sm">当前计算精度（1e-<span id="eps-reference">6</span>）。</p>
-                                <p class="text-xs text-gray-500 mt-1">使用滑块调整精度</p>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    acos(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的反余弦值（弧度）。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: acos(-1) 返回 pi</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    atan(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的反正切值（弧度）。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: atan(1) 返回 pi/4</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    acot(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的反余切值（弧度），定义为atan(1/x)。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: acot(1) 返回 pi/4</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- 常量 -->
-                <div>
-                    <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
-                        常量
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">pi</div>
-                            <div class="flex-1">
-                                <p class="text-sm">圆周率，约等于3.141592653589793。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: pi*2 返回约6.2831853</p>
+
+                    <!-- 双曲线函数与反双曲线函数 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
+                            双曲线函数与反双曲线函数
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <!-- 基本双曲 -->
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    sinh(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的双曲正弦值。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: sinh(0) 返回 0</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    cosh(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的双曲余弦值。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: cosh(0) 返回 1</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    tanh(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的双曲正切值。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: tanh(0) 返回 0</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    coth(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的双曲余切值，定义为1/tanh(x)。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: coth(1) 返回约1.313035</p>
+                                </div>
+                            </div>
+                            <!-- 反双曲 -->
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    asinh(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的反双曲正弦值。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: asinh(0) 返回 0</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    acosh(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的反双曲余弦值。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: acosh(1) 返回 0</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    atanh(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的反双曲正切值。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: atanh(0) 返回 0</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    acoth(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算x的反双曲余切值，定义为0.5*log((x+1)/(x-1))。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: acoth(2) 返回约0.549306</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">e</div>
-                            <div class="flex-1">
-                                <p class="text-sm">自然常数，约等于2.718281828459045。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: exp(1) 返回 e</p>
+                    </div>
+
+                    <!-- 概率函数 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
+                            概率函数
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    factorial(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">x的阶乘。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: factorial(5) 返回 120</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    gamma(x)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">x的伽玛函数值。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: gamma(6) 返回 120</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    arrangement(n,m)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">n个数中取m的排列。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: arrangement(5,2) 返回 20</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    combination(n,m)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">n个数中取m的组合。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: combination(5,2) 返回 10</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">i</div>
-                            <div class="flex-1">
-                                <p class="text-sm">虚数单位，定义为√(-1)。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: i*i 返回 -1</p>
+                    </div>
+
+                    <!-- 统计函数 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
+                            统计函数
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    mean(a,b,c...)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">一组数的平均数。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: mean(1,2,3,4) 返回 2.5</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    median(a,b,c...)</div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm">一组数的中位数。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: median(1,2,3,4,5) 返回 3</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    mode(a,b,c...)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">一组数的众数。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: mode(1,2,2,3,4) 返回 2</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    sum(a,b,c...)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">一组数的和。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: sum(1,2,3,4) 返回 10</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    prod(a,b,c...)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">一组数的连乘积。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: prod(1,2,3,4) 返回 24</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    min(a,b,c...)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">一组数的最小值。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: min(1,2,3,4) 返回 1</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    max(a,b,c...)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">一组数的最大值。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: max(1,2,3,4) 返回 4</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    var(a,b,c...)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">一组数的方差。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: var(1,2,3,4) 返回 1.25</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    std(a,b,c...)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">一组数的标准差。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: std(1,2,3,4) 返回 1.118034</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    mad(a,b,c...)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">一组数的绝对中位差。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: mad(1,1,2,2,4,6,9) 返回 1</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
-                            <div class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">ans</div>
-                            <div class="flex-1">
-                                <p class="text-sm">存储上一次计算的结果。</p>
-                                <p class="text-xs text-gray-500 mt-1">示例: 先计算2+3，然后输入ans*2 返回10</p>
+                    </div>
+
+                    <!-- 复数函数 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
+                            复数函数
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    abs(z)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算复数z的模（绝对值）。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: abs(3+4i) 返回 5</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    conj(z)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算复数z的共轭。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: conj(2+3i) 返回 2-3i</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    arg(z)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">计算复数z的辐角（主值）。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: arg(1+i) 返回 pi/4</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    re(z)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">提取复数z的实部。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: re(2+3i) 返回 2</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    im(z)</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">提取复数z的虚部。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: im(2+3i) 返回 3</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    eps</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">当前计算精度（1e-<span id="eps-reference">6</span>）。</p>
+                                    <p class="text-xs text-gray-500 mt-1">使用滑块调整精度</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 常量 -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-secondary mb-4 flex items-center">
+                            常量
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    pi</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">圆周率，约等于3.141592653589793。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: pi*2 返回约6.2831853</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    e</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">自然常数，约等于2.718281828459045。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: exp(1) 返回 e</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    i</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">虚数单位，定义为√(-1)。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: i*i 返回 -1</p>
+                                </div>
+                            </div>
+                            <div class="reference-item bg-gray-50 p-3 rounded-lg flex items-center">
+                                <div
+                                    class="min-w-[11rem] max-w-[15rem] font-mono font-bold text-primary truncate text-center">
+                                    ans</div>
+                                <div class="flex-1">
+                                    <p class="text-sm">存储上一次计算的结果。</p>
+                                    <p class="text-xs text-gray-500 mt-1">示例: 先计算2+3，然后输入ans*2 返回10</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
-    <!-- 页脚 -->
-    <footer class="bg-gray-900 text-white py-6">
-        <div class="container mx-auto px-4 text-center">
-            <p>数学计算器 &copy; 2025</p>
-            <p class="text-sm text-gray-400 mt-1">可以连续计算的数学计算器</p>
-            <div class="mt-2 text-xs text-gray-500">
-                <span id="busuanzi_container_site_uv">
-                    <i class="fa-solid fa-user mr-1"></i>
-                    <span id="busuanzi_value_site_uv"></span> 访客
-                </span>
-                &nbsp;&nbsp;|&nbsp;&nbsp;
-                <span id="busuanzi_container_site_pv">
-                    <i class="fa-solid fa-eye mr-1"></i>
-                    <span id="busuanzi_value_site_pv"></span> 访问
-                </span>
+        </main>
+        <!-- 页脚 -->
+        <footer class="bg-gray-900 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p>数学计算器 &copy; 2025</p>
+                <p class="text-sm text-gray-400 mt-1">可以连续计算的数学计算器</p>
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn"
+                    one-link-mark="yes">皖ICP备18002386号-1</a>
             </div>
-            <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn" one-link-mark="yes">皖ICP备18002386号-1</a>
-        </div>
-    </footer>
-    <script src="./js/calculator.js"></script>
-    <script>
-        // 统一风格后只需初始化一次
-        const calculator = new MathCalculator();
-    </script>
-</body>
+        </footer>
+        <script src="./js/calculator.js"></script>
+        <script>
+            // 统一风格后只需初始化一次
+            const calculator = new MathCalculator();
+        </script>
+    </body>
+
 </html>
