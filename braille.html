@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>布莱叶盲文输入</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="./css/styles.css">
+        <script>
+            var _hmt = _hmt || [];
+            (function () {
+                var hm = document.createElement("script");
+                hm.src = "//hm.baidu.com/hm.js?767e3ea52a6b4f3c656cdd4119c87e62";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();
+        </script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            tool: {
+                                braille: '#9333EA'  // purple-600
+                            }
+                        },
+                        fontFamily: {
+                            sans: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                        },
+                    }
+                }
+            }
+        </script>
+    </head>
+
+    <body class="font-sans bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="text-tool-braille mr-2">
+                        <i class="fa-solid fa-braille text-2xl"></i>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-bold text-tool-braille">布莱叶盲文输入</h1>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="https://tools.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>
+                        访问我的主页
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+            <div class="max-w-4xl mx-auto space-y-8">
+
+                <!-- 介绍卡片 -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 mb-8">
+                    <p class="text-center text-base md:text-lg text-gray-600">
+                        使用键盘模拟布莱叶盲文点位输入，支持UJMIK或小键盘7741852
+                    </p>
+                </div>
+
+                <!-- 输入结果区域 -->
+                <div class="bg-white rounded-2xl shadow-card p-6">
+                    <h2 class="text-lg font-bold text-tool-braille mb-6">输入结果</h2>
+
+                    <div class="space-y-6">
+                        <!-- 盲文结果 -->
+                        <div class="bg-gray-50 p-4 rounded-xl">
+                            <label class="block text-sm font-medium text-gray-500 mb-2">盲文符号</label>
+                            <textarea id="brailleResult"
+                                class="w-full h-28 p-4 bg-white border-2 rounded-lg resize-none font-mono text-xl leading-relaxed"></textarea>
+                        </div>
+
+                        <!-- 拉丁字母结果 -->
+                        <div class="bg-gray-50 p-4 rounded-xl">
+                            <textarea id="latinResult"
+                                class="w-full h-28 p-4 bg-white border-2 rounded-lg resize-none font-mono text-xl leading-relaxed"
+                                readonly></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 输入模式选择 -->
+                    <div class="mt-6 pt-4 border-t">
+                        <div class="flex justify-center gap-8">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="inputMode" value="ujmik" checked
+                                    class="w-4 h-4 text-tool-braille">
+                                <span class="ml-2">UJMIK键位</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="inputMode" value="numpad" class="w-4 h-4 text-tool-braille">
+                                <span class="ml-2">数字键盘</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="inputMode" value="rfvedc" class="w-4 h-4 text-tool-braille">
+                                <span class="ml-2">RFVEDC键位</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 键位说明区域 -->
+                <div class="bg-white rounded-2xl shadow-card p-6">
+                    <h2 class="text-lg font-bold text-tool-braille mb-4">键位说明</h2>
+                    <!-- 功能键说明 -->
+                    <div class="mb-6">
+                        <h3 class="font-bold mb-2">操作说明</h3>
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <ul class="space-y-2 text-sm">
+                                <li>空格键 或 小键盘0 - 确认输入当前字符</li>
+                                <li>ESC - 清除当前输入</li>
+                                <li>Enter - 确认并换行</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- 点位映射说明 -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div>
+                            <h3 class="font-bold mb-2">UJMIK键位</h3>
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <pre class="text-sm">
+U I - 点位 1 4
+J K - 点位 2 5
+M , - 点位 3 6</pre>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="font-bold mb-2">数字键盘</h3>
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <pre class="text-sm">
+7 8 - 点位 1 4
+4 5 - 点位 2 5
+1 2 - 点位 3 6</pre>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="font-bold mb-2">RFVEDC键位</h3>
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <pre class="text-sm">
+E R - 点位 1 4
+D F - 点位 2 5
+C V - 点位 3 6</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 添加浮动布莱叶显示窗口 -->
+        <div id="braillePopup"
+            class="fixed top-1/4 left-1/2 transform -translate-x-1/2 bg-white rounded-2xl shadow-xl border-2 border-tool-braille/20 p-6 transition-all duration-300 opacity-0 pointer-events-none w-80">
+            <div class="relative">
+                <!-- 显示区域标题 -->
+                <h2 class="text-lg font-bold text-tool-braille mb-4">布莱叶显示</h2>
+
+                <div class="flex justify-center mb-6">
+                    <div class="grid grid-cols-2 gap-4 p-4 bg-gray-100 rounded-xl">
+                        <div id="dot1" class="w-8 h-8 rounded-full border-4 border-gray-300"></div>
+                        <div id="dot4" class="w-8 h-8 rounded-full border-4 border-gray-300"></div>
+                        <div id="dot2" class="w-8 h-8 rounded-full border-4 border-gray-300"></div>
+                        <div id="dot5" class="w-8 h-8 rounded-full border-4 border-gray-300"></div>
+                        <div id="dot3" class="w-8 h-8 rounded-full border-4 border-gray-300"></div>
+                        <div id="dot6" class="w-8 h-8 rounded-full border-4 border-gray-300"></div>
+                    </div>
+                </div>
+
+                <div class="text-center mb-4">
+                    <span id="currentChar" class="text-2xl font-bold">请按键输入</span>
+                </div>
+
+                <div class="flex justify-center space-x-4">
+                    <button id="clearBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                        清除
+                    </button>
+                    <button id="confirmBtn"
+                        class="px-4 py-2 bg-tool-braille text-white rounded-lg hover:bg-tool-braille/90">
+                        确认
+                    </button>
+                </div>
+
+                <div class="absolute -top-2 -right-2">
+                    <span class="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-400">ESC 关闭</span>
+                </div>
+            </div>
+        </div>
+        <!-- 页脚 -->
+        <footer class="bg-gray-900 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p>数学计算器 &copy; 2025</p>
+                <p class="text-sm text-gray-400 mt-1">可以连续计算的数学计算器</p>
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn"
+                    one-link-mark="yes">皖ICP备18002386号-1</a>
+            </div>
+        </footer>
+
+        <script src="./js/braille.js"></script>
+    </body>
+
+</html>
