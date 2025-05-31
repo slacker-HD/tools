@@ -41,7 +41,7 @@ const keyMaps = {
 // 点阵与字符映射 - 确保与标准布莱叶点位一致
 const brailleMap = {
     // 空格
-    '000000': [' '],
+    '000000': ['⠀'],    // 盲文空格字符
     
     // 英文字母和数字映射
     '100000': ['a', '1'],         // a/1
@@ -223,13 +223,25 @@ document.addEventListener('keydown', (e) => {
     const code = e.code;
     const mode = document.querySelector('input[name="inputMode"]:checked').value;
     
+    // 直接输入空格
+    if (key === ' ' || (key === '0' && code === 'Numpad0')) {
+        e.preventDefault();
+        if (isInputting) {
+            confirmInput();
+        } else {
+            const pos = brailleResult.selectionStart;
+            const before = brailleResult.value.slice(0, pos);
+            const after = brailleResult.value.slice(pos);
+            brailleResult.value = before + '⠀' + after;  // 使用盲文空格字符
+            brailleResult.setSelectionRange(pos + 1, pos + 1);
+        }
+        return;
+    }
+    
     // 如果正在点位输入或按下了映射键
     if (isInputting || keyMaps[mode][key] !== undefined) {
         e.preventDefault();
-        
-        if (key === ' ' || key === '0' && code === 'Numpad0') {
-            confirmInput();
-        } else if (key === 'escape') {
+        if (key === 'escape') {
             hidePopup();
             clearDots();
         } else if (keyMaps[mode][key] !== undefined) {
