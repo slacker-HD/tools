@@ -40,14 +40,51 @@ const keyMaps = {
 
 // 点阵与字符映射 - 确保与标准布莱叶点位一致
 const brailleMap = {
-    '000000': ' ',  // 空格
-    '100000': 'a', '110000': 'b', '100100': 'c', '100110': 'd',
-    '100010': 'e', '110100': 'f', '110110': 'g', '110010': 'h',
-    '010100': 'i', '010110': 'j', '101000': 'k', '111000': 'l',
-    '101100': 'm', '101110': 'n', '101010': 'o', '111100': 'p',
-    '111110': 'q', '111010': 'r', '011100': 's', '011110': 't',
-    '101001': 'u', '111001': 'v', '010111': 'w', '101101': 'x',
-    '101111': 'y', '101011': 'z'
+    // 空格
+    '000000': [' '],
+    
+    // 英文字母和数字映射
+    '100000': ['a', '1'],         // a/1
+    '110000': ['b', '2'],         // b/2
+    '100100': ['c', '3'],         // c/3
+    '100110': ['d', '4'],         // d/4
+    '100010': ['e', '5'],         // e/5
+    '110100': ['f', '6'],         // f/6
+    '110110': ['g', '7'],         // g/7
+    '110010': ['h', '8'],         // h/8
+    '010100': ['i', '9'],         // i/9
+    '010110': ['j', '0'],         // j/0
+
+    // 数字映射（下移一行）
+    '010000': ['①'],         // 圆圈1
+    '011000': ['②'],         // 圆圈2
+    '010010': ['③'],         // 圆圈3
+    '010011': ['④'],         // 圆圈4
+    '010001': ['⑤'],         // 圆圈5
+    '011010': ['⑥'],         // 圆圈6
+    '011011': ['⑦'],         // 圆圈7
+    '011001': ['⑧'],         // 圆圈8
+    '001010': ['⑨'],         // 圆圈9
+    '001011': ['⓪'],         // 圆圈0
+    '101000': ['k'],         // k
+    '111000': ['l'],         // l
+    '101100': ['m'],         // m
+    '101110': ['n'],         // n
+    '101010': ['o'],         // o
+    '111100': ['p'],         // p
+    '111110': ['q'],         // q
+    '111010': ['r'],         // r
+    '011100': ['s'],         // s
+    '011110': ['t'],         // t
+    '101001': ['u'],         // u
+    '111001': ['v'],         // v
+    '010111': ['w'],         // w
+    '101101': ['x'],         // x
+    '101111': ['y'],         // y
+    '101011': ['z'],         // z
+
+    // 数字记号
+    '001111': ['数字记号']    // 数字记号
 };
 
 // 为所有可能的点位组合生成盲文字符映射 - 修正点位编码逻辑
@@ -105,8 +142,13 @@ function updateDotDisplay() {
     
     // 更新当前字符显示
     const dotString = dotStates.map(d => d ? '1' : '0').join('');
-    const brailleChar = brailleDots[dotString];
-    currentChar.textContent = brailleChar;
+    const chars = brailleMap[dotString];
+    if (chars) {
+        const displayText = chars.filter(c => c !== null).join('/');
+        currentChar.textContent = displayText || '请按键输入';
+    } else {
+        currentChar.textContent = '请按键输入';
+    }
 }
 
 // 切换点位状态
@@ -122,12 +164,10 @@ function clearDots() {
 }
 
 // 更新DOM元素获取
-const latinResult = document.getElementById('latinResult');
 const brailleResult = document.getElementById('brailleResult');
 
 // 修改清除结果函数
 function clearResult() {
-    latinResult.value = '';
     brailleResult.value = '';
 }
 
@@ -135,14 +175,19 @@ function clearResult() {
 let savedCursorPos = null;
 
 // 浮动窗口控制函数
+let isInputting = false;
+
 function showPopup() {
+    isInputting = true;
     // 保存当前光标位置
     savedCursorPos = brailleResult.selectionStart;
     braillePopup.classList.remove('opacity-0', 'pointer-events-none');
     braillePopup.classList.add('opacity-100');
+    brailleResult.blur(); // 移除文本框焦点
 }
 
 function hidePopup() {
+    isInputting = false;
     braillePopup.classList.add('opacity-0', 'pointer-events-none');
     braillePopup.classList.remove('opacity-100');
     // 恢复光标位置
@@ -172,81 +217,50 @@ function confirmInput() {
     return false;
 }
 
-// 添加拉丁字母更新函数
-function updateLatinText() {
-    let latinText = '';
-    for (const char of brailleResult.value) {
-        // 查找点阵映射
-        const dotPattern = Object.entries(brailleDots).find(([_, braille]) => braille === char);
-        if (dotPattern) {
-            // 如果存在拉丁字母映射则使用，否则保持空
-            latinText += brailleMap[dotPattern[0]] || '';
-        }
-    }
-    latinResult.value = latinText;
-}
-
 // 修改键盘事件处理
 document.addEventListener('keydown', (e) => {
     const key = e.key.toLowerCase();
     const code = e.code;
     const mode = document.querySelector('input[name="inputMode"]:checked').value;
     
-    if (key === ' ' || code === 'numpad0') {
+    // 如果正在点位输入或按下了映射键
+    if (isInputting || keyMaps[mode][key] !== undefined) {
         e.preventDefault();
-        confirmInput();
-    } else if (keyMaps[mode][key] !== undefined) {
-        showPopup();
-        toggleDot(keyMaps[mode][key]);
-    } else if (key === 'enter') {
-        e.preventDefault();
-        // 如果有点位先确认输入
-        if (dotStates.some(state => state)) {
+        
+        if (key === ' ' || key === '0' && code === 'Numpad0') {
             confirmInput();
-        }
-        // 然后插入换行
-        if (savedCursorPos !== null) {
+        } else if (key === 'escape') {
+            hidePopup();
+            clearDots();
+        } else if (keyMaps[mode][key] !== undefined) {
+            showPopup();
+            toggleDot(keyMaps[mode][key]);
+        } else if (key === 'enter') {
+            if (dotStates.some(state => state)) {
+                confirmInput();
+            }
             const before = brailleResult.value.slice(0, savedCursorPos);
             const after = brailleResult.value.slice(savedCursorPos);
             brailleResult.value = before + '\n' + after;
             savedCursorPos++;
             brailleResult.setSelectionRange(savedCursorPos, savedCursorPos);
-            updateLatinText();
         }
-    } else if (key === 'escape') {
-        hidePopup();
-        clearDots();
     }
 });
 
-// 文本框输入监听
-latinResult.addEventListener('input', (e) => {
-    const text = e.target.value.toLowerCase();
-    let brailleText = '';
-    
-    // 逐字符转换为盲文
-    for (const char of text) {
-        // 遍历所有点阵映射找到对应字符
-        for (const [dots, letter] of Object.entries(brailleMap)) {
-            if (letter === char) {
-                brailleText += brailleDots[dots] || char;
-                break;
-            }
-        }
-    }
-    
-    brailleResult.value = brailleText;
-});
-
-// 修改盲文字符输入处理
+// 修改文本框事件处理
 brailleResult.addEventListener('input', (e) => {
+    if (isInputting) {
+        e.preventDefault();
+        return;
+    }
+
     const input = e.target;
     const text = input.value;
     const start = input.selectionStart;
     let validBrailleText = '';
     let cursorPos = start;
 
-    // 逐字符处理 - 只保留盲文字符和换行符
     for (let i = 0; i < text.length; i++) {
         const char = text[i];
         if (char === '\n' || (char >= '⠀' && char <= '⣿')) {
@@ -256,9 +270,15 @@ brailleResult.addEventListener('input', (e) => {
         }
     }
 
-    // 更新盲文文本
     input.value = validBrailleText;
     input.setSelectionRange(cursorPos, cursorPos);
+});
+
+// 防止在输入模式时失去焦点
+brailleResult.addEventListener('focus', (e) => {
+    if (isInputting) {
+        e.target.blur();
+    }
 });
 
 // 事件监听
@@ -276,4 +296,3 @@ window.addEventListener('DOMContentLoaded', () => {
     clearResult();
     updateDotDisplay();
 });
-    
