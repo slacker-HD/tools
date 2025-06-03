@@ -33,8 +33,9 @@
                                 convert: '#065F46',
                                 vim: '#165DFF',
                                 poem: '#D97706',
-                                history: '#0891B2', // 添加历史工具颜色
-                                monitor: '#E11D48', // rose-600 警戒红色
+                                history: '#0891B2',
+                                monitor: '#E11D48',
+                                braille: '#84CC16'  // lime-500 布莱叶点阵工具的颜色
                             }
                         },
                         fontFamily: {
@@ -250,6 +251,17 @@
                                     </div>
                                     <h3 class="text-3xl font-bold text-tool-monitor mb-2 text-center">智能桌面守护</h3>
                                     <p class="text-gray-600 max-w-md mx-auto text-center">智能守护您的桌面安全，当有人靠近时自动记录</p>
+                                </a>
+                            </div>
+
+                            <!-- 布莱叶点阵工具 -->
+                            <div class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                                <a href="braille.html" target="_blank" rel="noopener noreferrer">
+                                    <div class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-braille/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                        <i class="fa-solid fa-braille text-5xl text-tool-braille"></i>
+                                    </div>
+                                    <h3 class="text-3xl font-bold text-tool-braille mb-2 text-center">布莱叶点阵</h3>
+                                    <p class="text-gray-600 max-w-md mx-auto text-center">布莱叶盲文点阵输入工具</p>
                                 </a>
                             </div>
                         </div>
