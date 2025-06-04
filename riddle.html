@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>猜谜语 - 胡迪的工具箱</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            tool: {
+                                riddle: '#10B981', // 使用青绿色作为猜谜语工具的主题色
+                            }
+                        },
+                        fontFamily: {
+                            inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                        }
+                    }
+                }
+            }
+        </script>
+        <style>
+            .answer-hidden {
+                filter: blur(5px);
+                transition: filter 0.3s;
+            }
+
+            .answer-hidden:hover {
+                filter: blur(0);
+            }
+        </style>
+    </head>
+
+    <body class="font-sans bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+        <!-- 页面头部 -->
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="text-tool-riddle mr-2">
+                        <i class="fa-solid fa-puzzle-piece text-2xl"></i>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-bold text-gray-900">猜谜语</h1>
+                </div>
+                <!-- 添加返回工具箱和返回主页按钮 -->
+                <div class="flex space-x-4">
+                    <a href="https://tools.hudi.site"
+                        class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site"
+                        class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>
+                        访问我的主页
+                    </a>
+                </div>
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-full hover:bg-gray-100 transition-colors">
+                    <i class="fa-solid fa-bars text-gray-700"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+            <div class="max-w-6xl mx-auto">
+                <!-- 介绍卡片 -->
+                <div
+                    class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                    <p class="text-center text-base md:text-lg text-gray-600">
+                        猜一猜下面的谜语吧！把鼠标悬停在答案上可以查看谜底。
+                    </p>
+                </div>
+
+                <!-- 谜语展示区 -->
+                <div class="bg-white rounded-2xl shadow-card p-6 md:p-8 mb-8 relative overflow-hidden">
+                    <!-- 装饰元素 -->
+                    <div class="absolute -right-16 -top-16 w-48 h-48 bg-tool-riddle/5 rounded-full blur-3xl"></div>
+                    <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-tool-riddle/5 rounded-full blur-3xl"></div>
+
+                    <div class="relative z-10 space-y-8">
+                        <div class="text-center">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4" id="riddle-face">加载中...</h2>
+                            <div id="loading" class="hidden">
+                                <div
+                                    class="animate-spin inline-block w-6 h-6 border-4 border-tool-riddle border-t-transparent rounded-full">
+                                </div>
+                            </div>
+                            <div id="error-message" class="hidden text-red-500"></div>
+                        </div>
+
+                        <div class="text-center">
+                            <div class="space-y-4">
+                                <p id="riddle-answer"
+                                    class="text-xl answer-hidden bg-gray-100 inline-block px-6 py-3 rounded-lg">加载中...
+                                </p>
+                                <div class="mt-2">
+                                    <button id="show-answer"
+                                        class="text-tool-riddle hover:text-tool-riddle/80 font-medium text-sm transition-colors">
+                                        显示答案
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center space-y-4">
+                            <button id="next-btn"
+                                class="bg-tool-riddle hover:bg-tool-riddle/90 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+                                <i class="fa-solid fa-forward mr-2"></i>
+                                下一题
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 页脚 -->
+        <footer class="bg-gray-900 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-sm text-gray-400 mt-1">玩一玩谜语，动动脑筋</p>
+
+                <!-- 不蒜子统计 -->
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn"
+                    one-link-mark="yes">皖ICP备18002386号-1</a>
+            </div>
+        </footer>
+
+        <!-- 不蒜子统计脚本 -->
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        <!-- 猜谜语脚本 -->
+        <script src="./js/riddle.js"></script>
+    </body>
+
+</html>
