@@ -220,18 +220,10 @@ const foodIconElement = document.getElementById('food-icon-element');
 const beverageContainer = document.getElementById('beverage-container');
 const beverageName = document.getElementById('beverage-name');
 const beverageDesc = document.getElementById('beverage-desc');
-const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-const mobileMenu = document.getElementById('mobile-menu');
-const foodTab = document.getElementById('food-tab');
-const beverageTab = document.getElementById('beverage-tab');
-
-// 当前活跃的移动端标签
-let activeTab = 'food';
 
 // 初始化
 function init() {
   setupEventListeners();
-  setupMobileTabs();
   checkScreenSize();
 }
 
@@ -254,35 +246,6 @@ function setupEventListeners() {
       header.classList.remove('py-2');
     }
   });
-  
-  // 移动端菜单按钮
-  mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-  
-  // 监听窗口大小变化
-  window.addEventListener('resize', checkScreenSize);
-}
-
-// 设置移动端标签切换
-function setupMobileTabs() {
-  foodTab.addEventListener('click', () => switchTab('food'));
-  beverageTab.addEventListener('click', () => switchTab('beverage'));
-}
-
-// 切换移动端标签
-function switchTab(tab) {
-  activeTab = tab;
-  
-  if (tab === 'food') {
-    foodTab.classList.add('text-primary', 'border-primary');
-    foodTab.classList.remove('text-gray-500');
-    beverageTab.classList.add('text-gray-500');
-    beverageTab.classList.remove('text-primary', 'border-primary');
-  } else {
-    beverageTab.classList.add('text-primary', 'border-primary');
-    beverageTab.classList.remove('text-gray-500');
-    foodTab.classList.add('text-gray-500');
-    foodTab.classList.remove('text-primary', 'border-primary');
-  }
 }
 
 // 检查屏幕尺寸
@@ -374,11 +337,6 @@ function selectRandomBeverage() {
       result.classList.remove('animate-float');
     }, 1000);
   }, 1500);
-}
-
-// 切换移动端菜单
-function toggleMobileMenu() {
-  mobileMenu.classList.toggle('hidden');
 }
 
 // 页面加载完成后初始化
