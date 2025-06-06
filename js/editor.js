@@ -78,6 +78,8 @@ int main() {
         // 加载上次保存的语言类型，默认为 javascript
         this.lastLanguage = localStorage.getItem('editor-language') || 'javascript';
         this.fileName = `main${languageExtensions[this.lastLanguage]}`;
+        this.encoding = localStorage.getItem('editor-encoding') || 'UTF-8';
+        this.lineEnding = localStorage.getItem('editor-line-ending') || 'LF';
         this.init();
     }
 
@@ -86,6 +88,9 @@ int main() {
         this.bindEvents();
         // 设置选择器初始值
         document.getElementById('languageSelector').value = this.lastLanguage;
+        // 设置初始值
+        document.getElementById('encodingSelector').value = this.encoding;
+        document.getElementById('lineEndingSelector').value = this.lineEnding;
     }
 
     async initMonaco() {
@@ -133,6 +138,19 @@ int main() {
             monaco.editor.setTheme(e.target.value);
         });
 
+        // 编码选择
+        document.getElementById('encodingSelector').addEventListener('change', (e) => {
+            this.encoding = e.target.value;
+            localStorage.setItem('editor-encoding', this.encoding);
+        });
+
+        // 换行符选择
+        document.getElementById('lineEndingSelector').addEventListener('change', (e) => {
+            this.lineEnding = e.target.value;
+            localStorage.setItem('editor-line-ending', this.lineEnding);
+            this.updateLineEndings();
+        });
+
         // 其他事件绑定
         this.bindToolbarEvents();
         this.bindSettingsEvents();
@@ -171,6 +189,16 @@ int main() {
         
         // 更新界面显示
         document.getElementById('currentFileName').querySelector('span').textContent = this.fileName;
+    }
+
+    updateLineEndings() {
+        if (this.editor) {
+            const model = this.editor.getModel();
+            model.setEOL(this.lineEnding === 'CRLF' ? 
+                monaco.editor.EndOfLineSequence.CRLF : 
+                monaco.editor.EndOfLineSequence.LF
+            );
+        }
     }
 
     bindSettingsEvents() {
@@ -268,40 +296,28 @@ int main() {
     async saveFile() {
         const model = this.editor.getModel();
         const content = model.getValue();
-        const blob = new Blob([content], { type: 'text/plain' });
-
+        
         try {
-            // 尝试使用 File System Access API
-            if ('showSaveFilePicker' in window) {
-                const handle = await window.showSaveFilePicker({
-                    suggestedName: this.fileName,
-                    types: [{
-                        description: 'Text Files',
-                        accept: {
-                            'text/plain': ['.txt', '.js', '.html', '.css', '.py', '.java', '.cpp', '.c']
-                        }
-                    }]
-                });
-                const writable = await handle.createWritable();
-                await writable.write(blob);
-                await writable.close();
-            } else {
-                // 回退到下载方式
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = this.fileName;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+            // 调用PHP接口保存文件
+            const response = await fetch('/api/save.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    content: content,
+                    encoding: this.encoding,
+                    lineEnding: this.lineEnding,
+                    fileName: this.fileName
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Save failed');
             }
-            
-            // 保存到localStorage作为备份
-            this.saveContent();
-        } catch (e) {
-            console.error('Save failed:', e);
-            // 出错时回退到下载方式
+
+            // 获取二进制数据并触发下载
+            const blob = await response.blob();
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -310,7 +326,34 @@ int main() {
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            
+            // 保存到localStorage作为备份
+            this.saveContent();
+        } catch (e) {
+            console.error('Save failed:', e);
+            alert('保存失败，请重试');
         }
+    }
+
+    getEncodedBlob(content) {
+        let encodedContent;
+        switch (this.encoding) {
+            case 'UTF-8-BOM':
+                encodedContent = new Uint8Array([0xEF, 0xBB, 0xBF, ...new TextEncoder().encode(content)]);
+                break;
+            case 'UTF-16LE':
+                encodedContent = new Uint8Array([0xFF, 0xFE, ...new TextEncoder().encode(content)]);
+                break;
+            case 'UTF-16BE':
+                encodedContent = new Uint8Array([0xFE, 0xFF, ...new TextEncoder().encode(content)]);
+                break;
+            case 'ASCII':
+                encodedContent = new TextEncoder().encode(content);
+                break;
+            default: // UTF-8
+                encodedContent = new TextEncoder().encode(content);
+        }
+        return new Blob([encodedContent], { type: 'text/plain' });
     }
 
     setFontSize(size) {
