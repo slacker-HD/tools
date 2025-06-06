@@ -23,6 +23,26 @@
             }
         }
     </script>
+    <style>
+        input[type="range"] {
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 9999px;
+            appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #F97316;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+    </style>
     <script>
         var _hmt = _hmt || [];
         (function() {
