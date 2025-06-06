@@ -75,13 +75,17 @@ int main() {
             insertSpaces: true,
             tabSize: 4
         };
-        this.fileName = 'main.js';
+        // 加载上次保存的语言类型，默认为 javascript
+        this.lastLanguage = localStorage.getItem('editor-language') || 'javascript';
+        this.fileName = `main${languageExtensions[this.lastLanguage]}`;
         this.init();
     }
 
     async init() {
         await this.initMonaco();
         this.bindEvents();
+        // 设置选择器初始值
+        document.getElementById('languageSelector').value = this.lastLanguage;
     }
 
     async initMonaco() {
@@ -95,8 +99,8 @@ int main() {
 
         // 创建编辑器实例
         this.editor = monaco.editor.create(container, {
-            value: Editor.codeTemplates.javascript, // 使用静态属性
-            language: 'javascript',
+            value: Editor.codeTemplates[this.lastLanguage] || Editor.codeTemplates.default,
+            language: this.lastLanguage,
             theme: 'vs',
             automaticLayout: true,
             minimap: { enabled: true },
@@ -119,7 +123,9 @@ int main() {
             const language = e.target.value;
             monaco.editor.setModelLanguage(this.editor.getModel(), language);
             this.updateFileName(language);
-            this.loadSavedContent(); // 切换语言时加载对应保存的内容
+            this.loadSavedContent();
+            // 保存语言选择
+            localStorage.setItem('editor-language', language);
         });
 
         // 主题切换
