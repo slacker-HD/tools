@@ -35,10 +35,14 @@
                                 riddle: '#10B981',
                                 braille: '#84CC16',
                                 barcode: '#F97316',
-                                calculator: '#1E3A8A'
+                                calculator: '#1E3A8A',
+                                editor: '#059669'  // 添加编辑器的绿色主题
                             }
                         }
-                    }
+                    },
+                    fontFamily: {
+                        inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                    },
                 }
             }
         </script>
@@ -186,9 +190,11 @@
                             </div>
 
                             <!-- 数学计算器 -->
-                            <div class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                            <div
+                                class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
                                 <a href="calculator.html" target="_blank" rel="noopener noreferrer">
-                                    <div class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-calculator/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                    <div
+                                        class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-calculator/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
                                         <i class="fa-solid fa-calculator text-5xl text-tool-calculator"></i>
                                     </div>
                                     <h3 class="text-3xl font-bold text-tool-calculator mb-2 text-center">数学计算器</h3>
@@ -250,9 +256,11 @@
                             </div>
 
                             <!-- 布莱叶点阵工具 -->
-                            <div class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                            <div
+                                class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
                                 <a href="braille.html" target="_blank" rel="noopener noreferrer">
-                                    <div class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-braille/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                    <div
+                                        class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-braille/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
                                         <i class="fa-solid fa-braille text-5xl text-tool-braille"></i>
                                     </div>
                                     <h3 class="text-3xl font-bold text-tool-braille mb-2 text-center">布莱叶点阵</h3>
@@ -261,9 +269,11 @@
                             </div>
 
                             <!-- 猜谜语工具 -->
-                            <div class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                            <div
+                                class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
                                 <a href="riddle.html" target="_blank" rel="noopener noreferrer">
-                                    <div class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-riddle/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                    <div
+                                        class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-riddle/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
                                         <i class="fa-solid fa-puzzle-piece text-5xl text-tool-riddle"></i>
                                     </div>
                                     <h3 class="text-3xl font-bold text-tool-riddle mb-2 text-center">猜谜语</h3>
@@ -272,13 +282,26 @@
                             </div>
 
                             <!-- 二维码/条码生成器 -->
-                            <div class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                            <div
+                                class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
                                 <a href="barcode.html" target="_blank" rel="noopener noreferrer">
-                                    <div class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-barcode/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                    <div
+                                        class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-barcode/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
                                         <i class="fa-solid fa-qrcode text-5xl text-tool-barcode"></i>
                                     </div>
                                     <h3 class="text-3xl font-bold text-tool-barcode mb-2 text-center">二维码/条码生成器</h3>
                                     <p class="text-gray-600 max-w-md mx-auto text-center">生成高质量的二维码和条形码。</p>
+                                </a>
+                            </div>
+
+                            <!-- 在工具列表中添加编辑器卡片，放在合适位置 -->
+                            <div class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                                <a href="editor.html" target="_blank" rel="noopener noreferrer">
+                                    <div class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-editor/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                        <i class="fa-solid fa-terminal text-5xl text-tool-editor"></i>
+                                    </div>
+                                    <h3 class="text-3xl font-bold text-tool-editor mb-2 text-center">代码编辑器</h3>
+                                    <p class="text-gray-600 max-w-md mx-auto text-center">强大的在线代码编辑器，支持多种编程语言。</p>
                                 </a>
                             </div>
                         </div>
