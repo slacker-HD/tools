@@ -21,9 +21,6 @@
                 theme: {
                     extend: {
                         colors: {
-                            primary: '#165DFF',
-                            secondary: '#722ED1',
-                            accent: '#FF7D00',
                             tool: {
                                 index: '#165DFF',
                                 food: '#22C55E',
@@ -35,13 +32,12 @@
                                 poem: '#D97706',
                                 history: '#0891B2',
                                 monitor: '#E11D48',
-                                riddle: '#10B981',  // 使用青绿色作为猜谜语工具的主题色
-                                braille: '#84CC16'  // lime-500 布莱叶点阵工具的颜色
+                                riddle: '#10B981',
+                                braille: '#84CC16',
+                                barcode: '#F97316',
+                                calculator: '#1E3A8A'
                             }
-                        },
-                        fontFamily: {
-                            inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
-                        },
+                        }
                     }
                 }
             }
@@ -190,14 +186,12 @@
                             </div>
 
                             <!-- 数学计算器 -->
-                            <div
-                                class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                            <div class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
                                 <a href="calculator.html" target="_blank" rel="noopener noreferrer">
-                                    <div
-                                        class="mb-4 w-32 h-32 mx-auto rounded-full bg-[#1E3A8A]/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
-                                        <i class="fa-solid fa-calculator text-5xl" style="color:#1E3A8A"></i>
+                                    <div class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-calculator/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                        <i class="fa-solid fa-calculator text-5xl text-tool-calculator"></i>
                                     </div>
-                                    <h3 class="text-3xl font-bold mb-2 text-center" style="color:#1E3A8A">数学计算器</h3>
+                                    <h3 class="text-3xl font-bold text-tool-calculator mb-2 text-center">数学计算器</h3>
                                     <p class="text-gray-600 max-w-md mx-auto text-center">
                                         支持表达式、函数、变量、复数、统计等多功能的网页版数学计算器。</p>
                                 </a>
@@ -274,6 +268,17 @@
                                     </div>
                                     <h3 class="text-3xl font-bold text-tool-riddle mb-2 text-center">猜谜语</h3>
                                     <p class="text-gray-600 max-w-md mx-auto text-center">猜一猜谜语，动动脑筋。</p>
+                                </a>
+                            </div>
+
+                            <!-- 二维码/条码生成器 -->
+                            <div class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                                <a href="barcode.html" target="_blank" rel="noopener noreferrer">
+                                    <div class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-barcode/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                        <i class="fa-solid fa-qrcode text-5xl text-tool-barcode"></i>
+                                    </div>
+                                    <h3 class="text-3xl font-bold text-tool-barcode mb-2 text-center">二维码/条码生成器</h3>
+                                    <p class="text-gray-600 max-w-md mx-auto text-center">生成高质量的二维码和条形码。</p>
                                 </a>
                             </div>
                         </div>

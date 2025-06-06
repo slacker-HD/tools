@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二维码/条码生成器 - 胡迪的工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" rel="stylesheet">
+   <!-- 引入最新版的qrcode.min.js -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <!-- 引入最新版的JsBarcode.all.min.js -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tool: {
+                            barcode: '#F97316'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?767e3ea52a6b4f3c656cdd4119c87e62";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+</head>
+
+<body class="font-sans bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 min-h-screen flex flex-col">
+    <!-- 页面头部 -->
+    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-qrcode text-2xl text-tool-barcode"></i>
+                <h1 class="text-xl md:text-2xl font-bold text-gray-900">二维码/条码生成器</h1>
+            </div>
+            <div class="flex space-x-4">
+                <a href="https://tools.hudi.site" 
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors flex items-center">
+                    <i class="fa-solid fa-arrow-left mr-2"></i>
+                    返回工具箱
+                </a>
+                <a href="https://www.hudi.site"
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors flex items-center"
+                    target="_blank" rel="noopener noreferrer">
+                    <i class="fa-solid fa-blog mr-2"></i>
+                    访问我的主页
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+        <div class="max-w-4xl mx-auto">
+            <!-- 介绍卡片 -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-8">
+                <p class="text-center text-base md:text-lg text-gray-600">
+                    轻松生成高质量的二维码和条形码，支持多种格式和自定义选项。
+                </p>
+            </div>
+
+            <!-- 生成器主体 -->
+            <div class="bg-white rounded-2xl shadow-card p-6 md:p-8 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- 左侧：输入和选项 -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 mb-2">输入内容</label>
+                            <textarea id="input-text" rows="4" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-tool-barcode" placeholder="请输入要生成的文本内容"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 mb-2">编码类型</label>
+                            <select id="code-type" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-tool-barcode">
+                                <option value="qrcode">二维码</option>
+                                <option value="code128">条形码 (Code 128)</option>
+                                <option value="ean13">条形码 (EAN-13)</option>
+                                <option value="ean8">条形码 (EAN-8)</option>
+                                <option value="upc">条形码 (UPC)</option>
+                            </select>
+                        </div>
+
+                        <!-- QR码选项 -->
+                        <div id="qr-options" class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 mb-2">版本选择</label>
+                                <select id="qr-version" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-tool-barcode">
+                                    <option value="auto" selected>自动</option>
+                                    <option value="1">版本 1 (21×21)</option>
+                                    <option value="2">版本 2 (25×25)</option>
+                                    <option value="3">版本 3 (29×29)</option>
+                                    <option value="4">版本 4 (33×33)</option>
+                                    <option value="5">版本 5 (37×37)</option>
+                                    <option value="6">版本 6 (41×41)</option>
+                                    <option value="7">版本 7 (45×45)</option>
+                                    <option value="8">版本 8 (49×49)</option>
+                                    <option value="9">版本 9 (53×53)</option>
+                                    <option value="10">版本 10 (57×57)</option>
+                                </select>
+                                <p class="text-sm text-gray-500 mt-1">更高版本可存储更多数据，但尺寸更大</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-gray-700 mb-2">错误校正等级</label>
+                                <select id="qr-error-level" class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-tool-barcode">
+                                    <option value="L">低级别 - 可恢复7%的数据损坏</option>
+                                    <option value="M" selected>中级别 - 可恢复15%的数据损坏（推荐）</option>
+                                    <option value="Q">较高级别 - 可恢复25%的数据损坏</option>
+                                    <option value="H">高级别 - 可恢复30%的数据损坏</option>
+                                </select>
+                                <p class="text-sm text-gray-500 mt-1">级别越高，QR码尺寸越大但抗损坏能力越强</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-gray-700 mb-2">像素大小</label>
+                                <input type="range" id="qr-size" min="100" max="400" value="200" class="w-full" />
+                                <div class="text-sm text-gray-500 mt-1">当前大小：<span id="qr-size-value">200</span>px</div>
+                            </div>
+
+                            <div>
+                                <label class="block text-gray-700 mb-2">边距大小</label>
+                                <input type="range" id="qr-margin" min="0" max="4" value="1" class="w-full" />
+                                <div class="text-sm text-gray-500 mt-1">当前边距：<span id="qr-margin-value">1</span></div>
+                            </div>
+
+                            <div>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" id="qr-color-enabled" class="rounded text-tool-barcode focus:ring-tool-barcode">
+                                    <span class="text-gray-700">自定义颜色</span>
+                                </label>
+                                <div class="grid grid-cols-2 gap-4 mt-2">
+                                    <div>
+                                        <label class="text-sm text-gray-500">前景色</label>
+                                        <input type="color" id="qr-dark-color" value="#000000" class="w-full h-8 rounded-lg" disabled>
+                                    </div>
+                                    <div>
+                                        <label class="text-sm text-gray-500">背景色</label>
+                                        <input type="color" id="qr-light-color" value="#ffffff" class="w-full h-8 rounded-lg" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 条形码选项 -->
+                        <div id="barcode-options" class="hidden space-y-4">
+                            <div>
+                                <label class="block text-gray-700 mb-2">条码高度</label>
+                                <input type="range" id="barcode-height" min="50" max="200" value="100" class="w-full" />
+                                <div class="text-sm text-gray-500 mt-1">当前高度：<span id="barcode-height-value">100</span>px</div>
+                            </div>
+
+                            <div>
+                                <label class="block text-gray-700 mb-2">条码宽度</label>
+                                <input type="range" id="barcode-width" min="1" max="4" value="2" step="0.5" class="w-full" />
+                                <div class="text-sm text-gray-500 mt-1">当前宽度：<span id="barcode-width-value">2</span></div>
+                            </div>
+
+                            <div>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" id="barcode-text" class="rounded text-tool-barcode focus:ring-tool-barcode" checked>
+                                    <span class="text-gray-700">显示文本</span>
+                                </label>
+                            </div>
+
+                            <div>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" id="barcode-color-enabled" class="rounded text-tool-barcode focus:ring-tool-barcode">
+                                    <span class="text-gray-700">自定义颜色</span>
+                                </label>
+                                <div class="grid grid-cols-2 gap-4 mt-2">
+                                    <div>
+                                        <label class="text-sm text-gray-500">条码颜色</label>
+                                        <input type="color" id="barcode-color" value="#000000" class="w-full h-8 rounded-lg" disabled>
+                                    </div>
+                                    <div>
+                                        <label class="text-sm text-gray-500">背景色</label>
+                                        <input type="color" id="barcode-background" value="#ffffff" class="w-full h-8 rounded-lg" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="generate-btn" class="w-full bg-tool-barcode text-white font-bold py-3 px-6 rounded-lg hover:bg-tool-barcode/90 transition-colors">
+                            生成编码
+                        </button>
+                    </div>
+
+                    <!-- 右侧：预览和下载 -->
+                    <div class="space-y-6">
+                        <!-- 预览区域 -->
+                        <div class="bg-gray-50 rounded-xl p-6 flex flex-col items-center justify-center min-h-[300px]">
+                            <canvas id="qr-canvas" class="hidden max-w-full"></canvas>
+                            <svg id="barcode-svg" class="hidden max-w-full"></svg>
+                            <div id="preview-placeholder" class="text-gray-400">
+                                <i class="fa fa-qrcode text-6xl mb-4"></i>
+                                <p>预览区域</p>
+                            </div>
+                        </div>
+                        <!-- 下载按钮 -->
+                        <div class="flex justify-center space-x-4 mb-6">
+                            <button id="download-png" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors flex items-center">
+                                <i class="fa fa-download mr-2"></i>
+                                下载PNG
+                            </button>
+                            <button id="download-svg" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors flex items-center">
+                                <i class="fa fa-download mr-2"></i>
+                                下载SVG
+                            </button>
+                        </div>
+                        <!-- 使用指南 -->
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="text-sm text-gray-600">
+                                <h3 class="text-tool-barcode mb-3 font-medium">使用说明：</h3>
+                                <ul class="space-y-2 list-disc list-inside">
+                                    <li><span class="text-tool-barcode font-medium">二维码：</span>支持文本、网址等任意内容，高版本存储更多内容</li>
+                                    <li><span class="text-tool-barcode font-medium">Code 128：</span>支持 ASCII 字符（英文、数字和符号）</li>
+                                    <li><span class="text-tool-barcode font-medium">EAN-13：</span>需要12-13位数字，用于商品标识</li>
+                                    <li><span class="text-tool-barcode font-medium">EAN-8：</span>需要7-8位数字，用于小包装商品</li>
+                                    <li><span class="text-tool-barcode font-medium">UPC：</span>需要11-12位数字，北美商品代码标准</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+        <footer class="bg-gray-900 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-sm text-gray-400 mt-1">快速生成二维码和条形码</p>
+
+                <!-- 不蒜子统计 -->
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn"
+                    one-link-mark="yes">皖ICP备18002386号-1</a>
+            </div>
+        </footer>
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <script src="./js/barcode.js"></script>
+</body>
+</html>
