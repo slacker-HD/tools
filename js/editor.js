@@ -9,22 +9,27 @@ const defaultConfig = {
 // 语言扩展名映射
 const languageExtensions = {
     'javascript': '.js',
+    'typescript': '.ts',
     'html': '.html',
     'css': '.css',
+    'json': '.json',
+    'xml': '.xml',
+    'yaml': '.yml',
+    'markdown': '.md',
     'python': '.py',
     'java': '.java',
     'csharp': '.cs',
+    'c': '.c',
     'cpp': '.cpp',
+    'go': '.go',
     'php': '.php',
     'ruby': '.rb',
     'swift': '.swift',
-    'go': '.go',
-    'typescript': '.ts',
-    'markdown': '.md',
-    'xml': '.xml',
     'sql': '.sql',
-    'yaml': '.yml',
-    'json': '.json'
+    'shell': '.sh',
+    'ini': '.ini',
+    'less': '.less',
+    'scss': '.scss'
 };
 
 class Editor {
@@ -32,11 +37,7 @@ class Editor {
     static codeTemplates = {
         default: '// 开始编写您的代码...',
         javascript: `// JavaScript示例
-function greet(name) {
-    return "Hello, " + name + "!");
-}
-
-console.log(greet("World"));`,
+console.log('Hello World!');`,
         html: `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -51,14 +52,19 @@ console.log(greet("World"));`,
 body {
     margin: 0;
     padding: 20px;
-    font-family: sans-serif;
 }`,
         python: `# Python示例
-def main():
-    print("Hello World!")
-
-if __name__ == "__main__":
-    main()`
+print("Hello World!")`,
+        c: `#include <stdio.h>
+int main() {
+    printf("Hello World!\\n");
+    return 0;
+}`,
+        cpp: `#include <iostream>
+int main() {
+    std::cout << "Hello World!" << std::endl;
+    return 0;
+}`
     };
 
     constructor() {
@@ -103,7 +109,7 @@ if __name__ == "__main__":
             detectIndentation: false
         });
 
-        // 恢复保存的内容
+        // 如果自动保存开启，则加载保存的内容
         this.loadSavedContent();
     }
 
@@ -113,6 +119,7 @@ if __name__ == "__main__":
             const language = e.target.value;
             monaco.editor.setModelLanguage(this.editor.getModel(), language);
             this.updateFileName(language);
+            this.loadSavedContent(); // 切换语言时加载对应保存的内容
         });
 
         // 主题切换
@@ -120,55 +127,20 @@ if __name__ == "__main__":
             monaco.editor.setTheme(e.target.value);
         });
 
-        // 自动保存
-        setInterval(() => this.saveContent(), 60000);
-
         // 其他事件绑定
         this.bindToolbarEvents();
         this.bindSettingsEvents();
-    }
 
-    bindToolbarEvents() {
-        // 移除通用按钮事件绑定中的保存按钮
-        document.querySelectorAll('.toolbar-btn').forEach(btn => {
-            // 跳过保存按钮，它会单独处理
-            if (btn.id === 'saveBtn') return;
-            
-            btn.addEventListener('click', (e) => {
-                const action = e.currentTarget.title?.toLowerCase();
-                if (action) this.handleToolbarAction(action);
-            });
+        // 监听编辑器内容变化
+        this.editor.onDidChangeModelContent(() => {
+            this.saveContent(); // 内容变化时保存
         });
-
-        // 单独绑定保存按钮
-        document.getElementById('saveBtn')?.addEventListener('click', () => {
-            this.saveFile();
-        });
-    }
-
-    handleToolbarAction(action) {
-        const actions = {
-            '撤销': () => this.editor.trigger('keyboard', 'undo'),
-            '重做': () => this.editor.trigger('keyboard', 'redo'),
-            '复制': () => this.editor.trigger('keyboard', 'editor.action.clipboardCopyAction'),
-            '粘贴': () => navigator.clipboard.readText().then(text => {
-                this.editor.trigger('keyboard', 'paste', { text });
-            }),
-            '剪切': () => this.editor.trigger('keyboard', 'editor.action.clipboardCutAction'),
-            '查找': () => this.editor.trigger('keyboard', 'actions.find'),
-            '替换': () => this.editor.trigger('keyboard', 'editor.action.startFindReplaceAction'),
-            '自动格式化': () => this.editor.trigger('keyboard', 'editor.action.formatDocument')
-        };
-
-        if (actions[action]) {
-            actions[action]();
-            this.editor.focus();
-        }
     }
 
     saveContent() {
         if (this.editor) {
-            localStorage.setItem(`editor-content-${this.fileName}`, this.editor.getValue());
+            const content = this.editor.getValue();
+            localStorage.setItem(`editor-content-${this.fileName}`, content);
         }
     }
 
@@ -176,6 +148,11 @@ if __name__ == "__main__":
         const saved = localStorage.getItem(`editor-content-${this.fileName}`);
         if (saved) {
             this.editor.setValue(saved);
+        } else {
+            // 如果没有保存的内容，使用语言对应的模板
+            const language = this.editor.getModel().getLanguageId();
+            const template = Editor.codeTemplates[language] || Editor.codeTemplates.default;
+            this.editor.setValue(template);
         }
     }
 
@@ -244,17 +221,90 @@ if __name__ == "__main__":
         });
     }
 
-    saveFile() {
-        const code = this.editor.getValue();
-        const blob = new Blob([code], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = this.fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+    bindToolbarEvents() {
+        // 移除通用按钮事件绑定中的保存按钮
+        document.querySelectorAll('.toolbar-btn').forEach(btn => {
+            // 跳过保存按钮，它会单独处理
+            if (btn.id === 'saveBtn') return;
+            
+            btn.addEventListener('click', (e) => {
+                const action = e.currentTarget.title?.toLowerCase();
+                if (action) this.handleToolbarAction(action);
+            });
+        });
+
+        // 单独绑定保存按钮
+        document.getElementById('saveBtn')?.addEventListener('click', () => {
+            this.saveFile();
+        });
+    }
+
+    handleToolbarAction(action) {
+        const actions = {
+            '撤销': () => this.editor.trigger('keyboard', 'undo'),
+            '重做': () => this.editor.trigger('keyboard', 'redo'),
+            '复制': () => this.editor.trigger('keyboard', 'editor.action.clipboardCopyAction'),
+            '粘贴': () => navigator.clipboard.readText().then(text => {
+                this.editor.trigger('keyboard', 'paste', { text });
+            }),
+            '剪切': () => this.editor.trigger('keyboard', 'editor.action.clipboardCutAction'),
+            '查找': () => this.editor.trigger('keyboard', 'actions.find'),
+            '替换': () => this.editor.trigger('keyboard', 'editor.action.startFindReplaceAction'),
+            '自动格式化': () => this.editor.trigger('keyboard', 'editor.action.formatDocument')
+        };
+
+        if (actions[action]) {
+            actions[action]();
+            this.editor.focus();
+        }
+    }
+
+    async saveFile() {
+        const model = this.editor.getModel();
+        const content = model.getValue();
+        const blob = new Blob([content], { type: 'text/plain' });
+
+        try {
+            // 尝试使用 File System Access API
+            if ('showSaveFilePicker' in window) {
+                const handle = await window.showSaveFilePicker({
+                    suggestedName: this.fileName,
+                    types: [{
+                        description: 'Text Files',
+                        accept: {
+                            'text/plain': ['.txt', '.js', '.html', '.css', '.py', '.java', '.cpp', '.c']
+                        }
+                    }]
+                });
+                const writable = await handle.createWritable();
+                await writable.write(blob);
+                await writable.close();
+            } else {
+                // 回退到下载方式
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = this.fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+            
+            // 保存到localStorage作为备份
+            this.saveContent();
+        } catch (e) {
+            console.error('Save failed:', e);
+            // 出错时回退到下载方式
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = this.fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
     }
 
     setFontSize(size) {
