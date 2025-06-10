@@ -1,155 +1,102 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智能拼音输入法</title>
-    <meta name="description" content="一款现代化的拼音输入法，提供流畅的输入体验和智能联想功能">
-    <meta name="keywords" content="拼音输入法, 在线输入法, 中文输入, 智能联想">
-
-    <!-- 引入外部资源 -->
+    <title>拼音输入法</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" rel="stylesheet">
-    <!-- 引入拼音表 -->
-    <script src="./js/pinyin_dict_notone.js"></script>
-    <!-- Tailwind 配置 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#EC4899', // 使用与其他工具一致的红色作为主色调
-                        error: '#EF4444',   // 错误提示颜色
-                        inputBg: '#F9FAFB', // 输入框背景色
-                        candidateBg: '#F3F4F6', // 候选词背景色
-                        candidateHover: '#E5E7EB', // 候选词悬停背景色
-                        candidateActive: '#D1D5DB', // 候选词选中背景色
+                        tool: {
+                            pinyin: '#3199E4', // 使用与工具箱一致的颜色
+                        }
                     },
                     fontFamily: {
-                        sans: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
-                    },
+                        inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                    }
                 }
             }
         }
     </script>
-    <!-- 自定义工具类 -->
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .content-auto {
-                content-visibility: auto;
-            }
-            .glass-effect {
-                backdrop-filter: blur(12px);
-                background-color: rgba(255, 255, 255, 0.7);
-            }
-            .card-hover {
-                transition: all 0.3s;
-            }
-            .card-hover:hover {
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                transform: translateY(-0.25rem);
-            }
-            .btn-primary {
-                @apply bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center;
-            }
-            .btn-secondary {
-                @apply bg-white hover:bg-gray-50 text-primary border border-primary rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center;
-            }
-            .pinyin-input-active {
-                @apply border-primary ring-2 ring-primary/20;
-            }
-            .candidate-highlight {
-                @apply bg-primary/10 text-primary font-medium rounded px-1;
-            }
-            .input-cursor {
-                animation: blink 1s infinite;
-            }
-            @keyframes blink {
-                0%, 100% {
-                    opacity: 1;
-                }
-                50% {
-                    opacity: 0;
-                }
-            }
-            .floating-input {
-                position: absolute;
-                background-color: white;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                padding: 8px;
-                z-index: 1000;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                min-width: 200px;
-                max-width: 400px;
-                display: none;
-                transition: all 0.2s ease;
-            }
-            .pinyin-display {
-                @apply text-lg font-medium text-gray-700 mb-2 pb-1 border-b border-gray-200;
-            }
-            .candidate-container {
-                @apply flex flex-wrap gap-1 pr-1;
-            }
-            .candidate-item {
-                @apply px-3 py-1 rounded-md bg-candidateBg text-gray-800 cursor-pointer hover:bg-candidateHover transition-colors whitespace-nowrap;
-            }
-            .candidate-item-active {
-                @apply bg-primary text-white;
-            }
-            .pagination {
-                @apply flex justify-between mt-2 text-sm text-gray-500;
-            }
-            .pagination-btn {
-                @apply cursor-pointer hover:text-primary;
-            }
-            .error-message {
-                @apply text-error text-sm mt-2 flex items-center;
-            }
-            .error-icon {
-                @apply mr-1;
-            }
-            .shadow-input {
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            }
-            .textarea-auto-height {
-                resize: none;
-                overflow: hidden;
-                min-height: 4rem;
-                max-height: 16rem;
-            }
+    <style>
+        /* 添加自定义样式 */
+        .simple-input-method {
+            position: absolute;
+            background: #FFF;
+            border: solid 1px #B5C5D2;
+            font-family: 'Arial';
+            color: #0364CD;
+            display: none;
+        }
+        .simple-input-method .pinyin {
+            border-bottom: solid 1px #B5C5D2;
+            padding: 4px 10px;
+            font-weight: bold;
+        }
+        .simple-input-method .result {
+            padding: 4px 10px 4px 0px;
+        }
+        .simple-input-method .result ol {
+            margin: 0;
+            padding: 0;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .simple-input-method .result ol:after {
+            content: '';
+            display: block;
+            clear: left;
+        }
+        .simple-input-method .result ol li {
+            float: left;
+            margin-left: 30px;
+            cursor: pointer;
+        }
+        .simple-input-method .result ol li:first-child {
+            color: red;
+        }
+        .simple-input-method .page-up-down {
+            display: inline-block;
+            border: solid 1px #BADBFF;
+            font-size: 12px;
+            color: #4C9AEF;
+            border-radius: 1px;
+            margin-left: 10px;
+        }
+        .simple-input-method .page-up-down .page-down{
+            border-left: solid 1px #BADBFF;
+        }
+        .simple-input-method .page-up-down span {
+            cursor: pointer;
+        }
+        .simple-input-method .page-up-down span.disable {
+            opacity: .3;
         }
     </style>
-    <script>
-        var _hmt = _hmt || [];
-        (function () {
-            var hm = document.createElement("script");
-            hm.src = "//hm.baidu.com/hm.js?767e3ea52a6b4f3c656cdd4119c87e62";
-            var s = document.getElementsByTagName("script")[0];
-            s.parentNode.insertBefore(hm, s);
-        })();
-    </script>
 </head>
-
-<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+<body class="font-sans bg-gray-50 text-gray-800 min-h-screen flex flex-col">
     <!-- 页面头部 -->
     <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center">
-                <div class="text-primary mr-2">
-                    <i class="fa fa-keyboard-o text-primary"></i>
+                <div class="text-tool-pinyin mr-2">
+                    <i class="fa-solid fa-language text-2xl"></i>
                 </div>
-                <h1 class="text-xl md:text-2xl font-bold text-primary">智能拼音输入法</h1>
+                <h1 class="text-xl md:text-2xl font-bold text-tool-pinyin">拼音输入法</h1>
             </div>
+            <!-- 添加返回工具箱和返回主页按钮 -->
             <div class="flex space-x-4">
                 <a href="https://tools.hudi.site"
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors flex items-center">
+                    class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
                     <i class="fa-solid fa-arrow-left mr-2"></i>
                     返回工具箱
                 </a>
                 <a href="https://www.hudi.site"
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors flex items-center"
+                    class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
                     target="_blank" rel="noopener noreferrer">
                     <i class="fa-solid fa-blog mr-2"></i>
                     访问我的主页
@@ -160,41 +107,20 @@
 
     <!-- 主内容区 -->
     <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
-        <div class="max-w-4xl mx-auto">
+        <div class="max-w-6xl mx-auto">
             <!-- 介绍卡片 -->
-            <div
-                class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
                 <p class="text-center text-base md:text-lg text-gray-600">
-                    智能拼音输入法，提供流畅的输入体验和智能联想功能，可在系统输入法无法使用时作为临时备用工具。
+                    使用这个拼音输入法工具，快速将拼音转换为汉字。
                 </p>
             </div>
 
-            <!-- 拼音输入框和候选词区域 -->
-            <div class="relative mb-6">
-                <!-- 浮动输入框 -->
-                <div class="floating-input" id="floating-input">
-                    <div id="pinyin-display" class="pinyin-display"></div>
-                    <!-- 候选词容器 -->
-                    <div id="candidates" class="candidate-container"></div>
-                    <!-- 分页按钮 -->
-                    <div class="pagination hidden" id="pagination">
-                        <span class="pagination-btn" id="prev-page">上一页</span>
-                        <span class="pagination-btn" id="next-page">下一页</span>
-                    </div>
-                    <!-- 错误提示区域 -->
-                    <div id="error-message" class="error-message hidden">
-                        <i class="fa fa-exclamation-circle error-icon"></i>
-                        <span id="error-text">拼音输入有误，请检查</span>
-                    </div>
-                </div>
-
-                <!-- 主输入区域 - 改为多行文本输入 -->
-                <div class="relative">
-                    <textarea id="main-input"
-                        class="border border-gray-300 p-3 w-full textarea-auto-height text-lg rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-input"
-                        placeholder="在这里输入拼音，按数字键选择候选字..."></textarea>
-                    <div class="absolute bottom-3 right-3 text-sm text-gray-400">
-                        <span id="char-count">0</span> 字符
+            <!-- 输入区域 -->
+            <div class="bg-white rounded-2xl shadow-card p-6 md:p-8 mb-8 relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="text-center">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4">请输入拼音</h2>
+                        <textarea id="main-input" class="test-input-method w-full h-32 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tool-pinyin focus:border-tool-pinyin" placeholder="请在这里打字试试"></textarea>
                     </div>
                 </div>
             </div>
@@ -202,623 +128,273 @@
     </main>
 
     <!-- 页脚 -->
-    <footer class="bg-gray-900 text-white py-6 mt-12">
+    <footer class="bg-gray-900 text-white py-6">
         <div class="container mx-auto px-4 text-center">
-            <p class="text-sm text-gray-400 mt-1">让输入更加便捷</p>
+            <p class="text-sm text-gray-400 mt-1">快速拼音转汉字</p>
 
             <!-- 不蒜子统计 -->
             <div class="mt-2 text-xs text-gray-500">
                 <span id="busuanzi_container_site_uv">
-                    <i class="fa fa-user mr-1"></i>
+                    <i class="fa-solid fa-user mr-1"></i>
                     <span id="busuanzi_value_site_uv"></span> 访客
                 </span>
                 &nbsp;&nbsp;|&nbsp;&nbsp;
                 <span id="busuanzi_container_site_pv">
-                    <i class="fa fa-eye mr-1"></i>
+                    <i class="fa-solid fa-eye mr-1"></i>
                     <span id="busuanzi_value_site_pv"></span> 访问
                 </span>
             </div>
-            <div>
-                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn" one-link-mark="yes">皖ICP备18002386号-1</a>
-            </div>
+            <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn" one-link-mark="yes">皖ICP备18002386号-1</a>
         </div>
     </footer>
 
-    <script>
-        // 获取DOM元素
-        const mainInput = document.getElementById('main-input');
-        const floatingInput = document.getElementById('floating-input');
-        const pinyinDisplay = document.getElementById('pinyin-display');
-        const candidatesDiv = document.getElementById('candidates');
-        const pagination = document.getElementById('pagination');
-        const prevPageBtn = document.getElementById('prev-page');
-        const nextPageBtn = document.getElementById('next-page');
-        const errorMessage = document.getElementById('error-message');
-        const errorText = document.getElementById('error-text');
-        const charCount = document.getElementById('char-count');
+    <!-- 不蒜子统计脚本 -->
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
-        // 状态变量
-        let pinyinBuffer = '';        // 拼音输入缓冲区
-        let isInputtingPinyin = false; // 是否正在输入拼音
-        let currentCandidateIndex = -1; // 当前选中的候选词索引
-        let currentPage = 0;            // 当前页码
-        const CANDIDATES_PER_PAGE = 5;  // 每页显示的候选词数量
-        let isErrorState = false;       // 是否处于错误状态
-        let activeCandidates = [];      // 当前活跃的候选词列表
-        let textBeforeCursor = '';      // 光标前的文本
-        let textAfterCursor = '';       // 光标后的文本
-        let currentInputMode = 'pinyin'; // 当前输入模式：pinyin 或 english
-
-        // 初始化拼音工具
-        window.addEventListener('load', function () {
-            // 确保拼音字典已加载
-            if (typeof pinyin_dict_notone !== 'undefined') {
-                console.log('拼音字典已加载');
-            } else {
-                console.error('拼音字典未加载');
-            }
-
-            // 初始化字符计数
-            updateCharCount();
-            
-            // 初始化文本区域高度
-            resizeTextarea();
-            
-            // 初始化输入模式为拼音
-            currentInputMode = 'pinyin';
-        });
-
-        // 监听主输入框的键盘事件
-        mainInput.addEventListener('keydown', function (event) {
-            // 保存当前光标位置的文本状态
-            saveCursorTextState();
-            
-            // 处理英文字母键
-            if (/[a-zA-Z]/.test(event.key) && event.key.length === 1) {
-                event.preventDefault();
-                
-                // 确定输入模式
-                if (!isInputtingPinyin) {
-                    // 检查是否需要切换到拼音模式
-                    if (currentInputMode === 'english') {
-                        // 如果当前是英文模式，检查是否需要切换到拼音模式
-                        // 例如：用户输入了一个空格后开始输入字母
-                        if (textBeforeCursor.trim().length === 0 || 
-                            /\s$/.test(textBeforeCursor)) {
-                            currentInputMode = 'pinyin';
-                        }
-                    } else {
-                        // 默认使用拼音模式
-                        currentInputMode = 'pinyin';
-                    }
-                }
-                
-                if (currentInputMode === 'pinyin') {
-                    handlePinyinInput(event);
-                } else {
-                    // 英文模式直接插入字符
-                    insertTextAtCursor(event.key);
-                    updateCharCount();
-                }
-            }
-
-            // 处理方向键
-            if (event.key === 'ArrowDown') {
-                event.preventDefault();
-                if (isInputtingPinyin && !isErrorState) {
-                    navigateCandidates(1);
-                }
-            } else if (event.key === 'ArrowUp') {
-                event.preventDefault();
-                if (isInputtingPinyin && !isErrorState) {
-                    navigateCandidates(-1);
-                }
-            } else if (event.key === 'ArrowLeft') {
-                event.preventDefault();
-                if (isInputtingPinyin) {
-                    // 左箭头用于选择前一个拼音字母
-                    if (pinyinBuffer.length > 0) {
-                        pinyinBuffer = pinyinBuffer.slice(0, -1);
-                        updateCandidates();
-                    }
-                    
-                    // 更新光标位置
-                    const start = mainInput.selectionStart;
-                    if (start > 0) {
-                        mainInput.selectionStart = mainInput.selectionEnd = start - 1;
-                    }
-                } else {
-                    // 非拼音输入状态下，移动光标
-                    const start = mainInput.selectionStart;
-                    if (start > 0) {
-                        mainInput.selectionStart = mainInput.selectionEnd = start - 1;
-                    }
-                }
-            } else if (event.key === 'ArrowRight') {
-                event.preventDefault();
-                if (isInputtingPinyin && currentCandidateIndex >= 0) {
-                    // 右箭头用于确认当前拼音
-                    selectCandidateByIndex(currentCandidateIndex);
-                } else {
-                    // 非拼音输入状态下，移动光标
-                    const start = mainInput.selectionStart;
-                    const end = mainInput.selectionEnd;
-                    const value = mainInput.value;
-                    if (start < value.length) {
-                        mainInput.selectionStart = mainInput.selectionEnd = start + 1;
-                    }
-                }
-            }
-
-            // 处理数字键 1-9
-            if (event.key >= '1' && event.key <= '9') {
-                event.preventDefault();
-                const index = parseInt(event.key) - 1;
-                if (isInputtingPinyin && !isErrorState) {
-                    selectCandidateByIndex(index);
-                } else {
-                    // 非拼音输入状态下，允许输入数字
-                    insertTextAtCursor(event.key);
-                    updateCharCount();
-                }
-            }
-
-            // 处理回车键
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                if (isInputtingPinyin) {
-                    if (currentCandidateIndex >= 0) {
-                        selectCandidateByIndex(currentCandidateIndex);
-                    } else if (isErrorState) {
-                        // 在错误状态下，允许用户输入回车来清除错误
-                        resetInputState();
-                        insertTextAtCursor('\n');
-                    } else {
-                        // 如果没有选中的候选词，尝试使用第一个候选词
-                        const candidates = getCurrentCandidates();
-                        if (candidates && candidates.length > 0) {
-                            insertTextAtCursor(candidates[0]);
+    <!-- 拼音输入法脚本 -->
+    <script type="text/javascript" src="./js/pinyin_dict_notone.js"></script>
+    <!-- 拼音字典文件来源：https://github.com/sxei/pinyinjs/ -->
+    <script type="text/javascript">
+        var pinyinUtil = {
+            dict: {},
+            parseDict: function() {
+                if(window.pinyin_dict_notone) {
+                    this.dict.notone = {};
+                    this.dict.py2hz = pinyin_dict_notone;
+                    for(var i in pinyin_dict_notone) {
+                        var temp = pinyin_dict_notone[i];
+                        for(var j = 0, len = temp.length; j < len; j++) {
+                            if(!this.dict.notone[temp[j]]) this.dict.notone[temp[j]] = i;
                         }
                     }
-                    resetInputState();
                 }
-                // 无论是否在输入拼音，都插入换行符
-                insertTextAtCursor('\n');
-                updateCharCount();
-                resizeTextarea();
-            }
-
-            // 处理空格键
-            if (event.key === ' ') {
-                event.preventDefault();
-                if (isInputtingPinyin) {
-                    if (currentCandidateIndex >= 0) {
-                        selectCandidateByIndex(currentCandidateIndex);
-                    } else if (isErrorState) {
-                        // 在错误状态下，允许用户输入空格来清除错误
-                        resetInputState();
-                        insertTextAtCursor(' ');
-                    } else {
-                        // 如果没有选中的候选词，尝试使用第一个候选词
-                        const candidates = getCurrentCandidates();
-                        if (candidates && candidates.length > 0) {
-                            insertTextAtCursor(candidates[0] + ' ');
-                            resetInputState();
-                        }
-                    }
-                } else {
-                    // 非拼音输入状态下，插入空格
-                    insertTextAtCursor(' ');
-                    updateCharCount();
-                    
-                    // 输入空格后，切换到拼音模式
-                    currentInputMode = 'pinyin';
-                }
-            }
-
-            // 处理 Backspace 键
-            if (event.key === 'Backspace') {
-                event.preventDefault();
-                const start = mainInput.selectionStart;
-                const end = mainInput.selectionEnd;
-                
-                if (isInputtingPinyin) {
-                    if (pinyinBuffer) {
-                        // 删除拼音缓冲区的最后一个字符
-                        pinyinBuffer = pinyinBuffer.slice(0, -1);
-                        updateCandidates(); // 更新候选词列表
-                    } else {
-                        // 拼音缓冲区为空时，删除输入框中的内容
-                        deleteTextAtCursor();
-                        resetInputState(); // 重置输入状态
-                    }
-                } else {
-                    // 非拼音输入状态下，删除输入框中的内容
-                    deleteTextAtCursor();
-                }
-                
-                updateCharCount(); // 更新字符计数
-                resizeTextarea(); // 调整文本区域高度
-            }
-
-            // 处理其他键（标点符号等）
-            if (!/[a-zA-Z0-9\s]/.test(event.key) && event.key.length === 1) {
-                event.preventDefault();
-                if (isInputtingPinyin) {
-                    // 正在输入拼音时，插入当前选中的候选词（如果有），然后插入该字符
-                    if (currentCandidateIndex >= 0) {
-                        const candidates = getCurrentCandidates();
-                        if (candidates && currentCandidateIndex < candidates.length) {
-                            insertTextAtCursor(candidates[currentCandidateIndex] + event.key);
+            },
+            getPinyin: function(chinese, splitter, withtone, polyphone) {
+                if(!chinese || /^ +$/g.test(chinese)) return '';
+                splitter = splitter == undefined ? ' ' : splitter;
+                withtone = withtone == undefined ? true : withtone;
+                polyphone = polyphone == undefined ? false : polyphone;
+                var result = [];
+                if(this.dict.notone) {
+                    if(withtone) console.warn('pinyin_dict_notone 字典文件不支持声调！');
+                    if(polyphone) console.warn('pinyin_dict_notone 字典文件不支持多音字！');
+                    var noChinese = '';
+                    for (var i = 0, len = chinese.length; i < len; i++) {
+                        var temp = chinese.charAt(i),
+                            pinyin = this.dict.notone[temp];
+                        if (pinyin) {
+                            noChinese && ( result.push( noChinese), noChinese = '' );
+                            result.push( pinyin );
+                        } else if ( !temp || /^ +$/g.test(temp) ) {
+                            noChinese && ( result.push( noChinese), noChinese = '' );
                         } else {
-                            insertTextAtCursor(event.key);
+                            noChinese += temp;
                         }
-                    } else {
-                        insertTextAtCursor(event.key);
                     }
-                    resetInputState();
+                    if ( noChinese ) {
+                        result.push( noChinese );
+                        noChinese = '';
+                    }
                 } else {
-                    // 英文模式直接插入该字符
-                    insertTextAtCursor(event.key);
+                    throw '抱歉，未找到合适的拼音字典文件！';
                 }
-                updateCharCount();
-                
-                // 输入标点后，切换到拼音模式
-                currentInputMode = 'pinyin';
-            }
-
-            // 处理 -+ 或 <> 键进行翻页
-            if (isInputtingPinyin && !isErrorState) {
-                if (event.key === '-' || event.key === '<') {
-                    event.preventDefault();
-                    const scrollTop = mainInput.scrollTop;
-                    prevPage();
-                    mainInput.scrollTop = scrollTop;
-                } else if (event.key === '+' || event.key === '>') {
-                    event.preventDefault();
-                    const scrollTop = mainInput.scrollTop;
-                    nextPage();
-                    mainInput.scrollTop = scrollTop;
+                return result.join(splitter);
+            },
+            getHanzi: function(pinyin) {
+                if(!this.dict.py2hz) {
+                    throw '抱歉，未找到合适的拼音字典文件！';
                 }
+                return this.dict.py2hz[pinyin] || '';
             }
+        };
 
-            // 确保浮动输入框位置正确
-            updateFloatingInputPosition();
-        });
-
-        // 处理拼音输入
-        function handlePinyinInput(event) {
-            // 尝试添加新字符到拼音缓冲区
-            const newPinyin = pinyinBuffer + event.key.toLowerCase();
-
-            // 检查新拼音是否是某个有效拼音的前缀
-            const isValidPrefix = checkValidPinyinPrefix(newPinyin);
-
-            if (isValidPrefix) {
-                // 有效拼音前缀，更新状态
-                isInputtingPinyin = true;
-                isErrorState = false;
-                pinyinBuffer = newPinyin;
-        
-                // 更新拼音显示
-                updateCandidates();
-        
-                // 确保浮动输入框可见
-                floatingInput.style.display = 'block';
-            } else {
-                // 无效拼音前缀，忽略该按键
-                event.preventDefault(); // 阻止无效按键的输入
-                isErrorState = true;
-        
-                // 显示提示信息
-                showErrorMessage('拼音无效，请重新输入');
-        
-                // 隐藏浮动输入框
-                floatingInput.style.display = 'none';
-                return; // 直接返回，不执行后续逻辑
-            }
-
-            // 更新拼音显示（即使拼音无效或没有候选词）
-            updatePinyinDisplay(newPinyin);
-        }
-
-        // 新增函数：更新拼音显示
-        function updatePinyinDisplay(pinyin) {
-            pinyinDisplay.innerHTML = pinyin.split('').map((char, index) => {
-                return index === pinyin.length - 1 
-                    ? `<span class="input-cursor">${char}</span>` 
-                    : char;
-            }).join('');
-        }
-
-        // 监听主输入框的输入事件
-        mainInput.addEventListener('input', function () {
-            updateCharCount();
-            resizeTextarea();
-        });
-
-        // 监听主输入框的焦点事件
-        mainInput.addEventListener('focus', function () {
-            updateFloatingInputPosition();
-        });
-
-        // 监听主输入框的滚动事件
-        mainInput.addEventListener('scroll', function () {
-            updateFloatingInputPosition();
-        });
-
-        // 监听候选词的点击事件
-        candidatesDiv.addEventListener('click', function (event) {
-            const candidateItem = event.target.closest('.candidate-item');
-            if (candidateItem) {
-                const index = parseInt(candidateItem.getAttribute('data-index'));
-                selectCandidateByIndex(index);
-            }
-        });
-
-        // 监听上一页按钮的点击事件
-        prevPageBtn.addEventListener('click', function () {
-            const scrollTop = mainInput.scrollTop;
-            prevPage();
-            mainInput.scrollTop = scrollTop;
-        });
-
-        // 监听下一页按钮的点击事件
-        nextPageBtn.addEventListener('click', function () {
-            const scrollTop = mainInput.scrollTop;
-            nextPage();
-            mainInput.scrollTop = scrollTop;
-        });
-
-        // 保存光标位置的文本状态
-        function saveCursorTextState() {
-            const start = mainInput.selectionStart;
-            const value = mainInput.value;
-            textBeforeCursor = value.substring(0, start);
-            textAfterCursor = value.substring(start);
-        }
-
-        // 更新候选词
-        function updateCandidates() {
-            // 隐藏错误信息
-            hideErrorMessage();
-
-            // 获取当前拼音的候选词
-            const candidates = getCandidatesForPinyin(pinyinBuffer);
-            activeCandidates = candidates; // 更新活跃候选词列表
-            
-            if (candidates.length === 0) {
-                // 检查是否有以当前拼音为前缀的有效拼音
-                const hasValidPrefix = checkHasValidPrefix(pinyinBuffer);
-                if (hasValidPrefix) {
-                    // 有有效前缀但当前拼音无候选词，显示提示
-                    pinyinDisplay.innerHTML = `<span class="text-gray-400">继续输入...</span>`;
-                    candidatesDiv.innerHTML = '';
-                    pagination.classList.add('hidden');
-                    floatingInput.style.display = 'block';
-                    isErrorState = false;
+        var SimpleInputMethod = {
+            pageSize: 10,
+            pageCurrent: 1,
+            pageCount: 0,
+            hanzi: '',
+            pinyin: '',
+            result: [],
+            _input: null,
+            _target: null,
+            _pinyinTarget: null,
+            _resultTarget: null,
+            initDict: function() {
+                var dict = pinyinUtil.dict;
+                if(!dict.py2hz) throw '未找到合适的字典文件！';
+                dict.py2hz2 = {};
+                dict.py2hz2['i'] = 'i';
+                for(var i = 97; i <= 123; i++) {
+                    var ch = String.fromCharCode(i);
+                    if(!dict.py2hz[ch]) {
+                        for(var j in dict.py2hz) {
+                            if(j.indexOf(ch) == 0) {
+                                dict.py2hz2[ch] = dict.py2hz[j];
+                                break;
+                            }
+                        }
+                    }
+                }
+            },
+            initDom: function() {
+                var temp = '<div class="pinyin"></div><div class="result"><ol></ol><div class="page-up-down"><span class="page-up">▲</span><span class="page-down">▼</span></div></div>';
+                var dom = document.createElement('div');
+                dom.id = 'simle_input_method';
+                dom.className = 'simple-input-method';
+                dom.innerHTML = temp;
+                var that = this;
+                dom.addEventListener('click', function(e) {
+                    var target = e.target;
+                    if(target.nodeName == 'LI') that.selectHanzi(parseInt(target.dataset.idx));
+                    else if(target.nodeName == 'SPAN') {
+                        if(target.className == 'page-up' && that.pageCurrent > 1) {
+                            that.pageCurrent--;
+                            that.refreshPage();
+                        } else if(target.className == 'page-down' && that.pageCurrent < that.pageCount) {
+                            that.pageCurrent++;
+                            that.refreshPage();
+                        }
+                    }
+                });
+                document.body.appendChild(dom);
+            },
+            init: function(selector) {
+                this.initDict();
+                this.initDom();
+                var obj = document.querySelectorAll(selector);
+                this._target = document.querySelector('#simle_input_method');
+                this._pinyinTarget = document.querySelector('#simle_input_method .pinyin');
+                this._resultTarget = document.querySelector('#simle_input_method .result ol');
+                var that = this;
+                for(var i = 0; i < obj.length; i++) {
+                    obj[i].addEventListener('keydown', function(e) {
+                        var keyCode = e.keyCode;
+                        var preventDefault = false;
+                        if(keyCode >= 65 && keyCode <= 90) {
+                            that.addChar(String.fromCharCode(keyCode + 32), this);
+                            preventDefault = true;
+                        } else if(keyCode == 8 && that.pinyin) {
+                            that.delChar();
+                            preventDefault = true;
+                        } else if(keyCode >= 48 && keyCode <= 57 && !e.shiftKey && that.pinyin) {
+                            that.selectHanzi(keyCode - 48);
+                            preventDefault = true;
+                        } else if(keyCode == 32 && that.pinyin) {
+                            that.selectHanzi(1);
+                            preventDefault = true;
+                        } else if(keyCode == 33 && that.pageCount > 0 && that.pageCurrent > 1) {
+                            that.pageCurrent--;
+                            that.refreshPage();
+                            preventDefault = true;
+                        } else if(keyCode == 34 && that.pageCount > 0 && that.pageCurrent < that.pageCount) {
+                            that.pageCurrent++;
+                            that.refreshPage();
+                            preventDefault = true;
+                        }
+                        if(preventDefault) e.preventDefault();
+                    });
+                    obj[i].addEventListener('focus', function() {
+                        if(that._input !== this) that.hide();
+                    });
+                }
+            },
+            getSingleHanzi: function(pinyin) {
+                return pinyinUtil.dict.py2hz2[pinyin] || pinyinUtil.dict.py2hz[pinyin] || '';
+            },
+            getHanzi: function(pinyin) {
+                var result = this.getSingleHanzi(pinyin);
+                if(result) return [result.split(''), pinyin];
+                var temp = '';
+                for(var i = 0, len = pinyin.length; i < len; i++) {
+                    temp += pinyin[i];
+                    result = this.getSingleHanzi(temp);
+                    if(!result) continue;
+                    var flag = false;
+                    if((i + 1) < pinyin.length) {
+                        for(var j = 1, len = pinyin.length; j <= 5 && (i + j) < len; j++) {
+                            if(this.getSingleHanzi(pinyin.substr(0, i + j + 1))) {
+                                flag = true;
+                                break;
+                            }
+                        }
+                    }
+                    if(!flag) return [result.split(''), pinyin.substr(0, i + 1) + "'" + pinyin.substr(i + 1)];
+                }
+                return [[], ''];
+            },
+            selectHanzi: function(i) {
+                var hz = this.result[(this.pageCurrent - 1) * this.pageSize + i - 1];
+                if(!hz) return;
+                this.hanzi += hz;
+                var idx = this.pinyin.indexOf("'");
+                if(idx > 0) {
+                    this.pinyin = this.pinyin.substr(idx + 1);
+                    this.refresh();
                 } else {
-                    // 拼音无效，显示错误信息
-                    showErrorMessage('拼音输入有误，请检查');
-                    floatingInput.style.display = 'none';
-                    isErrorState = true;
+                    this._input.value += this.hanzi;
+                    this.hide();
                 }
-                return;
-            }
-
-            // 拼音有效，重置错误状态
-            isErrorState = false;
-
-            // 计算当前页的候选词
-            const startIndex = currentPage * CANDIDATES_PER_PAGE;
-            const endIndex = startIndex + CANDIDATES_PER_PAGE;
-            const currentCandidates = candidates.slice(startIndex, endIndex);
-
-            // 更新候选词显示
-            candidatesDiv.innerHTML = currentCandidates.map((candidate, index) => {
-                return `<div class="candidate-item" data-index="${index}">${index + 1}. ${candidate}</div>`;
-            }).join('');
-
-            // 如果当前没有选中的候选词，默认选中第一个
-            if (currentCandidateIndex === -1 && currentCandidates.length > 0) {
-                currentCandidateIndex = 0;
-                const firstCandidate = candidatesDiv.querySelector(`.candidate-item[data-index="0"]`);
-                if (firstCandidate) {
-                    firstCandidate.classList.add('candidate-item-active');
+            },
+            refresh: function() {
+                var temp = this.getHanzi(this.pinyin.replace(/'/g, ''));
+                this.result = temp[0];
+                this.pinyin = temp[1];
+                var count = this.result.length;
+                this.pageCurrent = 1;
+                this.pageCount = Math.ceil(count / this.pageSize);
+                this._pinyinTarget.innerHTML = this.hanzi + this.pinyin;
+                this.refreshPage();
+            },
+            refreshPage: function() {
+                var temp = this.result.slice((this.pageCurrent - 1) * this.pageSize, this.pageCurrent * this.pageSize);
+                var html = '';
+                var i = 0;
+                temp.forEach(function(val) {
+                    html += '<li data-idx="'+(++i)+'">' + val + '</li>';
+                });
+                this._target.querySelector('.page-up').style.opacity = this.pageCurrent > 1 ? '1' : '.3';
+                this._target.querySelector('.page-down').style.opacity = this.pageCurrent < this.pageCount ? '1' : '.3';
+                this._resultTarget.innerHTML = html;
+            },
+            addChar: function(ch, obj) {
+                if(this.pinyin.length == 0) {
+                    this.show(obj);
                 }
-            }
-
-            // 更新分页按钮状态
-            const totalPages = Math.ceil(candidates.length / CANDIDATES_PER_PAGE);
-            if (totalPages > 1) {
-                pagination.classList.remove('hidden');
-            } else {
-                pagination.classList.add('hidden');
-            }
-            prevPageBtn.disabled = currentPage === 0;
-            nextPageBtn.disabled = currentPage === totalPages - 1;
-
-            // 显示浮动输入框
-            floatingInput.style.display = 'block';
-            updateFloatingInputPosition();
-        }
-
-        // 检查字符串是否是某个有效拼音的前缀
-        function checkValidPinyinPrefix(prefix) {
-            for (const validPinyin in pinyin_dict_notone) {
-                if (validPinyin.startsWith(prefix)) {
-                    return true;
+                this.pinyin += ch;
+                this.refresh();
+            },
+            delChar: function() {
+                if(this.pinyin.length <= 1) {
+                    this.hide();
+                    return;
                 }
+                this.pinyin = this.pinyin.substr(0, this.pinyin.length - 1);
+                this.refresh();
+            },
+            show: function(obj) {
+                var pos = obj.getBoundingClientRect();
+                this._target.style.left = pos.left + 'px';
+                this._target.style.top = pos.top + pos.height + document.body.scrollTop + 'px';
+                this._input = obj;
+                this._target.style.display = 'block';
+            },
+            hide: function() {
+                this.reset();
+                this._target.style.display = 'none';
+            },
+            reset: function() {
+                this.hanzi = '';
+                this.pinyin = '';
+                this.result = [];
+                this.pageCurrent = 1;
+                this.pageCount = 0;
+                this._pinyinTarget.innerHTML = '';
             }
-            return false;
-        }
+        };
 
-        // 检查是否有以给定字符串为前缀的有效拼音
-        function checkHasValidPrefix(prefix) {
-            for (const validPinyin in pinyin_dict_notone) {
-                if (validPinyin.startsWith(prefix)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        // 获取当前拼音的候选词
-        function getCandidatesForPinyin(pinyin) {
-            if (typeof pinyin_dict_notone[pinyin] === 'undefined') {
-                return [];
-            }
-            return pinyin_dict_notone[pinyin].split('');
-        }
-
-        // 获取当前页的候选词
-        function getCurrentCandidates() {
-            const candidates = getCandidatesForPinyin(pinyinBuffer);
-            const startIndex = currentPage * CANDIDATES_PER_PAGE;
-            const endIndex = startIndex + CANDIDATES_PER_PAGE;
-            return candidates.slice(startIndex, endIndex);
-        }
-
-        // 选择候选词
-        function selectCandidateByIndex(index) {
-            const candidates = getCurrentCandidates();
-            if (index < candidates.length) {
-                insertTextAtCursor(candidates[index]);
-                resetInputState();
-            }
-        }
-
-        // 导航候选词
-        function navigateCandidates(direction) {
-            const candidates = getCurrentCandidates();
-            if (candidates.length === 0) return;
-
-            // 移除当前选中的高亮样式
-            const currentActive = candidatesDiv.querySelector('.candidate-item-active');
-            if (currentActive) {
-                currentActive.classList.remove('candidate-item-active');
-            }
-
-            // 更新当前选中的候选词索引
-            currentCandidateIndex += direction;
-            if (currentCandidateIndex < 0) {
-                currentCandidateIndex = candidates.length - 1;
-            } else if (currentCandidateIndex >= candidates.length) {
-                currentCandidateIndex = 0;
-            }
-
-            // 添加新的高亮样式
-            const newActive = candidatesDiv.querySelector(`.candidate-item[data-index="${currentCandidateIndex}"]`);
-            if (newActive) {
-                newActive.classList.add('candidate-item-active');
-            }
-        }
-
-        // 插入文本到光标位置
-        function insertTextAtCursor(text) {
-            const start = mainInput.selectionStart;
-            const end = mainInput.selectionEnd;
-            const value = mainInput.value;
-            mainInput.value = value.slice(0, start) + text + value.slice(end);
-            mainInput.selectionStart = mainInput.selectionEnd = start + text.length;
-        }
-
-        // 删除光标前的文本
-        function deleteTextAtCursor() {
-            const start = mainInput.selectionStart;
-            const end = mainInput.selectionEnd;
-            const value = mainInput.value;
-            if (start > 0) {
-                mainInput.value = value.slice(0, start - 1) + value.slice(end);
-                mainInput.selectionStart = mainInput.selectionEnd = start - 1;
-            }
-        }
-
-        // 重置输入状态
-        function resetInputState() {
-            pinyinBuffer = '';
-            isInputtingPinyin = false;
-            currentCandidateIndex = -1;
-            currentPage = 0;
-            isErrorState = false;
-            activeCandidates = [];
-            floatingInput.style.display = 'none';
-            updateCandidates();
-        }
-
-        // 更新字符计数
-        function updateCharCount() {
-            charCount.textContent = mainInput.value.length;
-        }
-
-        // 显示错误信息
-        function showErrorMessage(message) {
-            errorText.textContent = message;
-            errorMessage.classList.remove('hidden');
-        }
-
-        // 隐藏错误信息
-        function hideErrorMessage() {
-            errorMessage.classList.add('hidden');
-        }
-
-        // 更新浮动输入框位置
-        function updateFloatingInputPosition() {
-            const rect = mainInput.getBoundingClientRect();
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-            const cursorPosition = getCursorPosition(mainInput);
-            
-            // 计算浮动输入框的位置
-            let top = rect.top + scrollTop + cursorPosition.top + 30;
-            let left = rect.left + scrollLeft + cursorPosition.left;
-            
-            // 确保浮动输入框不会超出视口
-            const windowWidth = window.innerWidth;
-            const inputWidth = floatingInput.offsetWidth || 200; // 假设默认宽度为200px
-            
-            // 如果超出右侧边界，调整位置
-            if (left + inputWidth > windowWidth) {
-                left = windowWidth - inputWidth - 10;
-            }
-            
-            // 设置位置
-            floatingInput.style.top = top + 'px';
-            floatingInput.style.left = left + 'px';
-        }
-
-        // 获取光标位置
-        function getCursorPosition(input) {
-            const range = document.createRange();
-            range.selectNodeContents(input);
-            range.setEnd(input, input.selectionEnd);
-            const rect = range.getBoundingClientRect();
-            return { top: rect.bottom, left: rect.left };
-        }
-
-        // 调整文本区域高度
-        function resizeTextarea() {
-            mainInput.style.height = 'auto';
-            mainInput.style.height = mainInput.scrollHeight + 'px';
-        }
-
-        // 上一页
-        function prevPage() {
-            if (currentPage > 0) {
-                currentPage--;
-                updateCandidates();
-            }
-        }
-
-        // 下一页
-        function nextPage() {
-            const totalPages = Math.ceil(activeCandidates.length / CANDIDATES_PER_PAGE);
-            if (currentPage < totalPages - 1) {
-                currentPage++;
-                updateCandidates();
-            }
-        }
+        pinyinUtil.parseDict();
+        SimpleInputMethod.init('.test-input-method');
+        document.querySelector('.loading-tip').innerHTML = 'JS加载完毕，现在你可以开始打字了！';
     </script>
 </body>
-
 </html>
