@@ -37,7 +37,8 @@
                                 barcode: '#F97316',
                                 calculator: '#1E3A8A',
                                 editor: '#059669',
-                                brainteaser: '#006400', // 修改为深绿色
+                                brainteaser: '#006400',
+                                pinyin: '#3199E4', // 新增拼音输入法的主颜色
                             }
                         }
                     },
@@ -110,11 +111,7 @@
                 </div>
 
                 <!-- 工具展示区 -->
-                <div class="bg-white rounded-2xl shadow-card p-6 md:p-8 mb-8 relative overflow-hidden min-h-[350px]">
-                    <!-- 装饰元素 -->
-                    <div class="absolute -right-16 -top-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
-                    <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-secondary/5 rounded-full blur-3xl"></div>
-
+                <div class="bg-white rounded-2xl shadow-card p-6 md:p-8 mb-8 relative overflow-hidden">
                     <div class="relative z-10">
                         <h2 class="text-center text-xl font-bold text-gray-900 mb-6 flex justify-center items-center">
                             <i class="fa-solid fa-toolbox mr-2 text-tool-index"></i>
@@ -318,6 +315,19 @@
                                     </div>
                                     <h3 class="text-3xl font-bold text-tool-editor mb-2 text-center">代码编辑器</h3>
                                     <p class="text-gray-600 max-w-md mx-auto text-center">强大的在线代码编辑器，支持多种编程语言。</p>
+                                </a>
+                            </div>
+
+                            <!-- 在工具列表中添加拼音 -->
+                            <div
+                                class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                                <a href="pinyin.html" target="_blank" rel="noopener noreferrer">
+                                    <div
+                                        class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-pinyin/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                        <i class="fa-solid fa-language text-5xl text-tool-pinyin"></i>
+                                    </div>
+                                    <h3 class="text-3xl font-bold text-tool-pinyin mb-2 text-center">拼音输入法</h3>
+                                    <p class="text-gray-600 max-w-md mx-auto text-center">系统输入法无法使用时的临时方案。</p>
                                 </a>
                             </div>
                         </div>
