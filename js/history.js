@@ -5,14 +5,9 @@ function formatDate(date) {
     return `${month}/${day}`;
 }
 
-// 从日期字符串中提取年份
-function extractYear(dateStr) {
-    return dateStr.split('年')[0];
-}
-
 // 创建历史事件卡片
 function createEventCard(event) {
-    const year = extractYear(event.date);
+    const year = event.year;
     return `
         <div class="bg-gray-50 p-3 rounded-lg hover:shadow-md transition-all duration-300 mb-2">
             <div class="flex items-center">
@@ -28,25 +23,30 @@ function createEventCard(event) {
 // 初始化页面
 document.addEventListener('DOMContentLoaded', async () => {
     const currentDate = new Date();
-    document.getElementById('current-date').textContent = formatDate(currentDate);
+    const formattedDate = formatDate(currentDate);
+    const [month, day] = formattedDate.split('/');
+    document.getElementById('current-date').textContent = formattedDate;
 
     try {
-        const response = await fetch('https://api.oick.cn/api/lishi');
+        // 修改为调用PHP接口
+        const response = await fetch('./api/history.php');
         const data = await response.json();
         console.log('API Response:', data); // 调试用
 
         const container = document.getElementById('history-container');
         document.getElementById('loading').remove();
 
-        if (data && data.result && Array.isArray(data.result)) {
+        // 获取PHP接口返回的数据
+        const key = `${month}${day}`;
+        const events = data[key] || [];
+        
+        if (Array.isArray(events) && events.length > 0) {
             // 按年份排序（从新到旧）
-            const sortedEvents = data.result.sort((a, b) => 
-                extractYear(b.date) - extractYear(a.date)
-            );
+            const sortedEvents = events.sort((a, b) => b.year - a.year);
             const eventsHTML = `<div class="space-y-2">${sortedEvents.map(createEventCard).join('')}</div>`;
-            container.innerHTML = eventsHTML || '<p class="text-center text-gray-500">暂无历史数据</p>';
+            container.innerHTML = eventsHTML;
         } else {
-            throw new Error(`数据格式不正确: ${JSON.stringify(data)}`);
+            container.innerHTML = '<p class="text-center text-gray-500">暂无历史数据</p>';
         }
     } catch (error) {
         console.error('获取历史数据失败:', error);
