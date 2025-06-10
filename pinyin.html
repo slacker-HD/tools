@@ -1,400 +1,530 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>拼音输入法</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        tool: {
-                            pinyin: '#3199E4', // 使用与工具箱一致的颜色
+
+    <head>
+        <!-- 原有的头部代码保持不变 -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>拼音输入法</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            tool: {
+                                pinyin: '#3199E4', // 使用与工具箱一致的颜色
+                            }
+                        },
+                        fontFamily: {
+                            inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
                         }
-                    },
-                    fontFamily: {
-                        inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
                     }
                 }
             }
-        }
-    </script>
-    <style>
-        /* 添加自定义样式 */
-        .simple-input-method {
-            position: absolute;
-            background: #FFF;
-            border: solid 1px #B5C5D2;
-            font-family: 'Arial';
-            color: #0364CD;
-            display: none;
-        }
-        .simple-input-method .pinyin {
-            border-bottom: solid 1px #B5C5D2;
-            padding: 4px 10px;
-            font-weight: bold;
-        }
-        .simple-input-method .result {
-            padding: 4px 10px 4px 0px;
-        }
-        .simple-input-method .result ol {
-            margin: 0;
-            padding: 0;
-            display: inline-block;
-            vertical-align: middle;
-        }
-        .simple-input-method .result ol:after {
-            content: '';
-            display: block;
-            clear: left;
-        }
-        .simple-input-method .result ol li {
-            float: left;
-            margin-left: 30px;
-            cursor: pointer;
-        }
-        .simple-input-method .result ol li:first-child {
-            color: red;
-        }
-        .simple-input-method .page-up-down {
-            display: inline-block;
-            border: solid 1px #BADBFF;
-            font-size: 12px;
-            color: #4C9AEF;
-            border-radius: 1px;
-            margin-left: 10px;
-        }
-        .simple-input-method .page-up-down .page-down{
-            border-left: solid 1px #BADBFF;
-        }
-        .simple-input-method .page-up-down span {
-            cursor: pointer;
-        }
-        .simple-input-method .page-up-down span.disable {
-            opacity: .3;
-        }
-    </style>
-</head>
-<body class="font-sans bg-gray-50 text-gray-800 min-h-screen flex flex-col">
-    <!-- 页面头部 -->
-    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center">
-                <div class="text-tool-pinyin mr-2">
-                    <i class="fa-solid fa-language text-2xl"></i>
+        </script>
+        <style>
+            /* 原有的样式代码保持不变 */
+            .simple-input-method {
+                position: absolute;
+                background: #FFF;
+                border: solid 1px #B5C5D2;
+                font-family: 'Arial';
+                color: #0364CD;
+                display: none;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .simple-input-method .pinyin {
+                border-bottom: solid 1px #B5C5D2;
+                padding: 8px 16px;
+                font-weight: bold;
+                font-size: 16px;
+            }
+
+            .simple-input-method .result {
+                padding: 8px 16px 8px 0px;
+                display: flex;
+                align-items: center;
+            }
+
+            .simple-input-method .result ol {
+                margin: 0;
+                padding: 0;
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .simple-input-method .result ol:after {
+                content: '';
+                display: block;
+                clear: left;
+            }
+
+            .simple-input-method .result ol li {
+                float: left;
+                margin-left: 20px;
+                cursor: pointer;
+                font-size: 16px;
+                transition: color 0.3s ease;
+                display: flex;
+                align-items: center;
+            }
+
+            /* 添加数字标识样式 */
+            .simple-input-method .result ol li::before {
+                content: attr(data-idx) ".";
+                margin-right: 4px;
+                color: #999;
+                font-size: 12px;
+            }
+
+            .simple-input-method .result ol li:first-child {
+                color: red;
+            }
+
+            .simple-input-method .result ol li:first-child::before {
+                color: red;
+            }
+
+            .simple-input-method .result ol li:hover {
+                color: #3199E4;
+            }
+
+            .simple-input-method .result ol li:hover::before {
+                color: #3199E4;
+            }
+
+            .simple-input-method .page-up-down {
+                display: inline-block;
+                border: solid 1px #BADBFF;
+                font-size: 14px;
+                color: #4C9AEF;
+                border-radius: 4px;
+                margin-left: 10px;
+                overflow: hidden;
+                vertical-align: middle;
+            }
+
+            .simple-input-method .page-up-down .page-down {
+                border-left: solid 1px #BADBFF;
+            }
+
+            .simple-input-method .page-up-down span {
+                cursor: pointer;
+                padding: 4px 8px;
+                display: inline-block;
+                transition: background-color 0.3s ease;
+            }
+
+            .simple-input-method .page-up-down span:hover {
+                background-color: #E5F6FF;
+            }
+
+            .simple-input-method .page-up-down span.disable {
+                opacity: .3;
+            }
+
+            /* 输入区域样式 */
+            .test-input-method {
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                padding: 12px;
+                font-size: 16px;
+                transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            }
+
+            .test-input-method:focus {
+                border-color: #3199E4;
+                box-shadow: 0 0 0 2px rgba(49, 153, 228, 0.2);
+                outline: none;
+            }
+
+            /* 介绍卡片样式 */
+            .bg-white.rounded-2xl.shadow-sm.p-6.mb-8.transform.hover:shadow-md.transition-all.duration-300 {
+                border-radius: 16px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                transition: box-shadow 0.3s ease;
+            }
+
+            .bg-white.rounded-2xl.shadow-sm.p-6.mb-8.transform.hover:shadow-md.transition-all.duration-300:hover {
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            }
+
+            /* 标题样式 */
+            h2.text-2xl.font-bold.text-gray-900.mb-4 {
+                color: #3199E4;
+                font-size: 24px;
+            }
+        </style>
+    </head>
+
+    <body class="font-sans bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+        <!-- 原有的页面头部代码保持不变 -->
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="text-tool-pinyin mr-2">
+                        <i class="fa-solid fa-language text-2xl"></i>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-bold text-tool-pinyin">拼音输入法</h1>
                 </div>
-                <h1 class="text-xl md:text-2xl font-bold text-tool-pinyin">拼音输入法</h1>
+                <!-- 添加返回工具箱和返回主页按钮 -->
+                <div class="flex space-x-4">
+                    <a href="https://tools.hudi.site"
+                        class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site"
+                        class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>
+                        访问我的主页
+                    </a>
+                </div>
             </div>
-            <!-- 添加返回工具箱和返回主页按钮 -->
-            <div class="flex space-x-4">
-                <a href="https://tools.hudi.site"
-                    class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
-                    <i class="fa-solid fa-arrow-left mr-2"></i>
-                    返回工具箱
-                </a>
-                <a href="https://www.hudi.site"
-                    class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
-                    target="_blank" rel="noopener noreferrer">
-                    <i class="fa-solid fa-blog mr-2"></i>
-                    访问我的主页
-                </a>
-            </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- 主内容区 -->
-    <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
-        <div class="max-w-6xl mx-auto">
-            <!-- 介绍卡片 -->
-            <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
-                <p class="text-center text-base md:text-lg text-gray-600">
-                    使用这个拼音输入法工具，快速将拼音转换为汉字。
-                </p>
-            </div>
+        <!-- 原有的主内容区代码保持不变 -->
+        <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+            <div class="max-w-6xl mx-auto">
+                <!-- 介绍卡片 -->
+                <div
+                    class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                    <p class="text-center text-base md:text-lg text-gray-600">
+                        使用这个拼音输入法工具，快速将拼音转换为汉字。
+                    </p>
+                </div>
 
-            <!-- 输入区域 -->
-            <div class="bg-white rounded-2xl shadow-card p-6 md:p-8 mb-8 relative overflow-hidden">
-                <div class="relative z-10">
-                    <div class="text-center">
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4">请输入拼音</h2>
-                        <textarea id="main-input" class="test-input-method w-full h-32 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tool-pinyin focus:border-tool-pinyin" placeholder="请在这里打字试试"></textarea>
+                <!-- 输入区域 -->
+                <div class="bg-white rounded-2xl shadow-card p-6 md:p-8 mb-8 relative overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="text-center">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">请输入拼音</h2>
+                            <textarea id="main-input"
+                                class="test-input-method w-full h-64 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tool-pinyin focus:border-tool-pinyin"
+                                placeholder="请在这里打字试试"></textarea>
+                        </div>
                     </div>
                 </div>
+                <!-- 数据来源 -->
+                <div class="text-sm text-gray-500 mt-8 flex items-center justify-center space-x-2">
+                    <span class="font-medium">网页工具基于</span>
+                    <a href="https://github.com/sxei/pinyinjs" target="_blank"
+                        class="text-tool-history hover:text-tool-history/80 underline decoration-dotted">pinyinjs</a>
+                    <span class="font-medium">修改而来。</span>
+
+                </div>
             </div>
-        </div>
-    </main>
+        </main>
 
-    <!-- 页脚 -->
-    <footer class="bg-gray-900 text-white py-6">
-        <div class="container mx-auto px-4 text-center">
-            <p class="text-sm text-gray-400 mt-1">快速拼音转汉字</p>
+        <!-- 原有的页脚代码保持不变 -->
+        <footer class="bg-gray-900 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-sm text-gray-400 mt-1">快速拼音转汉字</p>
 
-            <!-- 不蒜子统计 -->
-            <div class="mt-2 text-xs text-gray-500">
-                <span id="busuanzi_container_site_uv">
-                    <i class="fa-solid fa-user mr-1"></i>
-                    <span id="busuanzi_value_site_uv"></span> 访客
-                </span>
-                &nbsp;&nbsp;|&nbsp;&nbsp;
-                <span id="busuanzi_container_site_pv">
-                    <i class="fa-solid fa-eye mr-1"></i>
-                    <span id="busuanzi_value_site_pv"></span> 访问
-                </span>
+                <!-- 不蒜子统计 -->
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn"
+                    one-link-mark="yes">皖ICP备18002386号-1</a>
             </div>
-            <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn" one-link-mark="yes">皖ICP备18002386号-1</a>
-        </div>
-    </footer>
+        </footer>
 
-    <!-- 不蒜子统计脚本 -->
-    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <!-- 不蒜子统计脚本 -->
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
-    <!-- 拼音输入法脚本 -->
-    <script type="text/javascript" src="./js/pinyin_dict_notone.js"></script>
-    <!-- 拼音字典文件来源：https://github.com/sxei/pinyinjs/ -->
-    <script type="text/javascript">
-        var pinyinUtil = {
-            dict: {},
-            parseDict: function() {
-                if(window.pinyin_dict_notone) {
-                    this.dict.notone = {};
-                    this.dict.py2hz = pinyin_dict_notone;
-                    for(var i in pinyin_dict_notone) {
-                        var temp = pinyin_dict_notone[i];
-                        for(var j = 0, len = temp.length; j < len; j++) {
-                            if(!this.dict.notone[temp[j]]) this.dict.notone[temp[j]] = i;
-                        }
-                    }
-                }
-            },
-            getPinyin: function(chinese, splitter, withtone, polyphone) {
-                if(!chinese || /^ +$/g.test(chinese)) return '';
-                splitter = splitter == undefined ? ' ' : splitter;
-                withtone = withtone == undefined ? true : withtone;
-                polyphone = polyphone == undefined ? false : polyphone;
-                var result = [];
-                if(this.dict.notone) {
-                    if(withtone) console.warn('pinyin_dict_notone 字典文件不支持声调！');
-                    if(polyphone) console.warn('pinyin_dict_notone 字典文件不支持多音字！');
-                    var noChinese = '';
-                    for (var i = 0, len = chinese.length; i < len; i++) {
-                        var temp = chinese.charAt(i),
-                            pinyin = this.dict.notone[temp];
-                        if (pinyin) {
-                            noChinese && ( result.push( noChinese), noChinese = '' );
-                            result.push( pinyin );
-                        } else if ( !temp || /^ +$/g.test(temp) ) {
-                            noChinese && ( result.push( noChinese), noChinese = '' );
-                        } else {
-                            noChinese += temp;
-                        }
-                    }
-                    if ( noChinese ) {
-                        result.push( noChinese );
-                        noChinese = '';
-                    }
-                } else {
-                    throw '抱歉，未找到合适的拼音字典文件！';
-                }
-                return result.join(splitter);
-            },
-            getHanzi: function(pinyin) {
-                if(!this.dict.py2hz) {
-                    throw '抱歉，未找到合适的拼音字典文件！';
-                }
-                return this.dict.py2hz[pinyin] || '';
-            }
-        };
-
-        var SimpleInputMethod = {
-            pageSize: 10,
-            pageCurrent: 1,
-            pageCount: 0,
-            hanzi: '',
-            pinyin: '',
-            result: [],
-            _input: null,
-            _target: null,
-            _pinyinTarget: null,
-            _resultTarget: null,
-            initDict: function() {
-                var dict = pinyinUtil.dict;
-                if(!dict.py2hz) throw '未找到合适的字典文件！';
-                dict.py2hz2 = {};
-                dict.py2hz2['i'] = 'i';
-                for(var i = 97; i <= 123; i++) {
-                    var ch = String.fromCharCode(i);
-                    if(!dict.py2hz[ch]) {
-                        for(var j in dict.py2hz) {
-                            if(j.indexOf(ch) == 0) {
-                                dict.py2hz2[ch] = dict.py2hz[j];
-                                break;
+        <!-- 拼音输入法脚本 -->
+        <script type="text/javascript" src="./js/pinyin_dict_notone.js"></script>
+        <!-- 拼音字典文件来源：https://github.com/sxei/pinyinjs/ -->
+        <script type="text/javascript">
+            var pinyinUtil = {
+                dict: {},
+                parseDict: function () {
+                    if (window.pinyin_dict_notone) {
+                        this.dict.notone = {};
+                        this.dict.py2hz = pinyin_dict_notone;
+                        for (var i in pinyin_dict_notone) {
+                            var temp = pinyin_dict_notone[i];
+                            for (var j = 0, len = temp.length; j < len; j++) {
+                                if (!this.dict.notone[temp[j]]) this.dict.notone[temp[j]] = i;
                             }
                         }
                     }
-                }
-            },
-            initDom: function() {
-                var temp = '<div class="pinyin"></div><div class="result"><ol></ol><div class="page-up-down"><span class="page-up">▲</span><span class="page-down">▼</span></div></div>';
-                var dom = document.createElement('div');
-                dom.id = 'simle_input_method';
-                dom.className = 'simple-input-method';
-                dom.innerHTML = temp;
-                var that = this;
-                dom.addEventListener('click', function(e) {
-                    var target = e.target;
-                    if(target.nodeName == 'LI') that.selectHanzi(parseInt(target.dataset.idx));
-                    else if(target.nodeName == 'SPAN') {
-                        if(target.className == 'page-up' && that.pageCurrent > 1) {
-                            that.pageCurrent--;
-                            that.refreshPage();
-                        } else if(target.className == 'page-down' && that.pageCurrent < that.pageCount) {
-                            that.pageCurrent++;
-                            that.refreshPage();
+                },
+                getPinyin: function (chinese, splitter, withtone, polyphone) {
+                    if (!chinese || /^ +$/g.test(chinese)) return '';
+                    splitter = splitter == undefined ? ' ' : splitter;
+                    withtone = withtone == undefined ? true : withtone;
+                    polyphone = polyphone == undefined ? false : polyphone;
+                    var result = [];
+                    if (this.dict.notone) {
+                        if (withtone) console.warn('pinyin_dict_notone 字典文件不支持声调！');
+                        if (polyphone) console.warn('pinyin_dict_notone 字典文件不支持多音字！');
+                        var noChinese = '';
+                        for (var i = 0, len = chinese.length; i < len; i++) {
+                            var temp = chinese.charAt(i),
+                                pinyin = this.dict.notone[temp];
+                            if (pinyin) {
+                                noChinese && (result.push(noChinese), noChinese = '');
+                                result.push(pinyin);
+                            } else if (!temp || /^ +$/g.test(temp)) {
+                                noChinese && (result.push(noChinese), noChinese = '');
+                            } else {
+                                noChinese += temp;
+                            }
                         }
+                        if (noChinese) {
+                            result.push(noChinese);
+                            noChinese = '';
+                        }
+                    } else {
+                        throw '抱歉，未找到合适的拼音字典文件！';
                     }
-                });
-                document.body.appendChild(dom);
-            },
-            init: function(selector) {
-                this.initDict();
-                this.initDom();
-                var obj = document.querySelectorAll(selector);
-                this._target = document.querySelector('#simle_input_method');
-                this._pinyinTarget = document.querySelector('#simle_input_method .pinyin');
-                this._resultTarget = document.querySelector('#simle_input_method .result ol');
-                var that = this;
-                for(var i = 0; i < obj.length; i++) {
-                    obj[i].addEventListener('keydown', function(e) {
-                        var keyCode = e.keyCode;
-                        var preventDefault = false;
-                        if(keyCode >= 65 && keyCode <= 90) {
-                            that.addChar(String.fromCharCode(keyCode + 32), this);
-                            preventDefault = true;
-                        } else if(keyCode == 8 && that.pinyin) {
-                            that.delChar();
-                            preventDefault = true;
-                        } else if(keyCode >= 48 && keyCode <= 57 && !e.shiftKey && that.pinyin) {
-                            that.selectHanzi(keyCode - 48);
-                            preventDefault = true;
-                        } else if(keyCode == 32 && that.pinyin) {
-                            that.selectHanzi(1);
-                            preventDefault = true;
-                        } else if(keyCode == 33 && that.pageCount > 0 && that.pageCurrent > 1) {
-                            that.pageCurrent--;
-                            that.refreshPage();
-                            preventDefault = true;
-                        } else if(keyCode == 34 && that.pageCount > 0 && that.pageCurrent < that.pageCount) {
-                            that.pageCurrent++;
-                            that.refreshPage();
-                            preventDefault = true;
-                        }
-                        if(preventDefault) e.preventDefault();
-                    });
-                    obj[i].addEventListener('focus', function() {
-                        if(that._input !== this) that.hide();
-                    });
+                    return result.join(splitter);
+                },
+                getHanzi: function (pinyin) {
+                    if (!this.dict.py2hz) {
+                        throw '抱歉，未找到合适的拼音字典文件！';
+                    }
+                    return this.dict.py2hz[pinyin] || '';
                 }
-            },
-            getSingleHanzi: function(pinyin) {
-                return pinyinUtil.dict.py2hz2[pinyin] || pinyinUtil.dict.py2hz[pinyin] || '';
-            },
-            getHanzi: function(pinyin) {
-                var result = this.getSingleHanzi(pinyin);
-                if(result) return [result.split(''), pinyin];
-                var temp = '';
-                for(var i = 0, len = pinyin.length; i < len; i++) {
-                    temp += pinyin[i];
-                    result = this.getSingleHanzi(temp);
-                    if(!result) continue;
-                    var flag = false;
-                    if((i + 1) < pinyin.length) {
-                        for(var j = 1, len = pinyin.length; j <= 5 && (i + j) < len; j++) {
-                            if(this.getSingleHanzi(pinyin.substr(0, i + j + 1))) {
-                                flag = true;
-                                break;
+            };
+
+            var SimpleInputMethod = {
+                pageSize: 9, // 修改为每页显示 9 个候选词
+                pageCurrent: 1,
+                pageCount: 0,
+                hanzi: '',
+                pinyin: '',
+                result: [],
+                _input: null,
+                _target: null,
+                _pinyinTarget: null,
+                _resultTarget: null,
+                initDict: function () {
+                    var dict = pinyinUtil.dict;
+                    if (!dict.py2hz) throw '未找到合适的字典文件！';
+                    dict.py2hz2 = {};
+                    dict.py2hz2['i'] = 'i';
+                    for (var i = 97; i <= 123; i++) {
+                        var ch = String.fromCharCode(i);
+                        if (!dict.py2hz[ch]) {
+                            for (var j in dict.py2hz) {
+                                if (j.indexOf(ch) == 0) {
+                                    dict.py2hz2[ch] = dict.py2hz[j];
+                                    break;
+                                }
                             }
                         }
                     }
-                    if(!flag) return [result.split(''), pinyin.substr(0, i + 1) + "'" + pinyin.substr(i + 1)];
-                }
-                return [[], ''];
-            },
-            selectHanzi: function(i) {
-                var hz = this.result[(this.pageCurrent - 1) * this.pageSize + i - 1];
-                if(!hz) return;
-                this.hanzi += hz;
-                var idx = this.pinyin.indexOf("'");
-                if(idx > 0) {
-                    this.pinyin = this.pinyin.substr(idx + 1);
+                },
+                initDom: function () {
+                    var temp = '<div class="pinyin"></div><div class="result"><ol></ol><div class="page-up-down"><span class="page-up">▲</span><span class="page-down">▼</span></div></div>';
+                    var dom = document.createElement('div');
+                    dom.id = 'simle_input_method';
+                    dom.className = 'simple-input-method';
+                    dom.innerHTML = temp;
+                    var that = this;
+                    dom.addEventListener('click', function (e) {
+                        var target = e.target;
+                        if (target.nodeName == 'LI') that.selectHanzi(parseInt(target.dataset.idx));
+                        else if (target.nodeName == 'SPAN') {
+                            if (target.className == 'page-up' && that.pageCurrent > 1) {
+                                that.pageCurrent--;
+                                that.refreshPage();
+                                that._input.focus(); // 确保焦点回到输入框
+                            } else if (target.className == 'page-down' && that.pageCurrent < that.pageCount) {
+                                that.pageCurrent++;
+                                that.refreshPage();
+                                that._input.focus(); // 确保焦点回到输入框
+                            }
+                        }
+                    });
+                    document.body.appendChild(dom);
+                },
+                init: function (selector) {
+                    this.initDict();
+                    this.initDom();
+                    var obj = document.querySelectorAll(selector);
+                    this._target = document.querySelector('#simle_input_method');
+                    this._pinyinTarget = document.querySelector('#simle_input_method .pinyin');
+                    this._resultTarget = document.querySelector('#simle_input_method .result ol');
+                    var that = this;
+                    for (var i = 0; i < obj.length; i++) {
+                        obj[i].addEventListener('keydown', function (e) {
+                            var keyCode = e.keyCode;
+                            var preventDefault = false;
+                            if (keyCode >= 65 && keyCode <= 90) {
+                                that.addChar(String.fromCharCode(keyCode + 32), this);
+                                preventDefault = true;
+                            } else if (keyCode == 8 && that.pinyin) {
+                                that.delChar();
+                                preventDefault = true;
+                            } else if (keyCode >= 48 && keyCode <= 57 && !e.shiftKey && that.pinyin) {
+                                var idx = keyCode - 48;
+                                if (idx >= 1) {
+                                    var realIdx = (that.pageCurrent - 1) * that.pageSize + idx - 1;
+                                    if (realIdx < that.result.length) {
+                                        that.selectHanzi(idx);
+                                        preventDefault = true;
+                                    }
+                                }
+                            } else if (keyCode == 32 && that.pinyin) {
+                                that.selectHanzi(1);
+                                preventDefault = true;
+                            } else if (keyCode == 33 && that.pageCount > 0 && that.pageCurrent > 1) {
+                                that.pageCurrent--;
+                                that.refreshPage();
+                                that._input.focus(); // 确保焦点回到输入框
+                                preventDefault = true;
+                            } else if (keyCode == 34 && that.pageCount > 0 && that.pageCurrent < that.pageCount) {
+                                that.pageCurrent++;
+                                that.refreshPage();
+                                that._input.focus(); // 确保焦点回到输入框
+                                preventDefault = true;
+                            }
+                            // 新增翻页功能，并增加边界检查
+                            else if ((keyCode == 189 || keyCode == 188) && that.pageCount > 0 && that.pageCurrent > 1) {
+                                that.pageCurrent--;
+                                that.refreshPage();
+                                that._input.focus(); // 确保焦点回到输入框
+                                preventDefault = true;
+                            } else if ((keyCode == 187 || keyCode == 190) && that.pageCount > 0 && that.pageCurrent < that.pageCount) {
+                                that.pageCurrent++;
+                                that.refreshPage();
+                                that._input.focus(); // 确保焦点回到输入框
+                                preventDefault = true;
+                            }
+                            // 新增对第一页时的特殊处理
+                            else if ((keyCode == 189 || keyCode == 188) && that.pageCount > 0 && that.pageCurrent == 1) {
+                                preventDefault = true; // 阻止默认行为，但不翻页
+                            } else if ((keyCode == 187 || keyCode == 190) && that.pageCount > 0 && that.pageCurrent == that.pageCount) {
+                                preventDefault = true; // 阻止默认行为，但不翻页
+                            }
+                            if (preventDefault) e.preventDefault();
+                        });
+                        obj[i].addEventListener('focus', function () {
+                            if (that._input !== this) that.hide();
+                        });
+                    }
+                },
+                getSingleHanzi: function (pinyin) {
+                    return pinyinUtil.dict.py2hz2[pinyin] || pinyinUtil.dict.py2hz[pinyin] || '';
+                },
+                getHanzi: function (pinyin) {
+                    var result = this.getSingleHanzi(pinyin);
+                    if (result) return [result.split(''), pinyin];
+                    var temp = '';
+                    for (var i = 0, len = pinyin.length; i < len; i++) {
+                        temp += pinyin[i];
+                        result = this.getSingleHanzi(temp);
+                        if (!result) continue;
+                        var flag = false;
+                        if ((i + 1) < pinyin.length) {
+                            for (var j = 1, len = pinyin.length; j <= 5 && (i + j) < len; j++) {
+                                if (this.getSingleHanzi(pinyin.substr(0, i + j + 1))) {
+                                    flag = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!flag) return [result.split(''), pinyin.substr(0, i + 1) + "'" + pinyin.substr(i + 1)];
+                    }
+                    return [[], ''];
+                },
+                selectHanzi: function (i) {
+                    var hz = this.result[(this.pageCurrent - 1) * this.pageSize + i - 1];
+                    if (!hz) return;
+                    this.hanzi += hz;
+                    var idx = this.pinyin.indexOf("'");
+                    if (idx > 0) {
+                        this.pinyin = this.pinyin.substr(idx + 1);
+                        this.refresh();
+                    } else {
+                        this._input.value += this.hanzi;
+                        this.hide();
+                    }
+                },
+                refresh: function () {
+                    var temp = this.getHanzi(this.pinyin.replace(/'/g, ''));
+                    this.result = temp[0];
+                    this.pinyin = temp[1];
+                    var count = this.result.length;
+                    this.pageCurrent = 1;
+                    this.pageCount = Math.ceil(count / this.pageSize);
+                    this._pinyinTarget.innerHTML = this.hanzi + this.pinyin;
+
+                    // 如果没有候选词，直接将拼音输入到文本框
+                    if (count === 0) {
+                        this._input.value += this.pinyin;
+                        this.hide();
+                    } else {
+                        this.refreshPage();
+                    }
+                },
+                refreshPage: function () {
+                    var temp = this.result.slice((this.pageCurrent - 1) * this.pageSize, this.pageCurrent * this.pageSize);
+                    var html = '';
+                    var i = 0;
+                    temp.forEach(function (val) {
+                        html += '<li data-idx="' + (++i) + '">' + val + '</li>';
+                    });
+                    this._target.querySelector('.page-up').style.opacity = this.pageCurrent > 1 ? '1' : '.3';
+                    this._target.querySelector('.page-down').style.opacity = this.pageCurrent < this.pageCount ? '1' : '.3';
+                    this._resultTarget.innerHTML = html;
+                },
+                addChar: function (ch, obj) {
+                    if (this.pinyin.length == 0) {
+                        this.show(obj);
+                    }
+                    this.pinyin += ch;
                     this.refresh();
-                } else {
-                    this._input.value += this.hanzi;
-                    this.hide();
+                },
+                delChar: function () {
+                    if (this.pinyin.length <= 1) {
+                        this.hide();
+                        return;
+                    }
+                    this.pinyin = this.pinyin.substr(0, this.pinyin.length - 1);
+                    this.refresh();
+                },
+                show: function (obj) {
+                    var pos = obj.getBoundingClientRect();
+                    this._target.style.left = pos.left + 'px';
+                    this._target.style.top = pos.top + pos.height + document.body.scrollTop + 'px';
+                    this._input = obj;
+                    this._target.style.display = 'block';
+                },
+                hide: function () {
+                    this.reset();
+                    this._target.style.display = 'none';
+                },
+                reset: function () {
+                    this.hanzi = '';
+                    this.pinyin = '';
+                    this.result = [];
+                    this.pageCurrent = 1;
+                    this.pageCount = 0;
+                    this._pinyinTarget.innerHTML = '';
                 }
-            },
-            refresh: function() {
-                var temp = this.getHanzi(this.pinyin.replace(/'/g, ''));
-                this.result = temp[0];
-                this.pinyin = temp[1];
-                var count = this.result.length;
-                this.pageCurrent = 1;
-                this.pageCount = Math.ceil(count / this.pageSize);
-                this._pinyinTarget.innerHTML = this.hanzi + this.pinyin;
-                this.refreshPage();
-            },
-            refreshPage: function() {
-                var temp = this.result.slice((this.pageCurrent - 1) * this.pageSize, this.pageCurrent * this.pageSize);
-                var html = '';
-                var i = 0;
-                temp.forEach(function(val) {
-                    html += '<li data-idx="'+(++i)+'">' + val + '</li>';
-                });
-                this._target.querySelector('.page-up').style.opacity = this.pageCurrent > 1 ? '1' : '.3';
-                this._target.querySelector('.page-down').style.opacity = this.pageCurrent < this.pageCount ? '1' : '.3';
-                this._resultTarget.innerHTML = html;
-            },
-            addChar: function(ch, obj) {
-                if(this.pinyin.length == 0) {
-                    this.show(obj);
-                }
-                this.pinyin += ch;
-                this.refresh();
-            },
-            delChar: function() {
-                if(this.pinyin.length <= 1) {
-                    this.hide();
-                    return;
-                }
-                this.pinyin = this.pinyin.substr(0, this.pinyin.length - 1);
-                this.refresh();
-            },
-            show: function(obj) {
-                var pos = obj.getBoundingClientRect();
-                this._target.style.left = pos.left + 'px';
-                this._target.style.top = pos.top + pos.height + document.body.scrollTop + 'px';
-                this._input = obj;
-                this._target.style.display = 'block';
-            },
-            hide: function() {
-                this.reset();
-                this._target.style.display = 'none';
-            },
-            reset: function() {
-                this.hanzi = '';
-                this.pinyin = '';
-                this.result = [];
-                this.pageCurrent = 1;
-                this.pageCount = 0;
-                this._pinyinTarget.innerHTML = '';
-            }
-        };
+            };
 
-        pinyinUtil.parseDict();
-        SimpleInputMethod.init('.test-input-method');
-        document.querySelector('.loading-tip').innerHTML = 'JS加载完毕，现在你可以开始打字了！';
-    </script>
-</body>
+            pinyinUtil.parseDict();
+            SimpleInputMethod.init('.test-input-method');
+        </script>
+    </body>
+
 </html>
