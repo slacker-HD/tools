@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FTP下载工具</title>
+    <title>在线FTP工具</title>
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?767e3ea52a6b4f3c656cdd4119c87e62";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
     <script>
@@ -11,95 +20,148 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#3B82F6',
-                        secondary: '#10B981'
+                        tool: {
+                            ftp: '#3B82F6'  // 使用蓝色作为FTP工具的主题色
+                        }
+                    },
+                    fontFamily: {
+                        inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-center mb-8">FTP下载工具</h1>
-        
-        <!-- 连接设置 -->
-        <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-6 mb-6">
-            <h2 class="text-xl font-bold mb-4 flex items-center">
-                <i class="fas fa-server mr-2 text-primary"></i>
-                FTP服务器连接
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input type="text" id="host" placeholder="FTP服务器地址" 
-                    class="p-2 border rounded focus:outline-none focus:border-primary">
-                <input type="text" id="port" placeholder="端口 (默认21)" 
-                    class="p-2 border rounded focus:outline-none focus:border-primary" value="21">
-                <input type="text" id="username" placeholder="用户名" 
-                    class="p-2 border rounded focus:outline-none focus:border-primary">
-                <input type="password" id="password" placeholder="密码" 
-                    class="p-2 border rounded focus:outline-none focus:border-primary">
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- 页面头部 -->
+    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="text-tool-ftp mr-2">
+                    <i class="fa-solid fa-server text-2xl"></i>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold text-tool-ftp">在线FTP工具</h1>
             </div>
-            <button id="connectBtn" 
-                class="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center">
-                <i class="fas fa-plug mr-2"></i>连接服务器
-            </button>
+            <div class="flex space-x-4">
+                <a href="https://tools.hudi.site" 
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                    <i class="fa-solid fa-arrow-left mr-2"></i>
+                    返回工具箱
+                </a>
+                <a href="https://www.hudi.site" 
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                    target="_blank" rel="noopener noreferrer">
+                    <i class="fa-solid fa-blog mr-2"></i>
+                    访问我的主页
+                </a>
+            </div>
         </div>
+    </header>
 
-        <!-- 文件浏览器 -->
-        <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-6">
-            <h2 class="text-xl font-bold mb-4 flex items-center">
-                <i class="fas fa-folder-open mr-2 text-primary"></i>
-                文件浏览
-            </h2>
-            
-            <!-- 当前路径 -->
-            <div id="currentPath" class="text-sm text-gray-600 mb-4 flex items-center">
-                <i class="fas fa-folder mr-2"></i>
-                <span>/</span>
+    <!-- 主内容区 -->
+    <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+        <div class="max-w-4xl mx-auto">
+            <!-- 介绍卡片 -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                <p class="text-center text-base md:text-lg text-gray-600">
+                    输入FTP服务器信息并连接，即可浏览和下载文件。
+                </p>
             </div>
 
-            <!-- 文件列表 -->
-            <div id="fileList" class="border rounded-lg min-h-[300px] p-4 mb-4 space-y-2">
+            <!-- 连接设置面板 -->
+            <div class="bg-white rounded-2xl shadow-md p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4 flex items-center text-tool-ftp">
+                    <i class="fas fa-server mr-2"></i>
+                    连接信息
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="host" placeholder="FTP服务器地址" 
+                        class="p-2 border rounded focus:outline-none focus:border-tool-ftp">
+                    <input type="text" id="port" placeholder="端口 (默认21)" 
+                        class="p-2 border rounded focus:outline-none focus:border-tool-ftp" value="21">
+                    <input type="text" id="username" placeholder="用户名" 
+                        class="p-2 border rounded focus:outline-none focus:border-tool-ftp">
+                    <input type="password" id="password" placeholder="密码" 
+                        class="p-2 border rounded focus:outline-none focus:border-tool-ftp">
+                </div>
+                <button id="connectBtn" 
+                    class="mt-4 px-6 py-2 bg-tool-ftp text-white rounded-lg hover:bg-tool-ftp/90 transition-colors flex items-center">
+                    <i class="fas fa-plug mr-2"></i>连接服务器
+                </button>
             </div>
-            <template id="file-item-template">
-                <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
-                    <div class="flex items-center">
-                        <i class="fas fa-file mr-2 text-primary"></i>
-                        <span class="filename"></span>
+
+            <!-- 文件浏览器面板 -->
+            <div class="bg-white rounded-2xl shadow-md p-6">
+                <h2 class="text-xl font-bold mb-4 flex items-center text-tool-ftp">
+                    <i class="fas fa-folder-open mr-2"></i>
+                    文件浏览
+                </h2>
+                
+                <!-- 当前路径 -->
+                <div id="currentPath" class="text-sm text-gray-600 mb-4 flex items-center">
+                    <i class="fas fa-folder mr-2"></i>
+                    <span>/</span>
+                </div>
+
+                <!-- 文件列表 -->
+                <div id="fileList" class="border rounded-lg min-h-[300px] p-4 mb-4 space-y-2">
+                </div>
+                <template id="file-item-template">
+                    <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                        <div class="flex items-center">
+                            <i class="fas fa-file mr-2 text-primary"></i>
+                            <span class="filename"></span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="download-btn px-2 py-1 text-sm bg-primary text-white rounded hover:bg-primary/90">
+                                <i class="fas fa-download mr-1"></i>下载
+                            </button>
+                            <button class="open-btn px-2 py-1 text-sm bg-primary text-white rounded hover:bg-primary/90 hidden">
+                                <i class="fas fa-folder-open mr-1"></i>打开
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex space-x-2">
-                        <button class="download-btn px-2 py-1 text-sm bg-primary text-white rounded hover:bg-primary/90">
-                            <i class="fas fa-download mr-1"></i>下载
-                        </button>
+                </template>
+
+                <!-- 下载进度 -->
+                <div id="downloadProgress" class="hidden">
+                    <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-primary transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <div class="text-sm text-gray-600 mt-2">
+                        下载进度: <span id="progressText">0%</span>
                     </div>
                 </div>
-            </template>
-
-            <!-- 下载进度 -->
-            <div id="downloadProgress" class="hidden">
-                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div class="h-full bg-primary transition-all duration-300" style="width: 0%"></div>
-                </div>
-                <div class="text-sm text-gray-600 mt-2">
-                    下载进度: <span id="progressText">0%</span>
-                </div>
+                <!-- 返回上一级按钮 -->
+                <button id="backBtn" 
+                    class="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i>返回上一级
+                </button>
             </div>
         </div>
+    </main>
 
-        <!-- 使用说明 -->
-        <div class="max-w-3xl mx-auto mt-8 bg-white rounded-xl shadow-md p-6">
-            <h2 class="text-xl font-bold mb-4 flex items-center">
-                <i class="fas fa-info-circle mr-2 text-primary"></i>
-                使用说明
-            </h2>
-            <ul class="list-disc list-inside space-y-2 text-gray-600">
-                <li>输入FTP服务器信息并连接</li>
-                <li>浏览并选择需要下载的文件</li>
-                <li>点击文件名即可开始下载</li>
-                <li>支持显示下载进度</li>
-            </ul>
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400 mt-1">方便快捷的在线FTP工具</p>
+            <!-- 不蒜子统计 -->
+            <div class="mt-2 text-xs text-gray-500">
+                <span id="busuanzi_container_site_uv">
+                    <i class="fa-solid fa-user mr-1"></i>
+                    <span id="busuanzi_value_site_uv"></span> 访客
+                </span>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <span id="busuanzi_container_site_pv">
+                    <i class="fa-solid fa-eye mr-1"></i>
+                    <span id="busuanzi_value_site_pv"></span> 访问
+                </span>
+            </div>
+            <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn">皖ICP备18002386号-1</a>
         </div>
-    </div>
+    </footer>
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     <script src="./js/ftp.js"></script>
 </body>
 </html>
