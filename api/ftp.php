@@ -45,8 +45,18 @@ switch($action) {
     case 'list':
         $conn = connectFTP($data['host'], $data['username'], $data['password'], $data['port']);
         $path = $data['path'] ?? '/';
-        $list = ftp_nlist($conn, $path);
-        echo json_encode(['files' => $list]);
+        $rawList = ftp_rawlist($conn, $path);
+        $files = [];
+        foreach ($rawList as $item) {
+            $parts = preg_split('/\s+/', $item, 9);
+            $isDir = $parts[0][0] === 'd';
+            $name = $parts[8];
+            $files[] = [
+                'name' => $name,
+                'isDir' => $isDir
+            ];
+        }
+        echo json_encode(['files' => $files]);
         break;
 
     case 'upload':

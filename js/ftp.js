@@ -9,6 +9,8 @@ class FTPClient {
     bindEvents() {
         // 连接按钮
         document.getElementById('connectBtn').addEventListener('click', () => this.connect());
+        // 后退按钮
+        document.getElementById('backBtn').addEventListener('click', () => this.goBack());
     }
 
     async connect() {
@@ -69,20 +71,27 @@ class FTPClient {
     updateFileList(files) {
         const fileList = document.getElementById('fileList');
         const template = document.getElementById('file-item-template');
-        if (!template) {
-            this.showError('未找到文件项模板元素');
-            return;
-        }
         fileList.innerHTML = '';
 
         files.forEach(file => {
             const clone = template.content.cloneNode(true);
             const filename = clone.querySelector('.filename');
-            filename.textContent = file;
+            filename.textContent = file.name;
 
-            // 为下载按钮添加事件监听
+            const icon = clone.querySelector('.filename').previousElementSibling;
             const downloadBtn = clone.querySelector('.download-btn');
-            downloadBtn.addEventListener('click', () => this.downloadFile(file));
+            const openBtn = clone.querySelector('.open-btn');
+
+            if (file.isDir) {
+                icon.classList.remove('fa-file');
+                icon.classList.add('fa-folder');
+                downloadBtn.style.display = 'none';
+                openBtn.style.display = 'block';
+                openBtn.addEventListener('click', () => this.enterFolder(file.name));
+            } else {
+                openBtn.style.display = 'none';
+                downloadBtn.addEventListener('click', () => this.downloadFile(file.name));
+            }
 
             fileList.appendChild(clone);
         });
@@ -129,6 +138,25 @@ class FTPClient {
             console.error('Download error:', error);
             alert('下载失败：' + error.message);
         }
+    }
+
+    enterFolder(folder) {
+        if (!this.isConnected) return;
+
+        this.currentPath = this.currentPath === '/' ? this.currentPath + folder : this.currentPath + '/' + folder;
+        document.getElementById('currentPath').querySelector('span').textContent = this.currentPath;
+        this.listFiles();
+    }
+
+    goBack() {
+        if (!this.isConnected || this.currentPath === '/') return;
+        
+        const parts = this.currentPath.split('/').filter(Boolean);
+        parts.pop(); // 删除最后一部分
+        this.currentPath = parts.length === 0 ? '/' : '/' + parts.join('/') + '/';
+        
+        document.getElementById('currentPath').querySelector('span').textContent = this.currentPath;
+        this.listFiles();
     }
 }
 
