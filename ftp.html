@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FTP下载工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-8">FTP下载工具</h1>
+        
+        <!-- 连接设置 -->
+        <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-server mr-2 text-primary"></i>
+                FTP服务器连接
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" id="host" placeholder="FTP服务器地址" 
+                    class="p-2 border rounded focus:outline-none focus:border-primary">
+                <input type="text" id="port" placeholder="端口 (默认21)" 
+                    class="p-2 border rounded focus:outline-none focus:border-primary" value="21">
+                <input type="text" id="username" placeholder="用户名" 
+                    class="p-2 border rounded focus:outline-none focus:border-primary">
+                <input type="password" id="password" placeholder="密码" 
+                    class="p-2 border rounded focus:outline-none focus:border-primary">
+            </div>
+            <button id="connectBtn" 
+                class="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center">
+                <i class="fas fa-plug mr-2"></i>连接服务器
+            </button>
+        </div>
+
+        <!-- 文件浏览器 -->
+        <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-6">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-folder-open mr-2 text-primary"></i>
+                文件浏览
+            </h2>
+            
+            <!-- 当前路径 -->
+            <div id="currentPath" class="text-sm text-gray-600 mb-4 flex items-center">
+                <i class="fas fa-folder mr-2"></i>
+                <span>/</span>
+            </div>
+
+            <!-- 文件列表 -->
+            <div id="fileList" class="border rounded-lg min-h-[300px] p-4 mb-4 space-y-2">
+            </div>
+            <template id="file-item-template">
+                <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                    <div class="flex items-center">
+                        <i class="fas fa-file mr-2 text-primary"></i>
+                        <span class="filename"></span>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="download-btn px-2 py-1 text-sm bg-primary text-white rounded hover:bg-primary/90">
+                            <i class="fas fa-download mr-1"></i>下载
+                        </button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- 下载进度 -->
+            <div id="downloadProgress" class="hidden">
+                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div class="h-full bg-primary transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <div class="text-sm text-gray-600 mt-2">
+                    下载进度: <span id="progressText">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 使用说明 -->
+        <div class="max-w-3xl mx-auto mt-8 bg-white rounded-xl shadow-md p-6">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-info-circle mr-2 text-primary"></i>
+                使用说明
+            </h2>
+            <ul class="list-disc list-inside space-y-2 text-gray-600">
+                <li>输入FTP服务器信息并连接</li>
+                <li>浏览并选择需要下载的文件</li>
+                <li>点击文件名即可开始下载</li>
+                <li>支持显示下载进度</li>
+            </ul>
+        </div>
+    </div>
+    <script src="./js/ftp.js"></script>
+</body>
+</html>
