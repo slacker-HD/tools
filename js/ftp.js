@@ -4,6 +4,7 @@ class FTPClient {
         this.connectionInfo = null;
         this.bindEvents();
         this.isConnected = false;
+        this.connectionMessage = document.getElementById('connectionMessage');
     }
 
     bindEvents() {
@@ -24,6 +25,12 @@ class FTPClient {
             return;
         }
 
+        // 显示加载提示，禁用连接按钮
+        const connectBtn = document.getElementById('connectBtn');
+        const connectLoading = document.getElementById('connectLoading');
+        connectBtn.disabled = true;
+        connectLoading.classList.remove('hidden');
+
         try {
             const response = await fetch('/api/ftp.php?action=connect', {
                 method: 'POST',
@@ -42,6 +49,10 @@ class FTPClient {
             }
         } catch (err) {
             this.showError('连接服务器失败');
+        } finally {
+            // 隐藏加载提示，启用连接按钮
+            connectBtn.disabled = false;
+            connectLoading.classList.add('hidden');
         }
     }
 
@@ -98,18 +109,26 @@ class FTPClient {
     }
 
     showSuccess(message) {
-        // 可以使用更漂亮的通知组件
-        alert(message);
+        this.connectionMessage.textContent = message;
+        this.connectionMessage.classList.remove('hidden');
+        this.connectionMessage.style.color = 'green';
+        setTimeout(() => {
+            this.connectionMessage.classList.add('hidden');
+        }, 3000);
     }
 
     showError(message) {
-        // 可以使用更漂亮的通知组件
-        alert('错误: ' + message);
+        this.connectionMessage.textContent = '错误: ' + message;
+        this.connectionMessage.classList.remove('hidden');
+        this.connectionMessage.style.color = 'red';
+        setTimeout(() => {
+            this.connectionMessage.classList.add('hidden');
+        }, 3000);
     }
 
     async downloadFile(fileName) {
         if (!this.connectionInfo) return;
-        
+
         try {
             const response = await fetch('/api/ftp.php?action=download', {
                 method: 'POST',
@@ -136,7 +155,7 @@ class FTPClient {
             URL.revokeObjectURL(url);
         } catch (error) {
             console.error('Download error:', error);
-            alert('下载失败：' + error.message);
+            this.showError('下载失败：' + error.message);
         }
     }
 
@@ -150,11 +169,11 @@ class FTPClient {
 
     goBack() {
         if (!this.isConnected || this.currentPath === '/') return;
-        
+
         const parts = this.currentPath.split('/').filter(Boolean);
         parts.pop(); // 删除最后一部分
         this.currentPath = parts.length === 0 ? '/' : '/' + parts.join('/') + '/';
-        
+
         document.getElementById('currentPath').querySelector('span').textContent = this.currentPath;
         this.listFiles();
     }
