@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网页版扫雷</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#10B981',
+                        danger: '#EF4444',
+                        warning: '#F59E0B',
+                        info: '#3B82F6',
+                        dark: '#1F2937',
+                        light: '#F3F4F6'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .cell-size {
+                width: clamp(1.2rem, 2.5vw, 1.7rem);
+                height: clamp(1.2rem, 2.5vw, 1.7rem);
+            }
+            .grid-container {
+                display: grid;
+                grid-template-columns: repeat(var(--grid-cols), clamp(1.2rem, 2.5vw, 1.7rem));
+                gap: 1px;
+            }
+            .shadow-cell {
+                box-shadow: inset 2px 2px 0 rgba(255,255,255,0.5), inset -2px -2px 0 rgba(0,0,0,0.3);
+            }
+            .revealed {
+                box-shadow: inset 1px 1px 0 rgba(0,0,0,0.2);
+                background-color: #e5e7eb;
+            }
+            .btn-hover {
+                @apply transition-all duration-200 hover:scale-105 active:scale-95;
+            }
+            .cell-pressed {
+                background-color: #d1d5db;
+            }
+            .victory-overlay {
+                @apply fixed inset-0 bg-dark/80 flex items-center justify-center z-50;
+            }
+            .victory-message {
+                @apply bg-white p-8 rounded-xl shadow-2xl text-center max-w-md w-full transform transition-all;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen font-inter text-dark flex flex-col items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl p-6 max-w-3xl w-full">
+        <header class="text-center mb-6">
+            <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-2">扫雷</h1>
+            <p class="text-gray-600 text-sm">点击方块揭示数字，右键标记地雷，数字格上同时按下左右键可探测周围</p>
+        </header>
+        
+        <div class="mb-6 flex flex-wrap gap-4 justify-center items-center">
+            <div class="bg-gray-100 rounded-lg p-3 flex-1 max-w-xs">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-medium">游戏难度</span>
+                    <select id="difficulty" class="bg-white border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="easy">初级 (9×9, 10雷)</option>
+                        <option value="medium">中级 (16×16, 40雷)</option>
+                        <option value="hard">高级 (30×16, 99雷)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-4 w-full max-w-xs">
+                <div class="bg-gray-100 rounded-lg p-3 text-center">
+                    <span class="text-xs text-gray-500 block mb-1">剩余地雷</span>
+                    <span id="mines-count" class="text-xl font-bold text-danger">10</span>
+                </div>
+                
+                <div class="bg-gray-100 rounded-lg p-3 text-center">
+                    <button id="reset-btn" class="btn-hover w-full h-full flex items-center justify-center bg-primary/10 hover:bg-primary/20 text-primary rounded-lg p-2 transition-colors">
+                        <i class="fa fa-refresh text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="bg-gray-100 rounded-lg p-3 text-center">
+                    <span class="text-xs text-gray-500 block mb-1">用时</span>
+                    <span id="timer" class="text-xl font-bold text-info">0</span>
+                    <span class="text-xs text-gray-500">秒</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex justify-center mb-6">
+            <div id="game-container" class="bg-gray-300 p-2 rounded-lg shadow-lg overflow-auto max-w-full">
+                <div id="game-board" class="grid-container" style="--grid-cols: 9;"></div>
+            </div>
+        </div>
+        
+        <div class="text-center text-sm text-gray-500">
+            <p>操作说明：左键点击翻开方块，右键点击标记地雷，在数字方块上同时按下左右键可探测周围</p>
+        </div>
+    </div>
+
+    <!-- 胜利提示层 -->
+    <div id="victory-modal" class="victory-overlay hidden">
+        <div class="victory-message">
+            <div class="mb-4">
+                <i class="fa fa-flag-checkered text-5xl text-primary"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-primary mb-2">恭喜你赢了!</h2>
+            <p class="text-gray-600 mb-4">你用了 <span id="victory-time" class="font-bold text-info"></span> 秒完成了游戏</p>
+            <button id="new-game-btn" class="btn-hover bg-primary text-white px-6 py-2 rounded-lg">
+                开始新游戏
+            </button>
+        </div>
+    </div>
+
+        <script src="./js/minesweeper.js"></script>
+
+</body>
+</html>
+    
