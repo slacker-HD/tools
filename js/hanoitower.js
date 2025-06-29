@@ -188,6 +188,34 @@ document.addEventListener('DOMContentLoaded', function () {
         hintBtn.disabled = true;
         startBtn.disabled = false;
         diskCountSlider.disabled = false;
+
+        // --- 新增：完成时弹窗提示 ---
+        showFinishTip();
+    }
+
+    // 仿 minesweeper.html 的完成提示
+    function showFinishTip() {
+        // 若已存在则不重复添加
+        if (document.getElementById('hanoi-finish-tip')) return;
+        const tip = document.createElement('div');
+        tip.id = 'hanoi-finish-tip';
+        tip.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/40';
+        tip.innerHTML = `
+            <div class="bg-white rounded-2xl shadow-xl p-8 max-w-xs w-full text-center animate-bounce-in">
+                <div class="mb-4">
+                    <i class="fa-solid fa-trophy text-5xl text-tool-hanoitower"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2 text-tool-hanoitower">通关成功！</h2>
+                <p class="text-gray-700 mb-4">你用 <span class="font-bold text-tool-hanoitower">${currentMoves}</span> 步完成了汉诺塔！</p>
+                <button id="hanoi-finish-close" class="mt-2 px-6 py-2 bg-tool-hanoitower text-white rounded-lg font-bold hover:bg-tool-hanoitower/80 transition">
+                    确定
+                </button>
+            </div>
+        `;
+        document.body.appendChild(tip);
+        document.getElementById('hanoi-finish-close').onclick = function() {
+            tip.remove();
+        };
     }
 
     function showHint() {
