@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汉诺塔游戏</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tool: {
+                            hanoitower: '#F59E0B' // orange-400
+                        },
+                        primary: '#F59E0B', // orange-400
+                        secondary: '#EC4899',
+                        accent: '#4F46E5',
+                        dark: '#1F2937',
+                        light: '#F9FAFB'
+                    },
+                    fontFamily: {
+                        inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto { content-visibility: auto; }
+            .tower-shadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); }
+            .disk-transition { transition: transform 0.3s ease, left 0.3s ease, bottom 0.3s ease; }
+            .button-hover { @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1; }
+            .tower-hover { @apply transition-all duration-300 hover:bg-primary/5; }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- 页面头部 -->
+    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="text-tool-hanoitower mr-2">
+                    <i class="fa-solid fa-tower-observation text-2xl text-tool-hanoitower"></i>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold text-tool-hanoitower">汉诺塔游戏</h1>
+            </div>
+            <div class="flex space-x-4">
+                <a href="https://tools.hudi.site"
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md flex items-center">
+                    <i class="fa-solid fa-arrow-left mr-2"></i>返回工具箱
+                </a>
+                <a href="https://www.hudi.site"
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md flex items-center"
+                    target="_blank" rel="noopener noreferrer">
+                    <i class="fa-solid fa-blog mr-2"></i>访问我的主页
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+        <div class="max-w-6xl mx-auto">
+            <!-- 介绍卡片 -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-8">
+                <p class="text-center text-base md:text-lg text-gray-600">
+                    经典的数学谜题，挑战你的逻辑思维能力。从一个柱子移动所有圆盘到另一个柱子，每次只能移动一个圆盘，且不能将较大的圆盘放在较小的圆盘上面。
+                </p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl p-6 mb-8 tower-shadow">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="flex flex-col">
+                        <label for="diskCount" class="text-lg font-medium mb-2">选择层数 (3-15):</label>
+                        <div class="flex items-center mb-6">
+                            <input type="range" id="diskCount" min="3" max="15" value="3"
+                                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary">
+                            <span id="diskCountValue" class="ml-3 text-xl font-bold text-primary">3</span>
+                        </div>
+                        <div class="space-y-3">
+                            <button id="startBtn"
+                                class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-lg button-hover flex items-center justify-center text-base">
+                                <i class="fa fa-play mr-2"></i> 开始游戏
+                            </button>
+                            <button id="autoSolveBtn"
+                                class="w-full bg-secondary hover:bg-secondary/90 text-white font-bold py-3 px-6 rounded-lg button-hover flex items-center justify-center text-base"
+                                disabled>
+                                <i class="fa fa-magic mr-2"></i> 自动解谜
+                            </button>
+                            <button id="hintBtn"
+                                class="w-full bg-accent hover:bg-accent/90 text-white font-bold py-3 px-6 rounded-lg button-hover flex items-center justify-center text-base"
+                                disabled>
+                                <i class="fa fa-lightbulb mr-2"></i> 提示
+                            </button>
+                            <button id="resetBtn"
+                                class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg button-hover flex items-center justify-center text-base"
+                                disabled>
+                                <i class="fa fa-refresh mr-2"></i> 重置
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold mb-3 text-gray-800">游戏信息</h2>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">最小移动次数:</span>
+                                    <span id="minMoves" class="font-bold text-primary">7</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">当前移动次数:</span>
+                                    <span id="currentMoves" class="font-bold text-primary">0</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">最佳记录:</span>
+                                    <span id="bestRecord" class="font-bold text-primary">--</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <h2 class="text-xl font-bold mb-3 text-gray-800">游戏状态</h2>
+                            <div id="gameStatus" class="bg-gray-100 p-4 rounded-lg h-24 overflow-auto text-gray-700">
+                                请点击"开始游戏"按钮开始
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h2 class="text-xl font-bold mb-3 text-gray-800">游戏规则</h2>
+                        <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                            <li>每次只能移动一个圆盘</li>
+                            <li>只能移动每个柱子最上面的圆盘</li>
+                            <li>不能将较大的圆盘放在较小的圆盘上面</li>
+                            <li>目标是将所有圆盘从起始柱子移动到目标柱子</li>
+                        </ul>
+                        <h3 class="text-lg font-semibold mt-4 mb-2 text-gray-800">如何操作</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                            <li>点击起始柱子选择要移动的圆盘</li>
+                            <li>点击目标柱子放置圆盘</li>
+                            <li>使用"提示"按钮获取下一步建议</li>
+                            <li>使用"自动解谜"按钮观看最优解</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative bg-white rounded-2xl shadow-xl p-4 md:p-8 overflow-hidden tower-shadow">
+                <div id="gameArea" class="relative w-full h-[600px]">
+                    <div class="absolute bottom-0 left-0 w-full h-6 bg-gray-300 rounded-t-lg"></div>
+                    <div class="flex justify-around h-full items-end pb-6">
+                        <div id="tower1"
+                            class="tower relative w-1/3 h-full flex flex-col items-center cursor-pointer tower-hover">
+                            <div class="absolute bottom-0 w-4/5 h-4 bg-gray-400 rounded-t-lg"></div>
+                            <div class="absolute bottom-4 w-4 h-[calc(100%-2.5rem)] bg-gray-400 rounded-t-md"></div>
+                            <div class="disk-container absolute bottom-8 w-full flex flex-col items-center"></div>
+                        </div>
+                        <div id="tower2"
+                            class="tower relative w-1/3 h-full flex flex-col items-center cursor-pointer tower-hover">
+                            <div class="absolute bottom-0 w-4/5 h-4 bg-gray-400 rounded-t-lg"></div>
+                            <div class="absolute bottom-4 w-4 h-[calc(100%-2.5rem)] bg-gray-400 rounded-t-md"></div>
+                            <div class="disk-container absolute bottom-8 w-full flex flex-col items-center"></div>
+                        </div>
+                        <div id="tower3"
+                            class="tower relative w-1/3 h-full flex flex-col items-center cursor-pointer tower-hover">
+                            <div class="absolute bottom-0 w-4/5 h-4 bg-gray-400 rounded-t-lg"></div>
+                            <div class="absolute bottom-4 w-4 h-[calc(100%-2.5rem)] bg-gray-400 rounded-t-md"></div>
+                            <div class="disk-container absolute bottom-8 w-full flex flex-col items-center"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400 mt-1">锻炼你的逻辑思维，挑战汉诺塔！</p>
+            <div class="mt-2 text-xs text-gray-500">
+                <span id="busuanzi_container_site_uv">
+                    <i class="fa-solid fa-user mr-1"></i>
+                    <span id="busuanzi_value_site_uv"></span> 访客
+                </span>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <span id="busuanzi_container_site_pv">
+                    <i class="fa-solid fa-eye mr-1"></i>
+                    <span id="busuanzi_value_site_pv"></span> 访问
+                </span>
+            </div>
+            <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn">皖ICP备18002386号-1</a>
+        </div>
+    </footer>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <script src="./js/hanoitower.js"></script>
+</body>
+</html>
