@@ -1,133 +1,213 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>网页版扫雷</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#4F46E5',
-                        secondary: '#10B981',
-                        danger: '#EF4444',
-                        warning: '#F59E0B',
-                        info: '#3B82F6',
-                        dark: '#1F2937',
-                        light: '#F3F4F6'
-                    },
-                    fontFamily: {
-                        inter: ['Inter', 'system-ui', 'sans-serif'],
-                    },
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>网页版扫雷</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: '#4F46E5',
+                            secondary: '#10B981',
+                            danger: '#EF4444',
+                            warning: '#F59E0B',
+                            info: '#3B82F6',
+                            dark: '#1F2937',
+                            light: '#F3F4F6',
+                            tool: {
+                                poem: '#D97706'
+                            }
+                        },
+                        fontFamily: {
+                            inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                        },
+                    }
                 }
             }
-        }
-    </script>
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .content-auto {
-                content-visibility: auto;
+        </script>
+        <style type="text/tailwindcss">
+            .hidden {
+                display: none;
             }
-            .cell-size {
-                width: clamp(1.2rem, 2.5vw, 1.7rem);
-                height: clamp(1.2rem, 2.5vw, 1.7rem);
+            @layer utilities {
+                .content-auto {
+                    content-visibility: auto;
+                }
+                /* 动态计算单元格大小，确保高级难度下不出现水平滚动条 */
+                .cell-size {
+                    aspect-ratio: 1 / 1;
+                    min-width: clamp(0.75rem, 2.3vw, 1.6rem);
+                    min-height: clamp(0.75rem, 2.3vw, 1.6rem);
+                }
+                .grid-container {
+                    display: grid;
+                    grid-template-columns: repeat(var(--grid-cols), 1fr);
+                    gap: 1px;
+                    width: fit-content;
+                    max-width: 100%;
+                    margin: 0 auto;
+                }
+                .shadow-cell {
+                    box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.5), inset -2px -2px 0 rgba(0, 0, 0, 0.3);
+                }
+                .revealed {
+                    box-shadow: inset 1px 1px 0 rgba(0, 0, 0, 0.2);
+                    background-color: #e5e7eb;
+                }
+                .btn-hover {
+                    @apply transition-all duration-200 hover:scale-105 active:scale-95;
+                }
+                .cell-pressed {
+                    background-color: #d1d5db;
+                }
+                .victory-overlay {
+                    @apply fixed inset-0 bg-dark/80 flex items-center justify-center z-50;
+                }
+                .victory-message {
+                    @apply bg-white p-8 rounded-xl shadow-2xl text-center max-w-md w-full transform transition-all;
+                }
+                /* 新增：不能全消时的动画效果 */
+                .shake {
+                    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+                }
+                @keyframes shake {
+                    10%, 90% { transform: translate3d(-1px, 0, 0); }
+                    20%, 80% { transform: translate3d(2px, 0, 0); }
+                    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+                    40%, 60% { transform: translate3d(4px, 0, 0); }
+                }
+                /* 新增：临时高亮效果 */
+                .cell-highlight {
+                    background-color: #d1d5db;
+                    box-shadow: inset 1px 1px 0 rgba(0, 0, 0, 0.2);
+                }
             }
-            .grid-container {
-                display: grid;
-                grid-template-columns: repeat(var(--grid-cols), clamp(1.2rem, 2.5vw, 1.7rem));
-                gap: 1px;
-            }
-            .shadow-cell {
-                box-shadow: inset 2px 2px 0 rgba(255,255,255,0.5), inset -2px -2px 0 rgba(0,0,0,0.3);
-            }
-            .revealed {
-                box-shadow: inset 1px 1px 0 rgba(0,0,0,0.2);
-                background-color: #e5e7eb;
-            }
-            .btn-hover {
-                @apply transition-all duration-200 hover:scale-105 active:scale-95;
-            }
-            .cell-pressed {
-                background-color: #d1d5db;
-            }
-            .victory-overlay {
-                @apply fixed inset-0 bg-dark/80 flex items-center justify-center z-50;
-            }
-            .victory-message {
-                @apply bg-white p-8 rounded-xl shadow-2xl text-center max-w-md w-full transform transition-all;
-            }
-        }
-    </style>
-</head>
-<body class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen font-inter text-dark flex flex-col items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl p-6 max-w-3xl w-full">
-        <header class="text-center mb-6">
-            <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-2">扫雷</h1>
-            <p class="text-gray-600 text-sm">点击方块揭示数字，右键标记地雷，数字格上同时按下左右键可探测周围</p>
+        </style>
+    </head>
+
+    <body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+        <!-- 页面头部 -->
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="text-tool-poem mr-2">
+                        <i class="fa-solid fa-bomb text-2xl"></i>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-bold text-tool-poem">网页版扫雷</h1>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="https://tools.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>
+                        访问我的主页
+                    </a>
+                </div>
+            </div>
         </header>
-        
-        <div class="mb-6 flex flex-wrap gap-4 justify-center items-center">
-            <div class="bg-gray-100 rounded-lg p-3 flex-1 max-w-xs">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="font-medium">游戏难度</span>
-                    <select id="difficulty" class="bg-white border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                        <option value="easy">初级 (9×9, 10雷)</option>
-                        <option value="medium">中级 (16×16, 40雷)</option>
-                        <option value="hard">高级 (30×16, 99雷)</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-3 gap-4 w-full max-w-xs">
-                <div class="bg-gray-100 rounded-lg p-3 text-center">
-                    <span class="text-xs text-gray-500 block mb-1">剩余地雷</span>
-                    <span id="mines-count" class="text-xl font-bold text-danger">10</span>
-                </div>
-                
-                <div class="bg-gray-100 rounded-lg p-3 text-center">
-                    <button id="reset-btn" class="btn-hover w-full h-full flex items-center justify-center bg-primary/10 hover:bg-primary/20 text-primary rounded-lg p-2 transition-colors">
-                        <i class="fa fa-refresh text-xl"></i>
-                    </button>
-                </div>
-                
-                <div class="bg-gray-100 rounded-lg p-3 text-center">
-                    <span class="text-xs text-gray-500 block mb-1">用时</span>
-                    <span id="timer" class="text-xl font-bold text-info">0</span>
-                    <span class="text-xs text-gray-500">秒</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="flex justify-center mb-6">
-            <div id="game-container" class="bg-gray-300 p-2 rounded-lg shadow-lg overflow-auto max-w-full">
-                <div id="game-board" class="grid-container" style="--grid-cols: 9;"></div>
-            </div>
-        </div>
-        
-        <div class="text-center text-sm text-gray-500">
-            <p>操作说明：左键点击翻开方块，右键点击标记地雷，在数字方块上同时按下左右键可探测周围</p>
-        </div>
-    </div>
 
-    <!-- 胜利提示层 -->
-    <div id="victory-modal" class="victory-overlay hidden">
-        <div class="victory-message">
-            <div class="mb-4">
-                <i class="fa fa-flag-checkered text-5xl text-primary"></i>
+        <!-- 主内容区 -->
+        <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+            <!-- 介绍卡片 -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                <p class="text-center text-base md:text-lg text-gray-600">
+                    点击方块揭示数字，右键标记地雷，数字格上同时按下左右键可探测周围
+                </p>
             </div>
-            <h2 class="text-2xl font-bold text-primary mb-2">恭喜你赢了!</h2>
-            <p class="text-gray-600 mb-4">你用了 <span id="victory-time" class="font-bold text-info"></span> 秒完成了游戏</p>
-            <button id="new-game-btn" class="btn-hover bg-primary text-white px-6 py-2 rounded-lg">
-                开始新游戏
-            </button>
-        </div>
-    </div>
+            <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-6">
 
+
+                <div class="mb-6 flex flex-wrap gap-4 justify-center items-center">
+                    <div class="bg-gray-100 rounded-lg p-3 flex-1 max-w-xs">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-medium">游戏难度</span>
+                            <select id="difficulty"
+                                class="bg-white border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="easy">初级 (9×9, 10雷)</option>
+                                <option value="medium">中级 (16×16, 40雷)</option>
+                                <option value="hard">高级 (30×16, 99雷)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 w-full max-w-xs">
+                        <div class="bg-gray-100 rounded-lg p-3 text-center">
+                            <span class="text-xs text-gray-500 block mb-1">剩余地雷</span>
+                            <span id="mines-count" class="text-xl font-bold text-danger">10</span>
+                        </div>
+
+                        <div class="bg-gray-100 rounded-lg p-3 text-center">
+                            <button id="reset-btn"
+                                class="btn-hover w-full h-full flex items-center justify-center bg-primary/10 hover:bg-primary/20 text-primary rounded-lg p-2 transition-colors">
+                                <i class="fa fa-refresh text-xl"></i>
+                            </button>
+                        </div>
+
+                        <div class="bg-gray-100 rounded-lg p-3 text-center">
+                            <span class="text-xs text-gray-500 block mb-1">用时</span>
+                            <span id="timer" class="text-xl font-bold text-info">0</span>
+                            <span class="text-xs text-gray-500">秒</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center mb-6">
+                    <div id="game-container"
+                        class="bg-gray-300 p-2 rounded-lg shadow-lg w-full max-w-4xl mx-auto overflow-x-hidden">
+                        <div id="game-board" class="grid-container"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 页脚 -->
+        <footer class="bg-gray-900 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-sm text-gray-400 mt-1">windows经典游戏扫雷的复刻。</p>
+
+                <!-- 不蒜子统计 -->
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn"
+                    one-link-mark="yes">皖ICP备18002386号-1</a>
+            </div>
+        </footer>
+
+        <!-- 胜利提示层 -->
+        <div id="victory-modal" class="hidden victory-overlay">
+            <div class="victory-message">
+                <div class="mb-4">
+                    <i class="fa fa-flag-checkered text-5xl text-primary"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-primary mb-2">恭喜你赢了!</h2>
+                <p class="text-gray-600 mb-4">你用了 <span id="victory-time" class="font-bold text-info"></span> 秒完成了游戏</p>
+                <button id="new-game-btn" class="btn-hover bg-primary text-white px-6 py-2 rounded-lg">
+                    开始新游戏
+                </button>
+            </div>
+        </div>
+
+        <!-- 游戏逻辑 -->
         <script src="./js/minesweeper.js"></script>
+    </body>
 
-</body>
 </html>
-    
