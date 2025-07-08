@@ -7,39 +7,47 @@
     <title>黑白棋</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1c4587',
+                        accent: '#4a90e2',
+                        board: '#6d4b35',
+                        boardLine: '#4a90e2',
+                        reversi: '#319914',
+                    },
+                    fontFamily: {
+                        inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        @keyframes pulse-thinking {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
+        :root {
+            --color-primary: #1c4587;
+            --color-accent: #4a90e2;
+            --color-board: #6d4b35;
+            --color-board-line: #22c55e;
+            --color-bg: #f5f7fa;
+            --color-text-main: #1c4587;
+            --color-text-sub: #374151;
         }
 
-        @keyframes pulse-subtle {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.7;
-            }
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text-main);
         }
 
-        /* 修改棋盘背景颜色和网格线颜色 */
-    .board-grid {
-        background-size: 100% 100%;
-        background-image:
-            linear-gradient(to right, #22c55e 1px, transparent 1px),
-            linear-gradient(to bottom, #22c55e 1px, transparent 1px);
-        background-color: #6d4b35; /* 修改为你喜欢的颜色，这里使用蓝色示例 */
-    }
+        .board-grid {
+            background-size: 100% 100%;
+            background-image:
+                linear-gradient(to right, var(--color-board-line) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--color-board-line) 1px, transparent 1px);
+            background-color: var(--color-board);
+        }
 
         .piece-black {
             background: radial-gradient(circle at 30% 30%, #374151, #0f172a);
@@ -64,57 +72,90 @@
             animation: pulse-thinking 1.5s infinite;
         }
 
-        /* 按钮样式 */
-        .game-mode-btn {
+        @keyframes pulse-thinking {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes pulse-subtle {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .game-mode-btn,
+        .game-mode-btn-selected {
             transition: all 0.2s ease;
-            background-color: #f0f4ff;
-            color: #1c4587;
-            border-color: #1c4587;
+            background-color: var(--color-primary);
+            color: #fff;
+            border-color: var(--color-primary);
         }
 
         .game-mode-btn-selected {
-            background-color: #1c4587;
-            color: white;
-            border-color: #1c4587;
+            box-shadow: 0 0 0 2px var(--color-accent) inset;
         }
 
         .game-mode-btn:hover {
-            background-color: #1c4587;
-            color: white;
-            border-color: #1c4587;
+            background-color: var(--color-accent);
+            border-color: var(--color-accent);
+            color: #fff;
         }
 
-        /* 控制按钮样式 */
         button {
-            background: linear-gradient(135deg, #4a90e2, #1c4587);
-            color: white;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            color: #fff;
             border: none;
         }
 
         button:hover {
-            background: linear-gradient(135deg, #1c4587, #4a90e2);
+            background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
+        }
+
+        .text-primary {
+            color: var(--color-primary);
+        }
+
+        .bg-primary {
+            background-color: var(--color-primary);
+        }
+
+        .bg-accent {
+            background-color: var(--color-accent);
         }
     </style>
 </head>
 
-<body class="font-inter bg-blue-50 text-gray-800 min-h-screen flex flex-col">
+<body class="font-inter bg-[var(--color-bg)] text-[var(--color-text-main)] min-h-screen flex flex-col">
     <!-- 页面头部 -->
     <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center">
-                <div class="text-tool-white mr-2">
-                    <i class="fa-solid fa-chess-board text-2xl"></i>
+                <div class="text-reversi mr-2">
+                    <i class="fa-solid fa-chess-board text-primary text-2xl"></i>
                 </div>
-                <h1 class="text-xl md:text-2xl font-bold text-tool-white">黑白棋</h1>
+                <h1 class="text-xl md:text-2xl font-bold text-primary">黑白棋</h1>
             </div>
             <div class="flex space-x-4">
                 <a href="https://tools.hudi.site"
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                    class="bg-gray-100 hover:bg-gray-200 text-[var(--color-text-sub)] font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
                     <i class="fa-solid fa-arrow-left mr-2"></i>
                     返回工具箱
                 </a>
                 <a href="https://www.hudi.site"
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                    class="bg-gray-100 hover:bg-gray-200 text-[var(--color-text-sub)] font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
                     target="_blank" rel="noopener noreferrer">
                     <i class="fa-solid fa-blog mr-2"></i>
                     访问我的主页
@@ -208,16 +249,12 @@
             <!-- 游戏控制按钮 -->
             <div class="flex flex-wrap gap-4 justify-center">
                 <button id="newGameBtn"
-                    class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2">
+                    class="bg-primary text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2">
                     <i class="fa fa-refresh mr-2"></i>新游戏
                 </button>
                 <button id="undoBtn"
-                    class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2">
+                    class="bg-primary text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2">
                     <i class="fa fa-undo mr-2"></i>悔棋
-                </button>
-                <button id="hintBtn"
-                    class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2">
-                    <i class="fa fa-lightbulb mr-2"></i>提示
                 </button>
             </div>
             <!-- 游戏规则说明 -->
