@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>井字棋</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: '#0E7490',
+                            accent: '#38BDF8',
+                            ttt: '#0E7490',
+                            board: '#f3f4f6',
+                            boardLine: '#0E7490',
+                        },
+                        fontFamily: {
+                            inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                        }
+                    }
+                }
+            }
+        </script>
+        <style>
+            :root {
+                --color-primary: #0E7490;
+                --color-accent: #38BDF8;
+                --color-ttt: #0E7490;
+                --color-board: #f3f4f6;
+                --color-board-line: #0E7490;
+                --color-bg: #f5f7fa;
+                --color-text-main: #0E7490;
+                --color-text-sub: #374151;
+            }
+
+            body {
+                background-color: var(--color-bg);
+                color: var(--color-text-main);
+            }
+
+            .ttt-board {
+                background-color: var(--color-board);
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+                gap: 0;
+                border-radius: 1rem;
+                box-shadow: 0 4px 16px 0 rgba(60, 60, 60, 0.08);
+                border: 2px solid var(--color-board-line);
+                width: min(90vw, 400px);
+                height: min(90vw, 400px);
+                margin: 0 auto;
+            }
+
+            .ttt-cell {
+                border: 1.5px solid var(--color-board-line);
+                background: #fff;
+                font-size: 3rem;
+                font-family: inherit;
+                color: var(--color-primary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: background 0.2s;
+                position: relative;
+            }
+
+            .ttt-cell:hover {
+                background: #f1f5f9;
+            }
+
+            .ttt-x {
+                color: #0E7490;
+                font-weight: bold;
+                text-shadow: 0 2px 8px #38BDF8aa;
+            }
+
+            .ttt-o {
+                color: #38BDF8;
+                font-weight: bold;
+                text-shadow: 0 2px 8px #0E7490aa;
+            }
+
+            .ttt-winner {
+                background: #e0f2fe !important;
+                animation: pulse 1s infinite;
+            }
+
+            @keyframes pulse {
+
+                0%,
+                100% {
+                    opacity: 1;
+                }
+
+                50% {
+                    opacity: 0.7;
+                }
+            }
+
+            .game-mode-btn,
+            .game-mode-btn-selected {
+                transition: all 0.2s ease;
+                background-color: var(--color-primary);
+                color: #fff;
+                border-color: var(--color-primary);
+            }
+
+            .game-mode-btn-selected {
+                box-shadow: 0 0 0 2px var(--color-accent) inset;
+            }
+
+            .game-mode-btn:hover {
+                background-color: var(--color-accent);
+                border-color: var(--color-accent);
+                color: #fff;
+            }
+
+            button {
+                background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+                color: #fff;
+                border: none;
+            }
+
+            button:hover {
+                background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
+            }
+
+            .text-primary {
+                color: var(--color-primary);
+            }
+
+            .bg-primary {
+                background-color: var(--color-primary);
+            }
+
+            .bg-accent {
+                background-color: var(--color-accent);
+            }
+        </style>
+    </head>
+
+    <body class="font-inter bg-[var(--color-bg)] text-[var(--color-text-main)] min-h-screen flex flex-col">
+        <!-- 页面头部 -->
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="text-ttt mr-2">
+                        <i class="fa-solid fa-table-cells-large text-ttt text-2xl"></i>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-bold text-ttt">井字棋</h1>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="index.html"
+                        class="bg-gray-100 hover:bg-gray-200 text-[var(--color-text-sub)] font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-[var(--color-text-sub)] font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>
+                        访问我的主页
+                    </a>
+                </div>
+            </div>
+        </header>
+        <!-- 主内容区 -->
+        <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+            <!-- 介绍卡片 -->
+            <div
+                class="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                <p class="text-center text-base md:text-lg text-gray-600">
+                    经典井字棋游戏，支持双人对战和人机对战，三子连线即胜！
+                </p>
+            </div>
+            <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-xl p-6">
+                <!-- 游戏模式选择 -->
+                <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h3 class="font-medium text-gray-700 mb-3">游戏模式：</h3>
+                    <div class="flex flex-wrap gap-4">
+                        <button id="pvpModeBtn"
+                            class="px-4 py-2 rounded-lg border-2 game-mode-btn game-mode-btn-selected">
+                            <i class="fa fa-user mr-2"></i>玩家对战
+                        </button>
+                        <button id="pveModeBtn" class="px-4 py-2 rounded-lg border-2 game-mode-btn">
+                            <i class="fa fa-desktop mr-2"></i>人机对战
+                        </button>
+                    </div>
+                    <!-- AI难度选择 -->
+                    <div id="aiDifficulty" class="mt-4 hidden">
+                        <h3 class="font-medium text-gray-700 mb-2">AI难度：</h3>
+                        <div class="flex flex-wrap gap-4">
+                            <button id="easyAIBtn"
+                                class="px-4 py-2 rounded-lg border-2 game-mode-btn game-mode-btn-selected">
+                                <i class="fa fa-smile-o mr-2"></i>简单
+                            </button>
+                            <button id="hardAIBtn" class="px-4 py-2 rounded-lg border-2 game-mode-btn">
+                                <i class="fa fa-frown-o mr-2"></i>困难
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- 游戏信息 -->
+                <div class="flex flex-wrap gap-4 mb-6 justify-center">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-col items-center">
+                        <span class="text-gray-600">当前回合</span>
+                        <span id="currentPlayerText" class="text-2xl font-bold text-ttt mt-2">X</span>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-col items-center">
+                        <span class="text-gray-600">X胜场</span>
+                        <span id="xWins" class="text-2xl font-bold text-ttt mt-2">0</span>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-col items-center">
+                        <span class="text-gray-600">O胜场</span>
+                        <span id="oWins" class="text-2xl font-bold text-primary mt-2">0</span>
+                    </div>
+                </div>
+                <!-- 游戏棋盘 -->
+                <div class="flex justify-center mb-6">
+                    <div id="tttBoard" class="ttt-board"></div>
+                </div>
+                <!-- 游戏状态信息 -->
+                <div id="gameMessage" class="mb-6 hidden">
+                    <div class="p-4 rounded-lg border-l-4 bg-yellow-50 border-yellow-400 text-yellow-800"
+                        id="messageContent">
+                        <!-- 游戏消息将在这里动态显示 -->
+                    </div>
+                </div>
+                <!-- 游戏控制按钮 -->
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <button id="newGameBtn"
+                        class="bg-primary text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2">
+                        <i class="fa fa-refresh mr-2"></i>新游戏
+                    </button>
+                </div>
+                <!-- 游戏规则说明 -->
+                <div class="bg-white rounded-xl shadow-card p-6 mb-8">
+                    <h2 class="font-bold text-ttt text-xl mb-4 flex items-center">
+                        <i class="fa-solid fa-book mr-2"></i>游戏规则
+                    </h2>
+                    <ul class="list-disc pl-5 text-gray-700 space-y-2">
+                        <li>井字棋为3×3棋盘，玩家轮流在空格中落子（X或O）</li>
+                        <li>任意一方率先在横、竖或斜线上连成三个相同符号即获胜</li>
+                        <li>若棋盘填满且无人获胜，则为平局</li>
+                        <li>支持玩家对战和人机对战两种模式</li>
+                    </ul>
+                </div>
+                <!-- 游戏结束模态框 -->
+                <div id="gameOverModal"
+                    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                    <div
+                        class="bg-white rounded-xl p-8 max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
+                        <div class="text-center">
+                            <div id="winnerIcon"
+                                class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-100 text-yellow-600 mb-4">
+                                <i class="fa fa-trophy text-3xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">游戏结束！</h2>
+                            <p class="text-gray-600 mb-4" id="gameOverMessage">X获胜！</p>
+                            <div class="flex justify-center space-x-4">
+                                <button id="playAgainBtn"
+                                    class="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2">
+                                    <i class="fa fa-refresh mr-2"></i>再玩一次
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- 页脚 -->
+        <footer class="bg-gray-900 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-sm text-gray-400 mt-1">复刻经典游戏井字棋</p>
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn"
+                    one-link-mark="yes">皖ICP备18002386号-1</a>
+            </div>
+        </footer>
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <script src="./js/tictactoe.js"></script>
+    </body>
+
+</html>
