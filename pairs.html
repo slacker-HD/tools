@@ -1,30 +1,40 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>记忆配对游戏</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: '#4F46E5',
-            accent: '#8B5CF6',
-            memory: '#4F46E5',
-            // 其它色彩可按需添加
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>记忆配对游戏</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#4F46E5',
+              accent: '#8B5CF6',
+              memory: '#4F46E5',
+              // 其它色彩可按需添加
+            },
+            fontFamily: {
+              inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+            },
           },
-          fontFamily: {
-            inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
-          },
-        },
+        }
       }
-    }
-  </script>
-  <style type="text/tailwindcss">
-    @layer utilities {
+    </script>
+    <script>
+      var _hmt = _hmt || [];
+      (function () {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?767e3ea52a6b4f3c656cdd4119c87e62";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
+    <style type="text/tailwindcss">
+      @layer utilities {
       .content-auto { content-visibility: auto; }
       .card-flip { perspective: 1000px; transform-style: preserve-3d; }
       .card-front, .card-back { backface-visibility: hidden; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);}
@@ -61,117 +71,134 @@
     .bg-primary { background-color: #4F46E5; }
     .bg-accent { background-color: #8B5CF6; }
   </style>
-</head>
-<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
-  <!-- 页面头部 -->
-  <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
-    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-      <div class="flex items-center">
-        <div class="text-memory mr-2">
-          <i class="fa-solid fa-clone text-2xl text-primary"></i>
-        </div>
-        <h1 class="text-xl md:text-2xl font-bold text-primary">记忆配对游戏</h1>
-      </div>
-      <div class="flex space-x-4">
-        <a href="index.html"
-          class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
-          <i class="fa-solid fa-arrow-left mr-2"></i>
-          返回工具箱
-        </a>
-        <a href="https://www.hudi.site"
-          class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
-          target="_blank" rel="noopener noreferrer">
-          <i class="fa-solid fa-blog mr-2"></i>
-          访问我的主页
-        </a>
-      </div>
-    </div>
-  </header>
-  <!-- 主内容区 -->
-  <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
-    <!-- 介绍卡片 -->
-    <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm p-4 md:p-6 mb-8 transform hover:shadow-md transition-all duration-300">
-      <p class="text-center text-base md:text-lg text-gray-600">
-        翻转卡片，找出所有匹配的图案，锻炼你的记忆力！
-      </p>
-    </div>
-    <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm p-4 md:p-6 mb-8 transform hover:shadow-md transition-all duration-300">
-      <!-- 游戏控制面板 -->
-      <div class="flex flex-wrap justify-between items-center mb-6 bg-gray-50 p-4 rounded-xl shadow">
-        <div class="flex items-center gap-4 mb-4 sm:mb-0">
-          <div class="flex items-center">
-            <span class="text-primary mr-2"><i class="fa fa-clock-o text-xl"></i></span>
-            <span class="text-xl font-bold text-gray-800" id="timer">00:00</span>
+  </head>
+
+  <body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- 页面头部 -->
+    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+      <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center">
+          <div class="text-memory mr-2">
+            <i class="fa-solid fa-clone text-2xl text-primary"></i>
           </div>
-          <div class="flex items-center">
-            <span class="text-accent mr-2"><i class="fa fa-trophy text-xl"></i></span>
-            <span class="text-xl font-bold text-gray-800" id="moves">0</span>
-            <span class="text-gray-500 ml-1">步数</span>
-          </div>
+          <h1 class="text-xl md:text-2xl font-bold text-primary">记忆配对游戏</h1>
         </div>
-        <button id="restart" class="bg-primary text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center">
-          <i class="fa fa-refresh mr-2"></i> 重新开始
-        </button>
-      </div>
-      <!-- 难度选择 -->
-      <div class="mb-6 bg-gray-50 p-4 rounded-xl shadow">
-        <h2 class="text-xl font-bold text-gray-800 mb-3">选择难度</h2>
-        <div class="flex flex-wrap gap-3">
-          <button class="difficulty-btn bg-primary/90 hover:bg-primary text-white font-medium py-1.5 px-4 rounded-lg transition-all" data-size="4x4">简单 (4x4)</button>
-          <button class="difficulty-btn bg-primary/80 hover:bg-primary/90 text-white font-medium py-1.5 px-4 rounded-lg transition-all" data-size="6x6">中等 (6x6)</button>
-          <button class="difficulty-btn bg-primary/70 hover:bg-primary/80 text-white font-medium py-1.5 px-4 rounded-lg transition-all" data-size="8x8">困难 (8x8)</button>
-          <button class="difficulty-btn bg-primary/60 hover:bg-primary/70 text-white font-medium py-1.5 px-4 rounded-lg transition-all" data-size="10x10">地狱 (10x10)</button>
-          <button class="difficulty-btn bg-primary/50 hover:bg-primary/60 text-white font-medium py-1.5 px-4 rounded-lg transition-all" data-size="12x12">炼狱 (12x12)</button>
+        <div class="flex space-x-4">
+          <a href="index.html"
+            class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+            <i class="fa-solid fa-arrow-left mr-2"></i>
+            返回工具箱
+          </a>
+          <a href="https://www.hudi.site"
+            class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+            target="_blank" rel="noopener noreferrer">
+            <i class="fa-solid fa-blog mr-2"></i>
+            访问我的主页
+          </a>
         </div>
       </div>
-      <!-- 游戏区域 -->
-      <div id="game-container" class="mb-8"></div>
-      <!-- 游戏结束弹窗 -->
-      <div id="game-over-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all">
-          <div class="text-center">
-            <div class="inline-block p-4 bg-accent/20 rounded-full mb-4">
-              <i class="fa fa-star text-accent text-4xl"></i>
+    </header>
+    <!-- 主内容区 -->
+    <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+      <!-- 介绍卡片 -->
+      <div
+        class="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm p-4 md:p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+        <p class="text-center text-base md:text-lg text-gray-600">
+          翻转卡片，找出所有匹配的图案，锻炼你的记忆力！
+        </p>
+      </div>
+      <div
+        class="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm p-4 md:p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+        <!-- 游戏控制面板 -->
+        <div class="flex flex-wrap justify-between items-center mb-6 bg-gray-50 p-4 rounded-xl shadow">
+          <div class="flex items-center gap-4 mb-4 sm:mb-0">
+            <div class="flex items-center">
+              <span class="text-primary mr-2"><i class="fa fa-clock-o text-xl"></i></span>
+              <span class="text-xl font-bold text-gray-800" id="timer">00:00</span>
             </div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">恭喜你!</h2>
-            <p class="text-gray-500 mb-6">你完成了游戏</p>
-            <div class="grid grid-cols-2 gap-4 mb-6">
-              <div class="bg-gray-50 p-3 rounded-lg">
-                <p class="text-gray-500 text-sm">用时</p>
-                <p class="text-xl font-bold text-gray-800" id="final-time">00:00</p>
-              </div>
-              <div class="bg-gray-50 p-3 rounded-lg">
-                <p class="text-gray-500 text-sm">步数</p>
-                <p class="text-xl font-bold text-gray-800" id="final-moves">0</p>
-              </div>
+            <div class="flex items-center">
+              <span class="text-accent mr-2"><i class="fa fa-trophy text-xl"></i></span>
+              <span class="text-xl font-bold text-gray-800" id="moves">0</span>
+              <span class="text-gray-500 ml-1">步数</span>
             </div>
-            <button id="play-again" class="w-full bg-primary text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105">
-              再玩一次
-            </button>
+          </div>
+          <button id="restart"
+            class="bg-primary text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center">
+            <i class="fa fa-refresh mr-2"></i> 重新开始
+          </button>
+        </div>
+        <!-- 难度选择 -->
+        <div class="mb-6 bg-gray-50 p-4 rounded-xl shadow">
+          <h2 class="text-xl font-bold text-gray-800 mb-3">选择难度</h2>
+          <div class="flex flex-wrap gap-3">
+            <button
+              class="difficulty-btn bg-primary/90 hover:bg-primary text-white font-medium py-1.5 px-4 rounded-lg transition-all"
+              data-size="4x4">简单 (4x4)</button>
+            <button
+              class="difficulty-btn bg-primary/80 hover:bg-primary/90 text-white font-medium py-1.5 px-4 rounded-lg transition-all"
+              data-size="6x6">中等 (6x6)</button>
+            <button
+              class="difficulty-btn bg-primary/70 hover:bg-primary/80 text-white font-medium py-1.5 px-4 rounded-lg transition-all"
+              data-size="8x8">困难 (8x8)</button>
+            <button
+              class="difficulty-btn bg-primary/60 hover:bg-primary/70 text-white font-medium py-1.5 px-4 rounded-lg transition-all"
+              data-size="10x10">地狱 (10x10)</button>
+            <button
+              class="difficulty-btn bg-primary/50 hover:bg-primary/60 text-white font-medium py-1.5 px-4 rounded-lg transition-all"
+              data-size="12x12">炼狱 (12x12)</button>
+          </div>
+        </div>
+        <!-- 游戏区域 -->
+        <div id="game-container" class="mb-8"></div>
+        <!-- 游戏结束弹窗 -->
+        <div id="game-over-modal"
+          class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+          <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all">
+            <div class="text-center">
+              <div class="inline-block p-4 bg-accent/20 rounded-full mb-4">
+                <i class="fa fa-star text-accent text-4xl"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-800 mb-2">恭喜你!</h2>
+              <p class="text-gray-500 mb-6">你完成了游戏</p>
+              <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-gray-50 p-3 rounded-lg">
+                  <p class="text-gray-500 text-sm">用时</p>
+                  <p class="text-xl font-bold text-gray-800" id="final-time">00:00</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                  <p class="text-gray-500 text-sm">步数</p>
+                  <p class="text-xl font-bold text-gray-800" id="final-moves">0</p>
+                </div>
+              </div>
+              <button id="play-again"
+                class="w-full bg-primary text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105">
+                再玩一次
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </main>
-  <!-- 页脚 -->
-  <footer class="bg-gray-900 text-white py-6 mt-12">
-    <div class="container mx-auto px-4 text-center">
-      <p class="text-sm text-gray-400 mt-1">记忆配对游戏 | 享受游戏乐趣</p>
-      <div class="mt-2 text-xs text-gray-500">
-        <span id="busuanzi_container_site_uv">
-          <i class="fa-solid fa-user mr-1"></i>
-          <span id="busuanzi_value_site_uv"></span> 访客
-        </span>
-        &nbsp;&nbsp;|&nbsp;&nbsp;
-        <span id="busuanzi_container_site_pv">
-          <i class="fa-solid fa-eye mr-1"></i>
-          <span id="busuanzi_value_site_pv"></span> 访问
-        </span>
+    </main>
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 text-white py-6 mt-12">
+      <div class="container mx-auto px-4 text-center">
+        <p class="text-sm text-gray-400 mt-1">记忆配对游戏 | 享受游戏乐趣</p>
+        <div class="mt-2 text-xs text-gray-500">
+          <span id="busuanzi_container_site_uv">
+            <i class="fa-solid fa-user mr-1"></i>
+            <span id="busuanzi_value_site_uv"></span> 访客
+          </span>
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          <span id="busuanzi_container_site_pv">
+            <i class="fa-solid fa-eye mr-1"></i>
+            <span id="busuanzi_value_site_pv"></span> 访问
+          </span>
+        </div>
+        <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn" one-link-mark="yes">皖ICP备18002386号-1</a>
       </div>
-      <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn" one-link-mark="yes">皖ICP备18002386号-1</a>
-    </div>
-  </footer>
-  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-  <script src="js/pairs.js"></script>
-</body>
+    </footer>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <script src="js/pairs.js"></script>
+  </body>
+
 </html>

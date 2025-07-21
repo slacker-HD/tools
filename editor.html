@@ -46,6 +46,15 @@
             }
         }
     </style>
+        <script>
+            var _hmt = _hmt || [];
+            (function () {
+                var hm = document.createElement("script");
+                hm.src = "//hm.baidu.com/hm.js?767e3ea52a6b4f3c656cdd4119c87e62";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();
+        </script>
     </head>
 
     <body class="bg-gray-50 min-h-screen flex flex-col">
@@ -84,7 +93,8 @@
         <main class="flex-1 container mx-auto px-4 py-6">
             <!-- 编辑器工具栏 -->
             <div class="bg-white border border-gray-200 rounded-t-md p-2 flex items-center space-x-1 flex-wrap">
-                <button id="saveBtn" class="toolbar-btn toolbar-hover p-2 rounded text-gray-600 flex items-center" title="保存">
+                <button id="saveBtn" class="toolbar-btn toolbar-hover p-2 rounded text-gray-600 flex items-center"
+                    title="保存">
                     <i class="fa fa-save mr-1"></i>
                     <span>保存</span>
                 </button>
@@ -264,7 +274,8 @@
                     <span id="charCount">字符: 0</span>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <select id="encodingSelector" class="bg-transparent text-gray-600 text-sm outline-none cursor-pointer">
+                    <select id="encodingSelector"
+                        class="bg-transparent text-gray-600 text-sm outline-none cursor-pointer">
                         <option value="UTF-8">UTF-8</option>
                         <option value="UTF-8-BOM">UTF-8-BOM</option>
                         <option value="UTF-16LE">UTF-16LE</option>
@@ -275,7 +286,8 @@
                         <option value="BIG5">BIG5</option>
                         <option value="ASCII">ASCII</option>
                     </select>
-                    <select id="lineEndingSelector" class="bg-transparent text-gray-600 text-sm outline-none cursor-pointer">
+                    <select id="lineEndingSelector"
+                        class="bg-transparent text-gray-600 text-sm outline-none cursor-pointer">
                         <option value="LF">LF (Unix)</option>
                         <option value="CRLF">CRLF (Windows)</option>
                     </select>

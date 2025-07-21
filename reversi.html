@@ -1,341 +1,350 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>黑白棋</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#1c4587',
-                        accent: '#4a90e2',
-                        board: '#6d4b35',
-                        boardLine: '#4a90e2',
-                        reversi: '#319914',
-                    },
-                    fontFamily: {
-                        inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>黑白棋</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: '#1c4587',
+                            accent: '#4a90e2',
+                            board: '#6d4b35',
+                            boardLine: '#4a90e2',
+                            reversi: '#319914',
+                        },
+                        fontFamily: {
+                            inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                        }
                     }
                 }
             }
-        }
-    </script>
-    <style>
-        :root {
-            --color-primary: #1c4587;
-            --color-accent: #4a90e2;
-            --color-board: #6d4b35;
-            --color-board-line: #22c55e;
-            --color-bg: #f5f7fa;
-            --color-text-main: #1c4587;
-            --color-text-sub: #374151;
-        }
-
-        body {
-            background-color: var(--color-bg);
-            color: var(--color-text-main);
-        }
-
-        .board-grid {
-            background-size: 100% 100%;
-            background-image:
-                linear-gradient(to right, var(--color-board-line) 1px, transparent 1px),
-                linear-gradient(to bottom, var(--color-board-line) 1px, transparent 1px);
-            background-color: var(--color-board);
-        }
-
-        .piece-black {
-            background: radial-gradient(circle at 30% 30%, #374151, #0f172a);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-        }
-
-        .piece-white {
-            background: radial-gradient(circle at 30% 30%, #f8fafc, #e2e8f0);
-            box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.3), 0 2px 4px -1px rgba(255, 255, 255, 0.15);
-        }
-
-        .valid-move {
-            background-color: rgba(255, 255, 255, 0.3);
-            transition: all 0.2s ease;
-        }
-
-        .valid-move:hover {
-            background-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .ai-thinking {
-            animation: pulse-thinking 1.5s infinite;
-        }
-
-        @keyframes pulse-thinking {
-
-            0%,
-            100% {
-                opacity: 1;
+        </script>
+        <script>
+            var _hmt = _hmt || [];
+            (function () {
+                var hm = document.createElement("script");
+                hm.src = "//hm.baidu.com/hm.js?767e3ea52a6b4f3c656cdd4119c87e62";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();
+        </script>
+        <style>
+            :root {
+                --color-primary: #1c4587;
+                --color-accent: #4a90e2;
+                --color-board: #6d4b35;
+                --color-board-line: #22c55e;
+                --color-bg: #f5f7fa;
+                --color-text-main: #1c4587;
+                --color-text-sub: #374151;
             }
 
-            50% {
-                opacity: 0.5;
-            }
-        }
-
-        @keyframes pulse-subtle {
-
-            0%,
-            100% {
-                opacity: 1;
+            body {
+                background-color: var(--color-bg);
+                color: var(--color-text-main);
             }
 
-            50% {
-                opacity: 0.7;
+            .board-grid {
+                background-size: 100% 100%;
+                background-image:
+                    linear-gradient(to right, var(--color-board-line) 1px, transparent 1px),
+                    linear-gradient(to bottom, var(--color-board-line) 1px, transparent 1px);
+                background-color: var(--color-board);
             }
-        }
 
-        .game-mode-btn,
-        .game-mode-btn-selected {
-            transition: all 0.2s ease;
-            background-color: var(--color-primary);
-            color: #fff;
-            border-color: var(--color-primary);
-        }
+            .piece-black {
+                background: radial-gradient(circle at 30% 30%, #374151, #0f172a);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+            }
 
-        .game-mode-btn-selected {
-            box-shadow: 0 0 0 2px var(--color-accent) inset;
-        }
+            .piece-white {
+                background: radial-gradient(circle at 30% 30%, #f8fafc, #e2e8f0);
+                box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.3), 0 2px 4px -1px rgba(255, 255, 255, 0.15);
+            }
 
-        .game-mode-btn:hover {
-            background-color: var(--color-accent);
-            border-color: var(--color-accent);
-            color: #fff;
-        }
+            .valid-move {
+                background-color: rgba(255, 255, 255, 0.3);
+                transition: all 0.2s ease;
+            }
 
-        button {
-            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-            color: #fff;
-            border: none;
-        }
+            .valid-move:hover {
+                background-color: rgba(255, 255, 255, 0.5);
+            }
 
-        button:hover {
-            background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
-        }
+            .ai-thinking {
+                animation: pulse-thinking 1.5s infinite;
+            }
 
-        .text-primary {
-            color: var(--color-primary);
-        }
+            @keyframes pulse-thinking {
 
-        .bg-primary {
-            background-color: var(--color-primary);
-        }
+                0%,
+                100% {
+                    opacity: 1;
+                }
 
-        .bg-accent {
-            background-color: var(--color-accent);
-        }
-    </style>
-</head>
+                50% {
+                    opacity: 0.5;
+                }
+            }
 
-<body class="font-inter bg-[var(--color-bg)] text-[var(--color-text-main)] min-h-screen flex flex-col">
-    <!-- 页面头部 -->
-    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center">
-                <div class="text-reversi mr-2">
-                    <i class="fa-solid fa-chess-board text-primary text-2xl"></i>
+            @keyframes pulse-subtle {
+
+                0%,
+                100% {
+                    opacity: 1;
+                }
+
+                50% {
+                    opacity: 0.7;
+                }
+            }
+
+            .game-mode-btn,
+            .game-mode-btn-selected {
+                transition: all 0.2s ease;
+                background-color: var(--color-primary);
+                color: #fff;
+                border-color: var(--color-primary);
+            }
+
+            .game-mode-btn-selected {
+                box-shadow: 0 0 0 2px var(--color-accent) inset;
+            }
+
+            .game-mode-btn:hover {
+                background-color: var(--color-accent);
+                border-color: var(--color-accent);
+                color: #fff;
+            }
+
+            button {
+                background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+                color: #fff;
+                border: none;
+            }
+
+            button:hover {
+                background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
+            }
+
+            .text-primary {
+                color: var(--color-primary);
+            }
+
+            .bg-primary {
+                background-color: var(--color-primary);
+            }
+
+            .bg-accent {
+                background-color: var(--color-accent);
+            }
+        </style>
+    </head>
+
+    <body class="font-inter bg-[var(--color-bg)] text-[var(--color-text-main)] min-h-screen flex flex-col">
+        <!-- 页面头部 -->
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="text-reversi mr-2">
+                        <i class="fa-solid fa-chess-board text-primary text-2xl"></i>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-bold text-primary">黑白棋</h1>
                 </div>
-                <h1 class="text-xl md:text-2xl font-bold text-primary">黑白棋</h1>
-            </div>
-            <div class="flex space-x-4">
-                <a href="https://tools.hudi.site"
-                    class="bg-gray-100 hover:bg-gray-200 text-[var(--color-text-sub)] font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
-                    <i class="fa-solid fa-arrow-left mr-2"></i>
-                    返回工具箱
-                </a>
-                <a href="https://www.hudi.site"
-                    class="bg-gray-100 hover:bg-gray-200 text-[var(--color-text-sub)] font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
-                    target="_blank" rel="noopener noreferrer">
-                    <i class="fa-solid fa-blog mr-2"></i>
-                    访问我的主页
-                </a>
-            </div>
-        </div>
-    </header>
-    <!-- 主内容区 -->
-    <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
-        <!-- 介绍卡片 -->
-        <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
-            <p class="text-center text-base md:text-lg text-gray-600">
-                经典策略游戏，翻转对手的棋子，占领棋盘
-            </p>
-        </div>
-        <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-6">
-            <!-- 游戏模式选择 -->
-            <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <h3 class="font-medium text-gray-700 mb-3">游戏模式：</h3>
-                <div class="flex flex-wrap gap-4">
-                    <button id="pvpModeBtn"
-                        class="px-4 py-2 rounded-lg border-2 game-mode-btn game-mode-btn-selected">
-                        <i class="fa fa-user mr-2"></i>玩家对战
-                    </button>
-                    <button id="pveModeBtn" class="px-4 py-2 rounded-lg border-2 game-mode-btn">
-                        <i class="fa fa-desktop mr-2"></i>人机对战
-                    </button>
+                <div class="flex space-x-4">
+                    <a href="https://tools.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-[var(--color-text-sub)] font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-[var(--color-text-sub)] font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>
+                        访问我的主页
+                    </a>
                 </div>
-                <!-- AI难度选择 -->
-                <div id="aiDifficulty" class="mt-4 hidden">
-                    <h3 class="font-medium text-gray-700 mb-2">AI难度：</h3>
+            </div>
+        </header>
+        <!-- 主内容区 -->
+        <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+            <!-- 介绍卡片 -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                <p class="text-center text-base md:text-lg text-gray-600">
+                    经典策略游戏，翻转对手的棋子，占领棋盘
+                </p>
+            </div>
+            <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-6">
+                <!-- 游戏模式选择 -->
+                <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h3 class="font-medium text-gray-700 mb-3">游戏模式：</h3>
                     <div class="flex flex-wrap gap-4">
-                        <button id="easyAIBtn"
+                        <button id="pvpModeBtn"
                             class="px-4 py-2 rounded-lg border-2 game-mode-btn game-mode-btn-selected">
-                            <i class="fa fa-smile-o mr-2"></i>简单
+                            <i class="fa fa-user mr-2"></i>玩家对战
                         </button>
-                        <button id="mediumAIBtn" class="px-4 py-2 rounded-lg border-2 game-mode-btn">
-                            <i class="fa fa-meh-o mr-2"></i>中等
-                        </button>
-                        <button id="hardAIBtn" class="px-4 py-2 rounded-lg border-2 game-mode-btn">
-                            <i class="fa fa-frown-o mr-2"></i>困难
+                        <button id="pveModeBtn" class="px-4 py-2 rounded-lg border-2 game-mode-btn">
+                            <i class="fa fa-desktop mr-2"></i>人机对战
                         </button>
                     </div>
-                </div>
-            </div>
-            <!-- 游戏信息 -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 rounded-full piece-black mr-3"></div>
-                            <span id="blackPlayerLabel" class="text-gray-600">黑方</span>
-                        </div>
-                        <span id="blackCount" class="text-2xl font-bold text-black">2</span>
-                    </div>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <span class="text-gray-600">当前回合</span>
-                        </div>
-                        <div class="flex items-center" id="currentPlayer">
-                            <div id="currentPlayerIndicator"
-                                class="w-8 h-8 rounded-full piece-black mr-2 animate-pulse-subtle"></div>
-                            <span id="currentPlayerText" class="text-lg font-semibold text-black">黑方</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 rounded-full piece-white mr-3"></div>
-                            <span id="whitePlayerLabel" class="text-gray-600">白方</span>
-                        </div>
-                        <span id="whiteCount" class="text-2xl font-bold text-black">2</span>
-                    </div>
-                </div>
-            </div>
-            <!-- 游戏棋盘 -->
-            <div class="flex justify-center mb-6">
-                <div id="boardContainer" class="relative board-grid">
-                    <!-- 棋盘将通过JS动态生成 -->
-                </div>
-            </div>
-            <!-- 游戏状态信息 -->
-            <div id="gameMessage" class="mb-6 hidden">
-                <div class="p-4 rounded-lg border-l-4" id="messageContent">
-                    <!-- 游戏消息将在这里动态显示 -->
-                </div>
-            </div>
-            <!-- 游戏控制按钮 -->
-            <div class="flex flex-wrap gap-4 justify-center">
-                <button id="newGameBtn"
-                    class="bg-primary text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2">
-                    <i class="fa fa-refresh mr-2"></i>新游戏
-                </button>
-                <button id="undoBtn"
-                    class="bg-primary text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2">
-                    <i class="fa fa-undo mr-2"></i>悔棋
-                </button>
-            </div>
-            <!-- 游戏规则说明 -->
-            <div class="bg-white rounded-xl shadow-card p-6 mb-8">
-                <h2 class="font-bold text-primary text-xl mb-4 flex items-center">
-                    <i class="fa-solid fa-book mr-2"></i>游戏规则
-                </h2>
-                <ul class="list-disc pl-5 text-gray-700 space-y-2">
-                    <li>黑白棋使用8×8的棋盘，黑白两色的棋子各32枚</li>
-                    <li>游戏开始时，棋盘正中央的四个格会放置棋子：黑方棋子置于D4和E5，白方棋子置于D5和E4</li>
-                    <li>黑方先行，之后双方交替落子</li>
-                    <li>落子必须翻转至少一枚对手的棋子。被夹住的所有棋子都会被翻转成你的颜色</li>
-                    <li>当一方无法落子时，由另一方继续落子，直到双方都无法落子为止</li>
-                    <li>游戏结束时，棋盘上棋子较多的一方获胜</li>
-                </ul>
-            </div>
-            <!-- 游戏结束模态框 -->
-            <div id="gameOverModal"
-                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-                <div
-                    class="bg-white rounded-xl p-8 max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
-                    <div class="text-center">
-                        <div id="winnerIcon"
-                            class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600 mb-4">
-                            <i class="fa fa-trophy text-3xl"></i>
-                        </div>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-2">游戏结束！</h2>
-                        <p class="text-gray-600 mb-4" id="gameOverMessage">黑方获胜！</p>
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <div class="flex items-center justify-center">
-                                    <div class="w-6 h-6 rounded-full piece-black mr-2"></div>
-                                    <span class="text-gray-600">黑方</span>
-                                </div>
-                                <div class="text-2xl font-bold text-black mt-2" id="finalBlackCount">30</div>
-                            </div>
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <div class="flex items-center justify-center">
-                                    <div class="w-6 h-6 rounded-full piece-white mr-2"></div>
-                                    <span class="text-gray-600">白方</span>
-                                </div>
-                                <div class="text-2xl font-bold text-black mt-2" id="finalWhiteCount">34</div>
-                            </div>
-                        </div>
-                        <div class="flex justify-center space-x-4">
-                            <button id="playAgainBtn"
-                                class="bg-gradient-green text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2">
-                                <i class="fa fa-refresh mr-2"></i>再玩一次
+                    <!-- AI难度选择 -->
+                    <div id="aiDifficulty" class="mt-4 hidden">
+                        <h3 class="font-medium text-gray-700 mb-2">AI难度：</h3>
+                        <div class="flex flex-wrap gap-4">
+                            <button id="easyAIBtn"
+                                class="px-4 py-2 rounded-lg border-2 game-mode-btn game-mode-btn-selected">
+                                <i class="fa fa-smile-o mr-2"></i>简单
+                            </button>
+                            <button id="mediumAIBtn" class="px-4 py-2 rounded-lg border-2 game-mode-btn">
+                                <i class="fa fa-meh-o mr-2"></i>中等
+                            </button>
+                            <button id="hardAIBtn" class="px-4 py-2 rounded-lg border-2 game-mode-btn">
+                                <i class="fa fa-frown-o mr-2"></i>困难
                             </button>
                         </div>
                     </div>
                 </div>
+                <!-- 游戏信息 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full piece-black mr-3"></div>
+                                <span id="blackPlayerLabel" class="text-gray-600">黑方</span>
+                            </div>
+                            <span id="blackCount" class="text-2xl font-bold text-black">2</span>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <span class="text-gray-600">当前回合</span>
+                            </div>
+                            <div class="flex items-center" id="currentPlayer">
+                                <div id="currentPlayerIndicator"
+                                    class="w-8 h-8 rounded-full piece-black mr-2 animate-pulse-subtle"></div>
+                                <span id="currentPlayerText" class="text-lg font-semibold text-black">黑方</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full piece-white mr-3"></div>
+                                <span id="whitePlayerLabel" class="text-gray-600">白方</span>
+                            </div>
+                            <span id="whiteCount" class="text-2xl font-bold text-black">2</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 游戏棋盘 -->
+                <div class="flex justify-center mb-6">
+                    <div id="boardContainer" class="relative board-grid">
+                        <!-- 棋盘将通过JS动态生成 -->
+                    </div>
+                </div>
+                <!-- 游戏状态信息 -->
+                <div id="gameMessage" class="mb-6 hidden">
+                    <div class="p-4 rounded-lg border-l-4" id="messageContent">
+                        <!-- 游戏消息将在这里动态显示 -->
+                    </div>
+                </div>
+                <!-- 游戏控制按钮 -->
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <button id="newGameBtn"
+                        class="bg-primary text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2">
+                        <i class="fa fa-refresh mr-2"></i>新游戏
+                    </button>
+                    <button id="undoBtn"
+                        class="bg-primary text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2">
+                        <i class="fa fa-undo mr-2"></i>悔棋
+                    </button>
+                </div>
+                <!-- 游戏规则说明 -->
+                <div class="bg-white rounded-xl shadow-card p-6 mb-8">
+                    <h2 class="font-bold text-primary text-xl mb-4 flex items-center">
+                        <i class="fa-solid fa-book mr-2"></i>游戏规则
+                    </h2>
+                    <ul class="list-disc pl-5 text-gray-700 space-y-2">
+                        <li>黑白棋使用8×8的棋盘，黑白两色的棋子各32枚</li>
+                        <li>游戏开始时，棋盘正中央的四个格会放置棋子：黑方棋子置于D4和E5，白方棋子置于D5和E4</li>
+                        <li>黑方先行，之后双方交替落子</li>
+                        <li>落子必须翻转至少一枚对手的棋子。被夹住的所有棋子都会被翻转成你的颜色</li>
+                        <li>当一方无法落子时，由另一方继续落子，直到双方都无法落子为止</li>
+                        <li>游戏结束时，棋盘上棋子较多的一方获胜</li>
+                    </ul>
+                </div>
+                <!-- 游戏结束模态框 -->
+                <div id="gameOverModal"
+                    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                    <div
+                        class="bg-white rounded-xl p-8 max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
+                        <div class="text-center">
+                            <div id="winnerIcon"
+                                class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600 mb-4">
+                                <i class="fa fa-trophy text-3xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">游戏结束！</h2>
+                            <p class="text-gray-600 mb-4" id="gameOverMessage">黑方获胜！</p>
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-center">
+                                        <div class="w-6 h-6 rounded-full piece-black mr-2"></div>
+                                        <span class="text-gray-600">黑方</span>
+                                    </div>
+                                    <div class="text-2xl font-bold text-black mt-2" id="finalBlackCount">30</div>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-center">
+                                        <div class="w-6 h-6 rounded-full piece-white mr-2"></div>
+                                        <span class="text-gray-600">白方</span>
+                                    </div>
+                                    <div class="text-2xl font-bold text-black mt-2" id="finalWhiteCount">34</div>
+                                </div>
+                            </div>
+                            <div class="flex justify-center space-x-4">
+                                <button id="playAgainBtn"
+                                    class="bg-gradient-green text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:ring-offset-2">
+                                    <i class="fa fa-refresh mr-2"></i>再玩一次
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </main>
+        </main>
 
-    <!-- 页脚 -->
-    <footer class="bg-gray-900 text-white py-6">
-        <div class="container mx-auto px-4 text-center">
-            <p class="text-sm text-gray-400 mt-1">复刻经典游戏黑白棋</p>
+        <!-- 页脚 -->
+        <footer class="bg-gray-900 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-sm text-gray-400 mt-1">复刻经典游戏黑白棋</p>
 
-            <!-- 不蒜子统计 -->
-            <div class="mt-2 text-xs text-gray-500">
-                <span id="busuanzi_container_site_uv">
-                    <i class="fa-solid fa-user mr-1"></i>
-                    <span id="busuanzi_value_site_uv"></span> 访客
-                </span>
-                &nbsp;&nbsp;|&nbsp;&nbsp;
-                <span id="busuanzi_container_site_pv">
-                    <i class="fa-solid fa-eye mr-1"></i>
-                    <span id="busuanzi_value_site_pv"></span> 访问
-                </span>
+                <!-- 不蒜子统计 -->
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn"
+                    one-link-mark="yes">皖ICP备18002386号-1</a>
             </div>
-            <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn"
-                one-link-mark="yes">皖ICP备18002386号-1</a>
-        </div>
-    </footer>
+        </footer>
 
-    <!-- 不蒜子统计脚本 -->
-    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-    <script src="./js/reversi.js"></script>
-</body>
+        <!-- 不蒜子统计脚本 -->
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <script src="./js/reversi.js"></script>
+    </body>
 
 </html>
