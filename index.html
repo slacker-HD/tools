@@ -48,7 +48,8 @@
                                 reversi: '#1c4587',
                                 pairs: '#4F46E5',
                                 tictactoe: '#0E7490',
-                                gomoku: '#8B4513' // 新增五子棋主色调
+                                gomoku: '#8B4513',
+                                rps: '#165DFF' // 石头剪刀布主色调
                             }
                         }
                     },
@@ -466,6 +467,19 @@
                                     </div>
                                     <h3 class="text-3xl font-bold text-tool-gomoku mb-2 text-center">五子棋</h3>
                                     <p class="text-gray-600 max-w-md mx-auto text-center">经典五子棋，支持人机和双人对战。</p>
+                                </a>
+                            </div>
+
+                            <!-- 新增石头剪刀布工具卡片 -->
+                            <div
+                                class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                                <a href="rock-paper-scissors-game.html" target="_blank" rel="noopener noreferrer">
+                                    <div
+                                        class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-rps/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                        <i class="fa-solid fa-hand-back-fist text-5xl text-tool-rps"></i>
+                                    </div>
+                                    <h3 class="text-3xl font-bold text-tool-rps mb-2 text-center">石头剪刀布</h3>
+                                    <p class="text-gray-600 max-w-md mx-auto text-center">AI识别手势，和电脑玩石头剪刀布。</p>
                                 </a>
                             </div>
                         </div>

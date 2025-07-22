@@ -44,20 +44,29 @@ let gameState = {
 const gestures = {
     rock: {
         name: '石头',
-        icon: 'fa-hand-rock-o',
-        beats: 'scissors' // 石头赢剪刀
+        icon: 'fa-solid fa-hand-back-fist', // 6.x石头
+        beats: 'scissors'
     },
     paper: {
         name: '布',
-        icon: 'fa-hand-paper-o',
-        beats: 'rock' // 布赢石头
+        icon: 'fa-solid fa-hand', // 6.x布
+        beats: 'rock'
     },
     scissors: {
         name: '剪刀',
-        icon: 'fa-hand-scissors-o',
-        beats: 'paper' // 剪刀赢布
+        icon: 'fa-solid fa-hand-scissors', // 6.x剪刀
+        beats: 'paper'
     }
 };
+
+// 修改 displayGesture 函数，确保渲染完整类名
+function displayGesture(element, gesture) {
+    element.innerHTML = `<i class="${gesture.icon}"></i>`;
+    element.classList.add('animate-shake');
+    setTimeout(() => {
+        element.classList.remove('animate-shake');
+    }, 500);
+}
 
 // 初始化事件监听
 function initEventListeners() {

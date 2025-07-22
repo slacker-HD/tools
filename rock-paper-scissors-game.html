@@ -6,7 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>AI手势识别石头剪刀布</title>
         <script src="https://cdn.tailwindcss.com"></script>
+        <!-- 同时引入 Font Awesome 4.7.0 和 6.x，保证所有图标都能显示 -->
         <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
         <!-- 引入TensorFlow.js和手势识别模型 -->
         <script src="./js/tf.min.js"></script>
         <script src="./js/handpose.min.js"></script>
@@ -27,11 +29,14 @@
                         colors: {
                             primary: '#165DFF',
                             secondary: '#36D399',
-                            danger: '#F87272',
+                            danger: '#EF4444',
                             neutral: '#1E293B',
+                            tool: {
+                                rps: '#165DFF' // 石头剪刀布主色调
+                            }
                         },
                         fontFamily: {
-                            inter: ['Inter', 'system-ui', 'sans-serif'],
+                            inter: ['"Inter", "system-ui", "华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
                         },
                     }
                 }
@@ -55,6 +60,7 @@
             .backdrop-blur {
                 backdrop-filter: blur(8px);
             }
+            .button-hover { @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1; }
         }
         
         @keyframes shake {
@@ -66,228 +72,271 @@
     </style>
     </head>
 
-    <body class="font-inter bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen text-neutral">
-        <div class="container mx-auto px-4 py-8 max-w-5xl">
-            <!-- 游戏标题 -->
-            <header class="text-center mb-8">
-                <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-primary text-shadow mb-2">
-                    AI手势识别石头剪刀布
-                </h1>
-                <p class="text-gray-600 text-lg">展示你的手势，与电脑一决胜负！</p>
-            </header>
-
-            <!-- 加载模型提示 -->
-            <div id="modelLoading"
-                class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-primary/90 text-white px-4 py-2 rounded-full shadow-lg z-40 hidden">
-                <i class="fa fa-circle-o-notch fa-spin mr-2"></i>
-                <span>正在加载AI模型，请稍候...</span>
-            </div>
-
-            <!-- 游戏区域 -->
-            <main class="flex flex-col lg:flex-row gap-8">
-                <!-- 左侧：玩家区域 -->
-                <div
-                    class="w-full lg:w-1/2 bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
-                    <div class="p-4 bg-primary text-white">
-                        <h2 class="text-xl font-semibold flex items-center">
-                            <i class="fa fa-user mr-2"></i> 玩家
-                        </h2>
+    <body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+        <!-- 页面头部 -->
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-40 transition-all duration-300">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="text-tool-rps mr-2">
+                        <i class="fa-solid fa-hand-fist text-2xl"></i>
                     </div>
-
-                    <!-- 摄像头区域 -->
-                    <div class="relative">
-                        <video id="playerVideo" class="w-full aspect-video object-cover bg-gray-800" autoplay
-                            playsinline></video>
-                        <canvas id="playerCanvas" class="absolute top-0 left-0 w-full h-full"></canvas>
-
-                        <!-- 加载状态覆盖层 -->
-                        <div id="loadingOverlay"
-                            class="absolute inset-0 bg-black/60 backdrop-blur flex flex-col items-center justify-center">
-                            <div
-                                class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4">
-                            </div>
-                            <p class="text-white text-lg">正在访问摄像头...</p>
-                        </div>
-
-                        <!-- 摄像头错误提示 -->
-                        <div id="cameraError"
-                            class="absolute inset-0 bg-black/60 backdrop-blur hidden flex-col items-center justify-center p-6">
-                            <i class="fa fa-exclamation-triangle text-4xl text-danger mb-4"></i>
-                            <h3 class="text-white text-xl font-semibold mb-2">无法访问摄像头</h3>
-                            <p id="errorMessage" class="text-gray-300 mb-4 text-center">请检查您的摄像头权限设置</p>
-                            <ul class="text-gray-300 text-left mb-6 space-y-2">
-                                <li>1. 确保您的设备有可用摄像头</li>
-                                <li>2. 检查浏览器是否被授予摄像头权限</li>
-                                <li>3. 确保没有其他应用正在使用摄像头</li>
-                            </ul>
-                            <div class="flex gap-3">
-                                <button id="retryCamera"
-                                    class="bg-primary hover:bg-primary/90 text-white font-semibold py-2 px-6 rounded-lg transition-all">
-                                    重试
-                                </button>
-                                <button id="showPermissionGuide"
-                                    class="bg-gray-200 hover:bg-gray-300 text-neutral font-semibold py-2 px-6 rounded-lg transition-all">
-                                    权限指南
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- 权限指南模态框 -->
-                        <div id="permissionGuideModal"
-                            class="fixed inset-0 bg-black/50 backdrop-blur hidden flex items-center justify-center z-50 p-4">
-                            <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h3 class="text-xl font-bold text-primary">如何开启摄像头权限</h3>
-                                    <button id="closePermissionGuide" class="text-gray-500 hover:text-gray-700">
-                                        <i class="fa fa-times text-xl"></i>
-                                    </button>
-                                </div>
-                                <div class="space-y-4 text-gray-700">
-                                    <div>
-                                        <h4 class="font-semibold mb-2">Chrome浏览器</h4>
-                                        <ol class="list-decimal pl-5 space-y-1">
-                                            <li>点击地址栏左侧的"锁"图标</li>
-                                            <li>在弹出的菜单中找到"摄像头"选项</li>
-                                            <li>选择"允许"选项</li>
-                                            <li>刷新页面使设置生效</li>
-                                        </ol>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-semibold mb-2">Edge浏览器</h4>
-                                        <ol class="list-decimal pl-5 space-y-1">
-                                            <li>点击地址栏左侧的"摄像头被阻止"图标</li>
-                                            <li>点击"始终允许此站点使用摄像头"</li>
-                                            <li>点击"完成"并刷新页面</li>
-                                        </ol>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-semibold mb-2">Firefox浏览器</h4>
-                                        <ol class="list-decimal pl-5 space-y-1">
-                                            <li>点击地址栏左侧的"信息"图标</li>
-                                            <li>点击"权限"选项卡</li>
-                                            <li>找到摄像头设置，选择"允许"</li>
-                                            <li>刷新页面使设置生效</li>
-                                        </ol>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 倒计时覆盖层 -->
-                        <div id="countdownOverlay"
-                            class="absolute inset-0 bg-black/40 backdrop-blur hidden flex items-center justify-center">
-                            <p id="countdownText" class="text-white text-[clamp(3rem,10vw,6rem)] font-bold"></p>
-                        </div>
-
-                        <!-- 手部检测提示 -->
-                        <div id="handDetectionHint"
-                            class="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm hidden">
-                            <i class="fa fa-hand-paper-o mr-1"></i> 请将手放在摄像头前
-                        </div>
-                    </div>
-
-                    <!-- 玩家手势 -->
-                    <div class="p-4 flex justify-center">
-                        <div id="playerGesture" class="text-5xl py-2 px-6 border-2 border-gray-200 rounded-lg">
-                            <i class="fa fa-question-circle"></i>
-                        </div>
-                    </div>
+                    <h1 class="text-xl md:text-2xl font-bold text-tool-rps">石头剪刀布</h1>
                 </div>
-
-                <!-- 右侧：电脑区域 -->
-                <div
-                    class="w-full lg:w-1/2 bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
-                    <div class="p-4 bg-neutral text-white">
-                        <h2 class="text-xl font-semibold flex items-center">
-                            <i class="fa fa-robot mr-2"></i> 电脑
-                        </h2>
-                    </div>
-
-                    <!-- 电脑显示区域 -->
-                    <div class="aspect-video bg-gray-100 flex items-center justify-center">
-                        <div id="computerGesture" class="text-8xl">
-                            <i class="fa fa-question-circle text-gray-300"></i>
-                        </div>
-                    </div>
-
-                    <!-- 电脑状态 -->
-                    <div class="p-4 flex justify-center">
-                        <p id="computerStatus" class="text-lg text-gray-600">等待游戏开始...</p>
-                    </div>
-                </div>
-            </main>
-
-            <!-- 游戏控制和结果 -->
-            <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
-                <!-- 分数显示 -->
-                <div class="flex justify-center items-center gap-8 mb-6">
-                    <div class="text-center">
-                        <p class="text-gray-500 mb-1">玩家分数</p>
-                        <p id="playerScore" class="text-4xl font-bold text-primary">0</p>
-                    </div>
-                    <div class="text-3xl font-bold">:</div>
-                    <div class="text-center">
-                        <p class="text-gray-500 mb-1">电脑分数</p>
-                        <p id="computerScore" class="text-4xl font-bold text-neutral">0</p>
-                    </div>
-                </div>
-
-                <!-- 游戏结果 -->
-                <div id="gameResult" class="text-center py-4 mb-6 rounded-lg hidden">
-                    <p id="resultText" class="text-xl font-semibold"></p>
-                </div>
-
-                <!-- 控制按钮 -->
-                <div class="flex flex-wrap justify-center gap-4">
-                    <button id="startBtn"
-                        class="bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center">
-                        <i class="fa fa-play mr-2"></i> 开始游戏
-                    </button>
-                    <button id="resetBtn"
-                        class="bg-gray-200 hover:bg-gray-300 text-neutral font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center"
-                        disabled>
-                        <i class="fa fa-refresh mr-2"></i> 重置游戏
-                    </button>
-                    <button id="helpBtn"
-                        class="bg-gray-200 hover:bg-gray-300 text-neutral font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center">
-                        <i class="fa fa-question-circle mr-2"></i> 游戏说明
-                    </button>
+                <div class="flex space-x-4">
+                    <a href="https://tools.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md flex items-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md flex items-center"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>访问我的主页
+                    </a>
                 </div>
             </div>
+        </header>
 
-            <!-- 游戏说明模态框 -->
-            <div id="helpModal"
-                class="fixed inset-0 bg-black/50 backdrop-blur hidden flex items-center justify-center z-50 p-4">
-                <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl transform transition-all">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-bold text-primary">游戏说明</h3>
-                        <button id="closeHelpBtn" class="text-gray-500 hover:text-gray-700">
-                            <i class="fa fa-times text-xl"></i>
+        <!-- 加载模型提示 - 调整为全屏居中显示，z-index最高 -->
+        <div id="modelLoading"
+            class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-xl p-8 max-w-md w-full text-center shadow-2xl transform transition-all">
+                <div
+                    class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-6">
+                </div>
+                <h3 class="text-xl font-bold text-neutral mb-2">正在准备游戏资源</h3>
+                <p class="text-gray-600">正在加载AI模型，请稍候...<br>首次加载可能需要几秒钟时间</p>
+            </div>
+        </div>
+
+        <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+            <div class="max-w-5xl mx-auto">
+                <!-- 介绍卡片 -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 mb-8">
+                    <p class="text-center text-base md:text-lg text-gray-600">
+                        展示你的手势，与电脑一决胜负！AI将实时识别你的手势，遵循标准石头剪刀布规则判定胜负。
+                    </p>
+                </div>
+
+                <!-- 游戏区域 -->
+                <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- 左侧：玩家区域 -->
+                        <div
+                            class="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+                            <div class="p-4 bg-primary text-white">
+                                <h2 class="text-xl font-semibold flex items-center">
+                                    <i class="fa fa-user mr-2"></i> 玩家
+                                </h2>
+                            </div>
+
+                            <!-- 摄像头区域 -->
+                            <div class="relative">
+                                <video id="playerVideo" class="w-full aspect-video object-cover bg-gray-800" autoplay
+                                    playsinline></video>
+                                <canvas id="playerCanvas" class="absolute top-0 left-0 w-full h-full"></canvas>
+
+                                <!-- 加载状态覆盖层 -->
+                                <div id="loadingOverlay"
+                                    class="absolute inset-0 bg-black/60 backdrop-blur flex flex-col items-center justify-center">
+                                    <div
+                                        class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4">
+                                    </div>
+                                    <p class="text-white text-lg">正在访问摄像头...</p>
+                                </div>
+
+                                <!-- 摄像头错误提示 -->
+                                <div id="cameraError"
+                                    class="absolute inset-0 bg-black/60 backdrop-blur hidden flex-col items-center justify-center p-6">
+                                    <i class="fa fa-exclamation-triangle text-4xl text-danger mb-4"></i>
+                                    <h3 class="text-white text-xl font-semibold mb-2">无法访问摄像头</h3>
+                                    <p id="errorMessage" class="text-gray-300 mb-4 text-center">请检查您的摄像头权限设置</p>
+                                    <ul class="text-gray-300 text-left mb-6 space-y-2">
+                                        <li>1. 确保您的设备有可用摄像头</li>
+                                        <li>2. 检查浏览器是否被授予摄像头权限</li>
+                                        <li>3. 确保没有其他应用正在使用摄像头</li>
+                                    </ul>
+                                    <div class="flex gap-3">
+                                        <button id="retryCamera"
+                                            class="bg-primary hover:bg-primary/90 text-white font-semibold py-2 px-6 rounded-lg transition-all">
+                                            重试
+                                        </button>
+                                        <button id="showPermissionGuide"
+                                            class="bg-gray-200 hover:bg-gray-300 text-neutral font-semibold py-2 px-6 rounded-lg transition-all">
+                                            权限指南
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- 权限指南模态框 -->
+                                <div id="permissionGuideModal"
+                                    class="fixed inset-0 bg-black/50 backdrop-blur hidden flex items-center justify-center z-50 p-4">
+                                    <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <h3 class="text-xl font-bold text-primary">如何开启摄像头权限</h3>
+                                            <button id="closePermissionGuide" class="text-gray-500 hover:text-gray-700">
+                                                <i class="fa fa-times text-xl"></i>
+                                            </button>
+                                        </div>
+                                        <div class="space-y-4 text-gray-700">
+                                            <div>
+                                                <h4 class="font-semibold mb-2">Chrome浏览器</h4>
+                                                <ol class="list-decimal pl-5 space-y-1">
+                                                    <li>点击地址栏左侧的"锁"图标</li>
+                                                    <li>在弹出的菜单中找到"摄像头"选项</li>
+                                                    <li>选择"允许"选项</li>
+                                                    <li>刷新页面使设置生效</li>
+                                                </ol>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-semibold mb-2">Edge浏览器</h4>
+                                                <ol class="list-decimal pl-5 space-y-1">
+                                                    <li>点击地址栏左侧的"摄像头被阻止"图标</li>
+                                                    <li>点击"始终允许此站点使用摄像头"</li>
+                                                    <li>点击"完成"并刷新页面</li>
+                                                </ol>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-semibold mb-2">Firefox浏览器</h4>
+                                                <ol class="list-decimal pl-5 space-y-1">
+                                                    <li>点击地址栏左侧的"信息"图标</li>
+                                                    <li>点击"权限"选项卡</li>
+                                                    <li>找到摄像头设置，选择"允许"</li>
+                                                    <li>刷新页面使设置生效</li>
+                                                </ol>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 倒计时覆盖层 -->
+                                <div id="countdownOverlay"
+                                    class="absolute inset-0 bg-black/40 backdrop-blur hidden flex items-center justify-center">
+                                    <p id="countdownText" class="text-white text-[clamp(3rem,10vw,6rem)] font-bold"></p>
+                                </div>
+
+                                <!-- 手部检测提示 -->
+                                <div id="handDetectionHint"
+                                    class="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm hidden">
+                                    <i class="fa fa-hand-paper-o mr-1"></i> 请将手放在摄像头前
+                                </div>
+                            </div>
+
+                            <!-- 玩家手势 -->
+                            <div class="p-4 flex justify-center">
+                                <div id="playerGesture" class="text-5xl py-2 px-6 border-2 border-gray-200 rounded-lg">
+                                    <i class="fa fa-question-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 右侧：电脑区域 -->
+                        <div
+                            class="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+                            <div class="p-4 bg-neutral text-white">
+                                <h2 class="text-xl font-semibold flex items-center">
+                                    <i class="fa fa-robot mr-2"></i> 电脑
+                                </h2>
+                            </div>
+
+                            <!-- 电脑显示区域 -->
+                            <div class="aspect-video bg-gray-100 flex items-center justify-center">
+                                <div id="computerGesture" class="text-8xl">
+                                    <i class="fa fa-question-circle text-gray-300"></i>
+                                </div>
+                            </div>
+
+                            <!-- 电脑状态 -->
+                            <div class="p-4 flex justify-center">
+                                <p id="computerStatus" class="text-lg text-gray-600">等待游戏开始...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 游戏控制和结果 -->
+                <div class="bg-white rounded-2xl shadow-xl p-6">
+                    <!-- 分数显示 -->
+                    <div class="flex justify-center items-center gap-8 mb-6">
+                        <div class="text-center">
+                            <span class="text-gray-500 mb-1">玩家分数</span>
+                            <p id="playerScore" class="text-4xl font-bold text-primary">0</p>
+                        </div>
+                        <div class="text-3xl font-bold">:</div>
+                        <div class="text-center">
+                            <span class="text-gray-500 mb-1">电脑分数</span>
+                            <p id="computerScore" class="text-4xl font-bold text-neutral">0</p>
+                        </div>
+                    </div>
+
+                    <!-- 游戏结果 -->
+                    <div id="gameResult" class="text-center py-4 mb-6 rounded-lg hidden">
+                        <p id="resultText" class="text-xl font-semibold"></p>
+                    </div>
+
+                    <!-- 控制按钮 -->
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <button id="startBtn"
+                            class="bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-8 rounded-lg button-hover flex items-center">
+                            <i class="fa fa-play mr-2"></i> 开始游戏
+                        </button>
+                        <button id="resetBtn"
+                            class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-8 rounded-lg button-hover flex items-center"
+                            disabled>
+                            <i class="fa fa-refresh mr-2"></i> 重置游戏
+                        </button>
+                        <button id="helpBtn"
+                            class="bg-gray-200 hover:bg-gray-300 text-neutral font-semibold py-3 px-8 rounded-lg button-hover flex items-center">
+                            <i class="fa fa-question-circle mr-2"></i> 游戏说明
                         </button>
                     </div>
-                    <div class="space-y-4 text-gray-700">
-                        <p>1. 点击"开始游戏"按钮，授予摄像头权限</p>
-                        <p>2. 倒计时结束时，请在摄像头前展示以下手势：</p>
-                        <ul class="list-disc pl-5 space-y-2">
-                            <li><strong>石头</strong>：握紧拳头</li>
-                            <li><strong>剪刀</strong>：伸出食指和中指</li>
-                            <li><strong>布</strong>：张开手掌</li>
-                        </ul>
-                        <p>3. AI会实时识别你的手势，并与电脑随机生成的手势比较</p>
-                        <p>4. 遵循标准石头剪刀布规则判定胜负</p>
-                        <p class="text-primary"><i class="fa fa-lightbulb-o mr-1"></i> 提示：确保光线充足，手部在摄像头中清晰可见</p>
-                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 游戏说明模态框 -->
+        <div id="helpModal"
+            class="fixed inset-0 bg-black/50 backdrop-blur hidden flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl transform transition-all">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-primary">游戏说明</h3>
+                    <button id="closeHelpBtn" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="space-y-4 text-gray-700">
+                    <p>1. 点击"开始游戏"按钮，授予摄像头权限</p>
+                    <p>2. 倒计时结束时，请在摄像头前展示以下手势：</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><strong>石头</strong>：握紧拳头</li>
+                        <li><strong>剪刀</strong>：伸出食指和中指</li>
+                        <li><strong>布</strong>：张开手掌</li>
+                    </ul>
+                    <p>3. AI会实时识别你的手势，并与电脑随机生成的手势比较</p>
+                    <p>4. 遵循标准石头剪刀布规则判定胜负</p>
+                    <p class="text-primary"><i class="fa fa-lightbulb-o mr-1"></i> 提示：确保光线充足，手部在摄像头中清晰可见</p>
                 </div>
             </div>
         </div>
 
-        <footer class="mt-12 text-center text-gray-500 text-sm py-4">
-            <p>AI手势识别石头剪刀布 &copy; 2023</p>
+        <footer class="bg-gray-900 text-white py-6 mt-12">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-sm text-gray-400 mt-1">AI手势识别石头剪刀布，体验智能交互的乐趣！</p>
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn">皖ICP备18002386号-1</a>
+            </div>
         </footer>
-        <script src="./js/rock-paper-scissors-game.js"></script>"
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <script src="./js/rock-paper-scissors-game.js"></script>
     </body>
-
-</html>
-</body>
 
 </html>
