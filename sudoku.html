@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数独游戏</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  <script>
+    // 配置Tailwind自定义颜色
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#4F46E5',    // 主色调：靛蓝色
+            secondary: '#10B981',  // 辅助色：绿色（成功）
+            accent: '#F59E0B',     // 强调色：琥珀色
+            danger: '#EF4444',     // 危险色：红色
+            dark: '#1E293B',       // 深色
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .sudoku-shadow {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+      .btn-hover {
+        @apply transition-all duration-300 transform hover:scale-105 hover:shadow-lg;
+      }
+      .hint-cell {
+        animation: pulse 1.5s infinite;
+      }
+      @keyframes pulse {
+        0% {
+          background-color: rgba(79, 70, 229, 0.1);
+        }
+        50% {
+          background-color: rgba(79, 70, 229, 0.3);
+        }
+        100% {
+          background-color: rgba(79, 70, 229, 0.1);
+        }
+      }
+    }
+  </style>
+  <style>
+    /* 增大棋盘单元格尺寸 */
+    .sudoku-cell {
+      width: 3rem;
+      height: 3rem;
+      text-align: center;
+      font-size: 1.5rem;
+      border: 1px solid #d1d5db;
+      outline: none;
+      background: #fff;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    
+    /* 响应式调整 - 在小屏幕上适当缩小 */
+    @media (max-width: 768px) {
+      .sudoku-cell {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1.25rem;
+      }
+    }
+    
+    @media (max-width: 640px) {
+      .sudoku-cell {
+        width: 2rem;
+        height: 2rem;
+        font-size: 1rem;
+      }
+    }
+    
+    .sudoku-cell:focus {
+      background: #f3f4f6;
+      border-color: #4F46E5;
+    }
+    
+    .sudoku-cell[readonly] {
+      background: #f1f5f9;
+      color: #4F46E5;
+      font-weight: bold;
+      cursor: default;
+    }
+    
+    .sudoku-board {
+      border: 2px solid #4F46E5;
+      border-radius: 0.5rem;
+      background: #fff;
+      margin: auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      display: inline-block;
+    }
+    
+    .sudoku-row {
+      display: flex;
+    }
+    
+    .sudoku-cell {
+      border-right: 1px solid #d1d5db;
+      border-bottom: 1px solid #d1d5db;
+      box-sizing: border-box;
+    }
+    
+    .sudoku-row:last-child .sudoku-cell {
+      border-bottom: none;
+    }
+    
+    .sudoku-cell:last-child {
+      border-right: none;
+    }
+    
+    /* 粗线分区 - 加粗分区线使其更清晰 */
+    .sudoku-cell:nth-child(3), .sudoku-cell:nth-child(6) {
+      border-right: 2px solid #4F46E5;
+    }
+    
+    .sudoku-row:nth-child(3) .sudoku-cell,
+    .sudoku-row:nth-child(6) .sudoku-cell {
+      border-bottom: 2px solid #4F46E5;
+    }
+    
+    /* 难度按钮样式 */
+    .difficulty-btn {
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .difficulty-btn.selected {
+      background-color: #4F46E5;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+    
+    .difficulty-btn:not(.selected):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* 按钮区域样式 */
+    .button-container {
+      margin-top: 2.5rem;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+  <!-- 页面头部 -->
+  <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center">
+        <div class="text-primary mr-2">
+          <i class="fa-solid fa-table-cells-large text-2xl text-primary"></i>
+        </div>
+        <h1 class="text-xl md:text-2xl font-bold text-primary">数独游戏</h1>
+      </div>
+      <div class="flex space-x-4">
+        <a href="index.html"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+          <i class="fa-solid fa-arrow-left mr-2"></i>
+          返回工具箱
+        </a>
+        <a href="https://www.hudi.site"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+          target="_blank" rel="noopener noreferrer">
+          <i class="fa-solid fa-blog mr-2"></i>
+          访问我的主页
+        </a>
+      </div>
+    </div>
+  </header>
+  
+  <!-- 主内容区 -->
+  <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+    <!-- 增加主容器的内边距，使内容与边缘更协调 -->
+    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm p-6 md:p-8 mb-8">
+      <p class="text-center text-base md:text-lg text-gray-600">
+        选择难度，挑战你的数独解谜能力！
+      </p>
+    </div>
+    
+    <!-- 游戏主容器 -->
+    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm p-6 md:p-8 mb-8">
+      <!-- 控制面板 -->
+      <div class="flex flex-wrap justify-between items-center mb-8 bg-gray-50 p-4 rounded-xl shadow">
+        <div class="flex items-center gap-4 mb-4 sm:mb-0">
+          <div class="flex items-center">
+            <span class="text-primary mr-2"><i class="fa fa-clock-o text-xl"></i></span>
+            <span class="text-xl font-bold text-gray-800" id="timer">00:00</span>
+          </div>
+          <div class="flex items-center ml-6">
+            <span class="text-accent mr-2"><i class="fa fa-lightbulb-o text-xl"></i></span>
+            <span class="text-xl font-bold text-gray-800" id="hint-count">提示: 3</span>
+          </div>
+        </div>
+        <button id="restart"
+          class="bg-primary text-white font-bold py-2 px-6 rounded-full shadow-lg btn-hover flex items-center">
+          <i class="fa fa-refresh mr-2"></i> 重新开始
+        </button>
+      </div>
+      
+      <!-- 难度选择 -->
+      <div class="mb-8 bg-gray-50 p-4 rounded-xl shadow">
+        <h2 class="text-xl font-bold text-gray-800 mb-3">选择难度</h2>
+        <div class="flex flex-wrap gap-3">
+          <button class="difficulty-btn selected bg-gray-200 hover:bg-primary/10 text-gray-800 font-medium py-2 px-6 rounded-lg transition-all" data-diff="easy">简单</button>
+          <button class="difficulty-btn bg-gray-200 hover:bg-primary/10 text-gray-800 font-medium py-2 px-6 rounded-lg transition-all" data-diff="medium">中等</button>
+          <button class="difficulty-btn bg-gray-200 hover:bg-primary/10 text-gray-800 font-medium py-2 px-6 rounded-lg transition-all" data-diff="hard">困难</button>
+        </div>
+      </div>
+      
+      <!-- 数独区域 - 增加与上下元素的间距 -->
+      <div class="text-center mb-8">
+        <div id="sudoku-board" class="sudoku-board my-6 inline-block"></div>
+      </div>
+      
+      <!-- 按钮区域 -->
+      <div class="button-container flex justify-center gap-4 md:gap-6 flex-wrap">
+        <button id="hint-btn" class="bg-accent text-white font-bold py-2 px-6 rounded-full shadow-lg btn-hover flex items-center">
+          <i class="fa fa-lightbulb-o mr-2"></i> 提示
+        </button>
+        <button id="check-btn" class="bg-secondary text-white font-bold py-2 px-6 rounded-full shadow-lg btn-hover flex items-center">
+          <i class="fa fa-check mr-2"></i> 检查答案
+        </button>
+        <button id="show-answer-btn" class="bg-primary text-white font-bold py-2 px-6 rounded-full shadow-lg btn-hover flex items-center">
+          <i class="fa fa-eye mr-2"></i> 显示答案
+        </button>
+      </div>
+      
+      <div id="result-msg" class="text-center text-lg font-bold mt-6 mb-2"></div>
+    </div>
+  </main>
+  
+  <!-- 页脚 -->
+  <footer class="bg-gray-900 text-white py-6 mt-12">
+    <div class="container mx-auto px-4 text-center">
+      <p class="text-sm text-gray-400 mt-1">数独游戏 | 享受解谜乐趣</p>
+      <div class="mt-2 text-xs text-gray-500">
+        <span id="busuanzi_container_site_uv">
+          <i class="fa-solid fa-user mr-1"></i>
+          <span id="busuanzi_value_site_uv"></span> 访客
+        </span>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <span id="busuanzi_container_site_pv">
+          <i class="fa-solid fa-eye mr-1"></i>
+          <span id="busuanzi_value_site_pv"></span> 访问
+        </span>
+      </div>
+      <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn" one-link-mark="yes">皖ICP备18002386号-1</a>
+    </div>
+  </footer>
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <script src="js/sudoku.js"></script>
+</body>
+</html>
+     

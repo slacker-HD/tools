@@ -49,7 +49,8 @@
                                 pairs: '#4F46E5',
                                 tictactoe: '#0E7490',
                                 gomoku: '#8B4513',
-                                rps: '#165DFF' // 石头剪刀布主色调
+                                rps: '#165DFF', // 石头剪刀布主色调
+                                sudoku: '#4F46E5',
                             }
                         }
                     },
@@ -480,6 +481,19 @@
                                     </div>
                                     <h3 class="text-3xl font-bold text-tool-rps mb-2 text-center">石头剪刀布</h3>
                                     <p class="text-gray-600 max-w-md mx-auto text-center">AI识别手势，和电脑玩石头剪刀布。</p>
+                                </a>
+                            </div>
+
+                            <!-- 新增数独游戏工具卡片 -->
+                            <div
+                                class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                                <a href="sudoku.html" target="_blank" rel="noopener noreferrer">
+                                    <div
+                                        class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-sudoku/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                        <i class="fa-solid fa-table-cells-large text-5xl text-tool-sudoku"></i>
+                                    </div>
+                                    <h3 class="text-3xl font-bold text-tool-sudoku mb-2 text-center">数独游戏</h3>
+                                    <p class="text-gray-600 max-w-md mx-auto text-center">经典数独，支持多种难度，锻炼逻辑思维。</p>
                                 </a>
                             </div>
                         </div>
