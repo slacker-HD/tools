@@ -2,3 +2,4 @@ api/Riddle.php
 api/Brainteaser.php
 api/Ruozhiba.php
 api/Feihua.php
+api/Feihua_gbk.php
