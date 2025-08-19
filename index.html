@@ -52,6 +52,7 @@
                                 rps: '#165DFF',
                                 sudoku: '#4F46E5',
                                 hanzi: '#1E3A8A',
+                                bitmap: '#F43F5E',
                             }
                         }
                     },
@@ -509,6 +510,21 @@
                                     <h3 class="text-3xl font-bold text-tool-hanzi mb-2 text-center">汉字点阵生成</h3>
                                     <p class="text-gray-600 max-w-md mx-auto text-center">
                                         自定义字体、尺寸，生成嵌入式C数组，适用于OLED/LCD等。</p>
+                                </a>
+                            </div>
+
+                            <!-- 新增Bitmap转C数组工具卡片 -->
+                            <div
+                                class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                                <a href="bitmap-carray-convert.html" target="_blank" rel="noopener noreferrer">
+                                    <div
+                                        class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-bitmap/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                        <i class="fa-solid fa-image text-5xl text-tool-bitmap"></i>
+                                    </div>
+                                    <h3 class="text-3xl font-bold text-tool-bitmap mb-2 text-center">图像转C数组</h3>
+                                    <p class="text-gray-600 max-w-md mx-auto text-center">
+                                        将图片快速转换为嵌入式C语言数组，适用于TFT彩屏使用。
+                                    </p>
                                 </a>
                             </div>
                         </div>

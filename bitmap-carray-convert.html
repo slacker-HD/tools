@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>图像转C数组工具</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: '#3B82F6',
+                            secondary: '#10B981',
+                            accent: '#6366F1',
+                        },
+                        fontFamily: {
+                            inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                        }
+                    }
+                }
+            }
+        </script>
+        <script>
+            var _hmt = _hmt || [];
+            (function () {
+                var hm = document.createElement("script");
+                hm.src = "//hm.baidu.com/hm.js?767e3ea52a6b4f3c656cdd4119c87e62";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();
+        </script>
+        <style type="text/tailwindcss">
+            @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .shadow-soft {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            }
+            .transition-custom {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .pixel {
+                box-sizing: border-box;
+                border: 1px solid rgba(0, 0, 0, 0.05);
+            }
+            .pixel-small {
+                width: 4px;
+                height: 4px;
+            }
+            .pixel-medium {
+                width: 8px;
+                height: 8px;
+            }
+            .pixel-large {
+                width: 16px;
+                height: 16px;
+            }
+        }
+    </style>
+    </head>
+
+    <body class="bg-gray-50 font-inter text-dark min-h-screen flex flex-col">
+        <!-- 页面头部 -->
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-image text-primary text-2xl"></i>
+                        <h1 class="text-xl md:text-2xl font-bold text-primary">图像转C数组工具</h1>
+                    </div>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="https://tools.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md flex items-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md flex items-center"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>访问我的主页
+                    </a>
+                </div>
+            </div>
+        </header>
+        <!-- 主内容区 -->
+        <main class="flex-grow container mx-auto px-4 py-8">
+            <!-- 介绍卡片 -->
+            <div class="bg-white rounded-xl shadow-soft p-6 mb-8 transform hover:translate-y-[-4px] transition-custom">
+                <h2 class="text-xl font-semibold mb-3 flex items-center">
+                    <i class="fa fa-info-circle text-accent mr-2"></i>功能介绍
+                </h2>
+                <p class="text-gray-600 mb-4">
+                    本工具可以将图像转换为RGB格式的C数组，适用于嵌入式系统在TFT彩屏显示图片。
+                <div class="grid md:grid-cols-4 gap-4 text-sm">
+                    <div class="flex items-start">
+                        <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                        <span>支持JPG、PNG和BMP格式图片</span>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                        <span>可配置扫描方式和数据格式</span>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                        <span>支持C数组点阵预览功能</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 上传和配置区域 -->
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-soft p-6 transform hover:shadow-lg transition-custom">
+                    <h2 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fa fa-upload text-primary mr-2"></i>上传图片与配置
+                    </h2>
+
+                    <div id="drop-area"
+                        class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-custom mb-6">
+                        <i class="fa fa-image text-4xl text-gray-400 mb-3"></i>
+                        <p class="text-gray-500 mb-2">拖放图片到此处，或点击选择文件</p>
+                        <p class="text-xs text-gray-400">支持 JPG、PNG、BMP 格式</p>
+                        <input type="file" id="file-input" class="hidden" accept="image/jpeg,image/png,image/bmp"
+                            multiple>
+                    </div>
+
+                    <!-- 转换选项配置 -->
+                    <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                        <h3 class="font-medium mb-3 text-gray-700">转换选项</h3>
+
+                        <div class="space-y-4">
+
+                            <!-- 扫描方式 -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">扫描方式</label>
+                                <div class="flex items-center space-x-3">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="scan-option" value="horizontal" checked
+                                            class="text-primary focus:ring-primary">
+                                        <span class="ml-2 text-sm text-gray-700">水平扫描</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="scan-option" value="vertical"
+                                            class="text-primary focus:ring-primary">
+                                        <span class="ml-2 text-sm text-gray-700">垂直扫描</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 数组格式 -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">数组格式</label>
+                                <div class="flex items-center space-x-3">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="format-option" value="rgb565" checked
+                                            class="text-primary focus:ring-primary">
+                                        <span class="ml-2 text-sm text-gray-700">RGB565</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="format-option" value="rgb555"
+                                            class="text-primary focus:ring-primary">
+                                        <span class="ml-2 text-sm text-gray-700">RGB555</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <button id="select-btn"
+                            class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg flex items-center transition-custom">
+                            <i class="fa fa-file-image-o mr-2"></i>选择图片
+                        </button>
+                        <button id="convert-btn"
+                            class="bg-secondary hover:bg-secondary/90 text-white px-4 py-2 rounded-lg flex items-center transition-custom disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled>
+                            <i class="fa fa-magic mr-2"></i>转换为C数组
+                        </button>
+                        <button id="clear-btn"
+                            class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center transition-custom disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled>
+                            <i class="fa fa-trash mr-2"></i>清空
+                        </button>
+                    </div>
+
+                    <div id="uploaded-images" class="mt-4 max-h-64 overflow-y-auto space-y-2">
+                        <!-- 上传的图片预览将显示在这里 -->
+                        <p class="text-gray-500 text-center italic text-sm">未选择任何图片</p>
+                    </div>
+                </div>
+
+                <!-- 右侧内容区：转换结果 + 点阵预览 -->
+                <div class="flex flex-col gap-8">
+                    <!-- 结果区域 -->
+                    <div class="bg-white rounded-xl shadow-soft p-6 transform hover:shadow-lg transition-custom">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fa fa-code text-accent mr-2"></i>转换结果
+                        </h2>
+
+                        <div id="result-container" class="mb-4">
+                            <div id="no-result" class="text-center py-12 text-gray-500">
+                                <i class="fa fa-file-code-o text-4xl mb-3 opacity-50"></i>
+                                <p>转换结果将显示在这里</p>
+                            </div>
+
+                            <div id="result-content" class="hidden">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h3 id="result-filename" class="font-medium text-sm bg-gray-100 px-2 py-1 rounded">
+                                    </h3>
+                                    <div class="flex gap-1">
+                                        <button id="copy-btn"
+                                            class="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded flex items-center transition-custom">
+                                            <i class="fa fa-copy mr-1"></i>复制
+                                        </button>
+                                        <button id="download-btn"
+                                            class="text-xs bg-primary hover:bg-primary/90 text-white px-2 py-1 rounded flex items-center transition-custom">
+                                            <i class="fa fa-download mr-1"></i>下载
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute top-2 right-2 flex gap-1">
+                                        <button
+                                            class="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition-custom"
+                                            onclick="toggleLineNumbers()">
+                                            <i class="fa fa-list-ol mr-1"></i>行号
+                                        </button>
+                                    </div>
+                                    <pre id="code-output"
+                                        class="bg-gray-50 p-3 rounded-lg text-sm overflow-x-auto max-h-64 font-mono"></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="processing-info" class="hidden text-center py-8">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-3">
+                            </div>
+                            <p class="text-gray-600">正在处理图片...</p>
+                        </div>
+
+                        <div id="error-message"
+                            class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative"
+                            role="alert">
+                            <strong class="font-bold">错误：</strong>
+                            <span class="block sm:inline" id="error-text"></span>
+                            <button onclick="this.parentElement.classList.add('hidden')"
+                                class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                                <i class="fa fa-times text-red-500"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 点阵预览区域 -->
+                    <div class="bg-white rounded-xl shadow-soft p-6 transform hover:shadow-lg transition-custom">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center">
+                            <i class="fa fa-th text-accent mr-2"></i>点阵预览
+                        </h2>
+
+                        <div id="preview-container" class="mb-4">
+                            <div id="no-preview" class="text-center py-12 text-gray-500">
+                                <i class="fa fa-eye text-4xl mb-3 opacity-50"></i>
+                                <p>转换后的点阵预览将显示在这里</p>
+                            </div>
+
+                            <div id="preview-content" class="hidden">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h3 id="preview-info" class="font-medium text-sm bg-gray-100 px-2 py-1 rounded">
+                                    </h3>
+                                    <div class="flex gap-1">
+                                        <select id="pixel-size"
+                                            class="text-xs bg-gray-100 border-none rounded px-2 py-1 focus:ring-1 focus:ring-primary">
+                                            <option value="small">小像素</option>
+                                            <option value="medium" selected>中像素</option>
+                                            <option value="large">大像素</option>
+                                        </select>
+                                        <select id="preview-bg"
+                                            class="text-xs bg-gray-100 border-none rounded px-2 py-1 focus:ring-1 focus:ring-primary">
+                                            <option value="white" selected>白色背景</option>
+                                            <option value="black">黑色背景</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-lg overflow-auto max-h-64"
+                                    style="min-height: 200px;">
+                                    <div id="pixel-grid" class="flex flex-wrap"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-xs text-gray-500 mt-2">
+                            <p>提示：点阵预览显示的是从C数组还原的图像，可用于验证转换结果的正确性</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 转换说明 -->
+            <div class="bg-white rounded-xl shadow-soft p-6 mt-8">
+                <h2 class="text-xl font-semibold mb-4 flex items-center">
+                    <i class="fa fa-book text-gray-600 mr-2"></i>格式说明
+                </h2>
+                <div class="grid md:grid-cols-2 gap-6 text-sm">
+                    <div>
+                        <h3 class="font-medium text-gray-700 mb-2">数组结构</h3>
+                        <ul class="list-disc list-inside text-gray-600 space-y-1">
+                            <li>头部信息（4字节）：宽度（2字节，小端）+ 高度（2字节，小端）</li>
+                            <li>像素数据（宽度×高度×2字节）：根据选择的格式存储</li>
+                            <li>水平扫描：从左到右，从上到下</li>
+                            <li>垂直扫描：从上到下，从左到右</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-700 mb-2">色彩格式转换</h3>
+                        <ul class="list-disc list-inside text-gray-600 space-y-1">
+                            <li><strong>RGB565</strong>：R5（5位红色）+ G6（6位绿色）+ B5（5位蓝色）</li>
+                            <li><strong>RGB555</strong>：R5（5位红色）+ G5（5位绿色）+ B5（5位蓝色）+ 1位保留</li>
+                            <li>RGB565组合：(R5 << 11) | (G6 << 5) | B5</li>
+                            <li>RGB555组合：(1 << 15) | (R5 << 10) | (G5 << 5) | B5（第16位通常设为1）</li>
+                            <li>所有格式均采用小端模式存储</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 页脚 -->
+        <footer class="bg-gray-900 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-sm text-gray-400 mt-1">用于将图像转换为嵌入式系统可用的RGB格式C数组，用于TFT显示。</p>
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn">皖ICP备18002386号-1</a>
+            </div>
+        </footer>
+        <script src="./js/bitmap-carray-convert.js"></script>
+    </body>
+
+</html>
