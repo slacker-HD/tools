@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>汉字点阵生成工具</title>
+        <script>
+            var _hmt = _hmt || [];
+            (function () {
+                var hm = document.createElement("script");
+                hm.src = "//hm.baidu.com/hm.js?767e3ea52a6b4f3c656cdd4119c87e62";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();
+        </script>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/mathjs@11.9.1/lib/browser/math.js"></script>
+        <link href="./css/styles.css" rel="stylesheet">
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: '#1E3A8A',
+                        },
+                        fontFamily: {
+                            inter: ['"微软雅黑"', '"Microsoft YaHei"', '"华文苹方"', 'PingFang', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                        },
+                    }
+                }
+            }
+        </script>
+
+        <style type="text/tailwindcss">
+            @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .matrix-grid {
+                background-image: linear-gradient(#444 1px, transparent 1px),
+                                 linear-gradient(90deg, #444 1px, transparent 1px);
+            }
+            .card-shadow {
+                box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+            }
+            .transition-all-300 {
+                transition: all 300ms ease-in-out;
+            }
+            .font-preview {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    </style>
+    </head>
+
+    <body class="bg-gray-50 font-inter text-dark min-h-screen flex flex-col">
+        <!-- 顶部导航 -->
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fa fa-th text-primary text-2xl"></i>
+                    <h1 class="text-xl md:text-2xl font-bold text-primary">汉字点阵生成工具</h1>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="https://tools.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>
+                        访问我的主页
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="flex-grow container mx-auto px-4 py-8">
+            <!-- 介绍卡片 -->
+            <div class="bg-white rounded-xl p-6 mb-8 card-shadow">
+                <h2 class="text-xl font-semibold mb-2">点阵字体生成器</h2>
+                <p class="text-gray-600">支持自定义任意点阵大小（如18×18），从系统字体中选择样式，生成点阵数据及对应的C语言数组，适用于嵌入式系统、OLED/LCD显示等场景。</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- 左侧：参数配置区 -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- 汉字输入 -->
+                    <div class="bg-white rounded-xl p-6 card-shadow">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fa fa-font text-primary mr-2"></i>汉字输入
+                        </h3>
+                        <div class="space-y-4">
+                            <input type="text" id="chinese-input" placeholder="请输入要转换的汉字（如：星期三）"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all-300">
+                            <div class="flex flex-wrap gap-2" id="char-preview-container">
+                                <!-- 字符预览将在这里动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 参数设置 -->
+                    <div class="bg-white rounded-xl p-6 card-shadow">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fa fa-sliders text-primary mr-2"></i>参数设置
+                        </h3>
+
+                        <!-- 字体选择（系统字体） -->
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 text-sm">选择字体</label>
+                            <div class="relative">
+                                <select id="font-select"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none appearance-none max-h-60 overflow-y-auto">
+                                    <!-- 动态加载字体 -->
+                                </select>
+                                <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                    <i class="fa fa-chevron-down text-gray-400 text-xs"></i>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-xs text-gray-500">
+                                <span id="font-count">0</span> 种系统字体
+                            </div>
+
+                            <!-- 字体样式设置 -->
+                            <div class="mt-3 flex items-center space-x-4">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="font-bold" class="w-4 h-4 accent-primary">
+                                    <label for="font-bold" class="ml-2 text-sm">加粗</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="font-italic" class="w-4 h-4 accent-primary">
+                                    <label for="font-italic" class="ml-2 text-sm">斜体</label>
+                                </div>
+                            </div>
+
+                            <!-- 字体预览 -->
+                            <div class="mt-3 p-3 bg-gray-50 rounded text-center" id="font-preview">
+                                <span class="font-preview" style="font-size: 1.2rem;">字体预览：星期三</span>
+                            </div>
+                        </div>
+
+                        <!-- 点阵大小（自定义尺寸） -->
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 text-sm">点阵大小</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="number" id="matrix-size" min="1" max="64" value="18"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none">
+                                <span class="text-gray-500">×</span>
+                                <input type="number" id="matrix-size-y" min="1" max="64" value="18"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none">
+                            </div>
+                            <div class="mt-2 text-xs text-gray-500">
+                                提示：宽度和高度可分别设置，范围1-64
+                            </div>
+
+                            <!-- 常用尺寸快捷选择 -->
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                <button class="size-preset px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                                    data-w="16" data-h="16">16×16</button>
+                                <button class="size-preset px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                                    data-w="18" data-h="18">18×18</button>
+                                <button class="size-preset px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                                    data-w="24" data-h="24">24×24</button>
+                                <button class="size-preset px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                                    data-w="32" data-h="32">32×32</button>
+                                <button class="size-preset px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                                    data-w="48" data-h="48">48×48</button>
+                                <button class="size-preset px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                                    data-w="64" data-h="64">64×64</button>
+                            </div>
+                        </div>
+
+                        <!-- 阈值调整优化 -->
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 text-sm">二值化阈值 (0-255)</label>
+                            <div class="flex items-center">
+                                <input type="range" id="threshold" min="0" max="255" value="128"
+                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary">
+                                <span id="threshold-value" class="ml-3 min-w-[3rem] text-center">128</span>
+                            </div>
+
+                            <!-- 阈值预设 -->
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                <button class="threshold-preset px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                                    data-value="64">纤细 (64)</button>
+                                <button class="threshold-preset px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                                    data-value="128">标准 (128)</button>
+                                <button class="threshold-preset px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                                    data-value="192">粗壮 (192)</button>
+                            </div>
+
+                            <!-- 智能阈值选项 -->
+                            <div class="mt-2 flex items-center">
+                                <input type="checkbox" id="auto-threshold" class="w-4 h-4 accent-primary">
+                                <label for="auto-threshold" class="ml-2 text-sm">根据字体自动调整阈值</label>
+                            </div>
+                        </div>
+
+                        <!-- 取模方式 -->
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2 text-sm">取模方式</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="flex items-center">
+                                    <input type="radio" id="scan-row" name="scan-mode" value="row" checked
+                                        class="w-4 h-4 accent-primary">
+                                    <label for="scan-row" class="ml-2 text-sm">横向取模</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="scan-col" name="scan-mode" value="col"
+                                        class="w-4 h-4 accent-primary">
+                                    <label for="scan-col" class="ml-2 text-sm">纵向取模</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="code-black" name="code-mode" value="black" checked
+                                        class="w-4 h-4 accent-primary">
+                                    <label for="code-black" class="ml-2 text-sm">阴码 (0=像素)</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="code-white" name="code-mode" value="white"
+                                        class="w-4 h-4 accent-primary">
+                                    <label for="code-white" class="ml-2 text-sm">阳码 (1=像素)</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 生成按钮 -->
+                        <button id="generate-btn"
+                            class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-lg transition-all-300 flex items-center justify-center">
+                            <i class="fa fa-cogs mr-2"></i>生成点阵数据
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 右侧：预览和代码区 -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- 点阵预览 -->
+                    <div class="bg-white rounded-xl p-6 card-shadow">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fa fa-eye text-primary mr-2"></i>点阵预览
+                            <span class="ml-2 text-xs text-gray-500">(蓝色=1，白色=0)</span>
+                        </h3>
+                        <div class="flex justify-center items-center p-4 border border-gray-200 rounded-lg min-h-[200px]"
+                            id="preview-container">
+                            <div class="text-center text-gray-500" id="preview-placeholder">
+                                <i class="fa fa-th-large text-4xl mb-3 opacity-30"></i>
+                                <p>生成的点阵将显示在这里</p>
+                            </div>
+                            <div id="matrix-preview" class="hidden flex flex-wrap gap-8 justify-center"></div>
+                        </div>
+                    </div>
+
+                    <!-- 代码输出 -->
+                    <div class="bg-white rounded-xl p-6 card-shadow">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold flex items-center">
+                                <i class="fa fa-code text-primary mr-2"></i>C语言数组
+                            </h3>
+                            <div class="flex space-x-2">
+                                <button id="copy-code"
+                                    class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-all-300 flex items-center">
+                                    <i class="fa fa-copy mr-1"></i>复制
+                                </button>
+                                <button id="download-code"
+                                    class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-all-300 flex items-center">
+                                    <i class="fa fa-download mr-1"></i>下载
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <pre id="code-output"
+                                class="font-mono text-sm bg-gray-50 p-4 rounded-lg overflow-x-auto max-h-[300px]"></pre>
+                            <div id="copy-success"
+                                class="absolute top-2 right-2 bg-success text-white text-xs px-2 py-1 rounded opacity-0 transition-all-300">
+                                已复制
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 帮助模态框 -->
+        <div id="help-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+            <div class="bg-white rounded-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+                <div class="p-6 border-b">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold">使用帮助</h3>
+                        <button id="close-help" class="text-gray-500 hover:text-gray-700">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <h4 class="font-semibold mb-2">基本操作</h4>
+                        <p class="text-gray-600 text-sm">1. 在输入框中输入要转换的汉字</p>
+                        <p class="text-gray-600 text-sm">2. 从系统字体中选择合适的字体</p>
+                        <p class="text-gray-600 text-sm">3. 设置点阵大小（支持如18×18等任意尺寸）</p>
+                        <p class="text-gray-600 text-sm">4. 调整其他参数并点击"生成点阵数据"按钮</p>
+                        <p class="text-gray-600 text-sm">5. 查看预览并复制生成的代码</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">字体设置</h4>
+                        <p class="text-gray-600 text-sm">可以选择系统中的任意字体，并可设置加粗和斜体效果，特别适合宋体等较细字体的优化显示。</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">二值化阈值</h4>
+                        <p class="text-gray-600 text-sm">阈值控制文字与背景的区分度，值越小文字越纤细，值越大文字越粗壮。</p>
+                        <p class="text-gray-600 text-sm">勾选"根据字体自动调整阈值"可根据所选字体特性自动优化阈值，特别适合宋体等衬线字体。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="bg-gray-900 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-sm text-gray-400 mt-1">支持自定义任意点阵尺寸，适用于嵌入式开发、显示屏字符显示等场景。</p>
+
+                <!-- 不蒜子统计 -->
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn"
+                    one-link-mark="yes">皖ICP备18002386号-1</a>
+            </div>
+        </footer>
+
+        <script src="./js/hanzi-bitmap-generator.js"></script>
+    </body>
+</html>
