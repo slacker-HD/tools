@@ -53,6 +53,7 @@
                                 sudoku: '#4F46E5',
                                 hanzi: '#1E3A8A',
                                 bitmap: '#F43F5E',
+                                image2oled: '#3B82F6',
                             }
                         }
                     },
@@ -524,6 +525,21 @@
                                     <h3 class="text-3xl font-bold text-tool-bitmap mb-2 text-center">图像转C数组</h3>
                                     <p class="text-gray-600 max-w-md mx-auto text-center">
                                         将图片快速转换为嵌入式C语言数组，适用于TFT彩屏使用。
+                                    </p>
+                                </a>
+                            </div>
+
+                            <!-- 新增OLED单色图像转换工具卡片 -->
+                            <div
+                                class="bg-gray-50 rounded-xl p-4 transform transition-all duration-300 hover:shadow-sm card-hover cursor-pointer">
+                                <a href="image2oled.html" target="_blank" rel="noopener noreferrer">
+                                    <div
+                                        class="mb-4 w-32 h-32 mx-auto rounded-full bg-tool-image2oled/10 flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-105">
+                                        <i class="fa-solid fa-microchip text-5xl text-tool-image2oled"></i>
+                                    </div>
+                                    <h3 class="text-3xl font-bold text-tool-image2oled mb-2 text-center">OLED图像转换</h3>
+                                    <p class="text-gray-600 max-w-md mx-auto text-center">
+                                        将图像转换为适用于12864等OLED单色屏幕的二进制数组。
                                     </p>
                                 </a>
                             </div>
