@@ -442,72 +442,53 @@ function processCanvasImage(canvas, file, options, resizeResult) {
             (height >> 8) & 0xFF
         ];
 
-        // 处理像素数据为二进制
+        let pixels = [];
         let binaryData = [];
-        let pixels = []; // 用于预览的像素数据
-
-        if (options.scanOption === 'horizontal') {
-            // 水平扫描：从左到右，从上到下
-            for (let y = 0; y < height; y++) {
-                for (let x = 0; x < width; x++) {
-                    const index = (y * width + x) * 4;
-                    const r = data[index];
-                    const g = data[index + 1];
-                    const b = data[index + 2];
-
-                    // 计算灰度值
-                    const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
-
-                    // 根据阈值判断黑白
-                    let isBlack = gray < options.threshold;
-                    if (options.invert) {
-                        isBlack = !isBlack;
-                    }
-
-                    // 保存像素状态用于预览
-                    pixels.push(isBlack ? 1 : 0);
-
-                    // 收集二进制数据
-                    binaryData.push(isBlack ? 1 : 0);
-                }
-            }
-        } else {
-            // 垂直扫描：从上到下，从左到右
+        // 统一收集pixels用于预览
+        for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
-                for (let y = 0; y < height; y++) {
-                    const index = (y * width + x) * 4;
-                    const r = data[index];
-                    const g = data[index + 1];
-                    const b = data[index + 2];
-
-                    // 计算灰度值
-                    const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
-
-                    // 根据阈值判断黑白
-                    let isBlack = gray < options.threshold;
-                    if (options.invert) {
-                        isBlack = !isBlack;
-                    }
-
-                    // 保存像素状态用于预览
-                    pixels.push(isBlack ? 1 : 0);
-
-                    // 收集二进制数据
-                    binaryData.push(isBlack ? 1 : 0);
+                const index = (y * width + x) * 4;
+                const r = data[index];
+                const g = data[index + 1];
+                const b = data[index + 2];
+                const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+                let isBlack = gray < options.threshold;
+                if (options.invert) {
+                    isBlack = !isBlack;
                 }
+                pixels.push(isBlack ? 1 : 0);
             }
         }
 
-        // 将二进制数据转换为字节数组（每8位一个字节）
-        const byteArray = [];
-        for (let i = 0; i < binaryData.length; i += 8) {
-            let byte = 0;
-            for (let j = 0; j < 8; j++) {
-                if (i + j < binaryData.length) {
-                    byte |= (binaryData[i + j] << (7 - j)); // 高位在前
+        let byteArray = [];
+        if (options.scanOption === 'vertical') {
+            // 垂直扫描：每列分组，每8个像素为一字节，低位在前
+            for (let x = 0; x < width; x++) {
+                for (let y = 0; y < height; y += 8) {
+                    let byte = 0;
+                    for (let bit = 0; bit < 8; bit++) {
+                        if (y + bit < height) {
+                            const idx = (y + bit) * width + x;
+                            byte |= (pixels[idx] << bit);
+                        }
+                    }
+                    byteArray.push(byte);
                 }
             }
-            byteArray.push(byte);
+        } else {
+            // 水平扫描：每行分组，每8个像素为一字节，低位在前
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x += 8) {
+                    let byte = 0;
+                    for (let bit = 0; bit < 8; bit++) {
+                        if (x + bit < width) {
+                            const idx = y * width + (x + bit);
+                            byte |= (pixels[idx] << bit);
+                        }
+                    }
+                    byteArray.push(byte);
+                }
+            }
         }
 
         // 组合头部和像素数据
