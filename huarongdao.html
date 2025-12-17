@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字华容道</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0EA5A4',
+                        accent: '#7EE7E0',
+                        board: '#d7ccc8',
+                        boardLine: '#0EA5A4',
+                    },
+                    fontFamily: {
+                            sans: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?767e3ea52a6b4f3c656cdd4119c87e62";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+    <style>
+        /* 保留最小必要样式：动态字体大小和获胜闪烁动画 */
+        :root { 
+            --board-size: 4;
+            --color-primary: #0EA5A4;
+            --color-accent: #7EE7E0;
+            --color-board: #d7ccc8;
+            --color-board-line: #0EA5A4;
+            --color-tile-bg: #f5f5f5;
+            --color-tile-text: #0f172a;
+            --color-win-bg: #8b5a2b;
+            --color-win-border: #5d4037;
+            --color-hint-bg: #ffb74d;
+        }
+
+        .tile-dynamic-font { font-size: clamp(12px, calc(28px - (var(--board-size) - 3) * 2px), 26px); }
+        .win-message { color: #8b4513; animation: flash 1s infinite alternate; }
+        @keyframes flash { from { opacity: 1 } to { opacity: 0.7 } }
+
+        /* 与其他页面一致：使用 CSS 变量为主题色提供类映射 */
+        .text-primary { color: var(--color-primary) !important; }
+        .bg-primary { background-color: var(--color-primary) !important; }
+        .bg-accent { background-color: var(--color-accent) !important; }
+        .bg-board { background-color: var(--color-board) !important; }
+        .border-boardLine { border-color: var(--color-board-line) !important; }
+
+        /* 棋盘背景与格线 */
+        .board-grid {
+            background-size: 100% 100%;
+            background-image:
+                linear-gradient(to right, var(--color-board-line) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--color-board-line) 1px, transparent 1px);
+            background-color: var(--color-board);
+        }
+
+        /* 棋子样式（js 也会添加 tile 类） */
+        .tile {
+            background-color: var(--color-tile-bg);
+            color: var(--color-tile-text);
+            border-color: var(--color-board-line);
+        }
+
+        .tile.empty, .tile.tile-empty-inline { background: transparent; border: none; box-shadow: none; cursor: default }
+
+        /* 提示与获胜样式，避免使用内联样式，便于统一管理 */
+        .tile-hint { background-color: var(--color-hint-bg) !important; }
+        .tile-win { background-color: var(--color-win-bg) !important; color: white !important; border-color: var(--color-win-border) !important; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="text-primary mr-2">
+                    <i class="fa-solid fa-puzzle-piece text-2xl"></i>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold text-primary">数字华容道</h1>
+            </div>
+            <div class="flex space-x-4">
+                    <a href="https://www.hudi.site/tools"
+                        class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site"
+                        class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>
+                        访问我的主页
+                    </a>
+                </div>
+        </div>
+    </header>
+
+    <!-- 主体内容（使用 Reversi 风格容器与卡片） -->
+    <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+            <!-- 介绍卡片（与下方卡片同宽） -->
+            <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                <p class="text-center text-base md:text-lg text-gray-600">经典数字华容道，拖拽或点击数字移动空格，完成序列即获胜。</p>
+            </div>
+            <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-6">
+                <!-- 游戏模式卡片（包含大小选择、重新开始、提示） -->
+                <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h3 class="font-medium text-gray-700 mb-3">游戏模式：</h3>
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <label class="flex items-center gap-2">
+                            <span class="text-sm text-gray-600">棋盘大小：</span>
+                            <select id="sizeSelect" class="px-3 py-2 border-2 border-primary rounded-md bg-white text-primary text-lg shadow-sm">
+                                <option value="3">3x3</option>
+                                <option value="4" selected>4x4</option>
+                                <option value="5">5x5</option>
+                                <option value="6">6x6</option>
+                                <option value="7">7x7</option>
+                                <option value="8">8x8</option>
+                                <option value="9">9x9</option>
+                                <option value="10">10x10</option>
+                            </select>
+                        </label>
+                        <button id="newGameBtn" class="px-4 py-2 rounded-md bg-primary text-white text-lg font-semibold shadow-md hover:bg-primary/90 transition">重新开始</button>
+                        <button id="hintBtn" class="px-4 py-2 rounded-md bg-primary text-white text-lg font-semibold shadow-md hover:bg-primary/90 transition">提示</button>
+                    </div>
+                </div>
+        <div class="game-wrapper mt-2">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-primary text-center mb-6">数字华容道</h1>
+            
+            
+            <div class="mx-auto bg-board border-4 border-boardLine rounded-lg p-3 shadow-inner w-full max-w-[700px] max-h-[700px]">
+                <div class="board-grid grid gap-2 w-full h-full" id="gameBoard"></div>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <div id="gameMessage" class="text-lg font-semibold text-primary h-9 mb-2"></div>
+                <div class="text-sm text-gray-600">移动次数: <span id="moveCount" class="text-primary font-semibold">0</span></div>
+            </div>
+        </div>
+        <!-- 可添加规则说明 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mt-6">
+            <h2 class="font-bold text-primary text-xl mb-4 flex items-center"><i class="fa-solid fa-book mr-2"></i>游戏说明</h2>
+            <ul class="list-disc pl-5 text-gray-700 space-y-2">
+                <li>选择难度（棋盘大小），点击或拖拽相邻数字到空格移动。</li>
+                <li>目标是把数字按1..N顺序排列，最后一个格子为空。</li>
+            </ul>
+        </div>
+    </div>
+    </main>
+
+    <!-- 页脚（与站内其它页面一致的结构） -->
+    <footer class="bg-gray-900 text-white py-6 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400 mt-1">数字华容道 — 锻炼逻辑思维的经典益智游戏。</p>
+            <div class="mt-2 text-xs text-gray-500">
+                <span id="busuanzi_container_site_uv">
+                    <i class="fa-solid fa-user mr-1"></i>
+                    <span id="busuanzi_value_site_uv"></span> 访客
+                </span>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <span id="busuanzi_container_site_pv">
+                    <i class="fa-solid fa-eye mr-1"></i>
+                    <span id="busuanzi_value_site_pv"></span> 访问
+                </span>
+            </div>
+            <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn" one-link-mark="yes">皖ICP备18002386号-1</a>
+        </div>
+    </footer>
+
+    <!-- 不蒜子统计脚本 -->
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <script src="./js/huarongdao.js"></script>
+</body>
+</html>
