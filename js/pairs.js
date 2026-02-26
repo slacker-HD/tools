@@ -97,7 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
       gapClass = 'gap-1';
       gridClass = `grid grid-cols-${cols} ${gapClass}`;
     }
-    gameContainer.className = `${gridClass} mb-8`;
+    // ensure container is centered and constrained
+    gameContainer.className = `${gridClass} mb-8 max-w-3xl mx-auto`;
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
         const index = i * cols + j;

@@ -35,14 +35,14 @@
         }
 
         .game-card {
-            max-width: 48rem; /* match Tailwind max-w-3xl */
+            max-width: 72rem; /* match Tailwind max-w-6xl for outer card */
             width: 100%;
             margin: 0 auto;
         }
 
         .game-canvas {
-            width: 100%;
-            height: auto;
+            width: 600px;
+            height: 600px;
             border-radius: 8px;
             display: block;
             margin: 0 auto;
@@ -95,8 +95,8 @@
         </div>
     </header>
 
-    <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
-        <div class="max-w-3xl mx-auto">
+    <main class="flex-grow container mx-auto px-4 py-6 md:py-10 max-w-6xl">
+        <div class="max-w-6xl mx-auto">
             <div class="bg-white rounded-2xl shadow-sm p-6 mb-8">
                 <p class="text-center text-base md:text-lg text-gray-600">复古风格贪吃蛇游戏。使用方向键控制，吃到食物得分，支持穿墙与本地最高分存储。</p>
             </div>

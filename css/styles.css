@@ -35,3 +35,15 @@
 .camera-shadow {
     box-shadow: 0 10px 25px -5px rgba(22, 93, 255, 0.1), 0 8px 10px -6px rgba(22, 93, 255, 0.1);
 }
+
+/* 统一主内容宽度：针对 PC 大屏调整，确保页面 main 元素具有较大最小宽度 */
+main {
+    width: 100%;
+    /* 给出一个较高的最小宽度，避免在大屏上显得过窄 */
+    min-width: 64rem; /* 1024px */
+}
+@media (min-width: 1280px) {
+    main {
+        min-width: 80rem; /* 1280px */
+    }
+}
