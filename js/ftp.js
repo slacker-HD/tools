@@ -32,7 +32,8 @@ class FTPClient {
         connectLoading.classList.remove('hidden');
 
         try {
-            const response = await fetch('/api/ftp.php?action=connect', {
+            // use a relative URL so the script works regardless of the page's directory
+        const response = await fetch('./api/ftp.php?action=connect', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ host, port, username, password })
@@ -63,7 +64,7 @@ class FTPClient {
         fileList.innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin mr-2"></i>加载中...</div>';
 
         try {
-            const response = await fetch('/api/ftp.php?action=list', {
+            const response = await fetch('./api/ftp.php?action=list', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -130,7 +131,7 @@ class FTPClient {
         if (!this.connectionInfo) return;
 
         try {
-            const response = await fetch('/api/ftp.php?action=download', {
+            const response = await fetch('./api/ftp.php?action=download', {
                 method: 'POST',
                 body: JSON.stringify({
                     ...this.connectionInfo,
