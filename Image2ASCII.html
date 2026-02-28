@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片转ASCII艺术生成器</title>
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?767e3ea52a6b4f3c656cdd4119c87e62";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/Image2ASCII.js" defer></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tool: {
+                            image2ascii: '#F59E0B'
+                        }
+                    }
+                },
+                fontFamily: {
+                    inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                },
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto { content-visibility: auto; }
+            .pulse-slow { animation: pulse 3s cubic-bezier(0.4,0,0.6,1) infinite; }
+            .shadow-card { box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05),0 8px 10px -6px rgba(0,0,0,0.03); }
+            .btn-primary { @apply bg-tool-image2ascii hover:bg-tool-image2ascii/90 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center; }
+            .card-hover { transition: all 0.3s; }
+            .card-hover:hover { box-shadow: 0 4px 6px rgba(0,0,0,0.1); transform: translateY(-0.25rem); }
+            .gradient-bg { background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); }
+            .warning-card { @apply bg-amber-50 border-l-4 border-tool-image2ascii text-tool-image2ascii rounded-r-lg shadow-sm; }
+            .input-container { @apply bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-2xl shadow-sm p-6 md:p-8 relative overflow-hidden; }
+            .result-container { @apply bg-white/90 backdrop-blur-sm border border-neutral-200 rounded-2xl shadow-sm p-6 md:p-8 relative overflow-hidden; }
+            .btn-secondary { @apply bg-white text-tool-image2ascii border border-tool-image2ascii font-bold py-2 px-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center; }
+            .copy-btn { @apply text-tool-image2ascii hover:text-tool-image2ascii/80 transition-all duration-300; }
+        }
+    </style>
+    <!-- ascii-result custom formatting -->
+    <style>
+        #ascii-result {
+            /* 使用 Courier New 等等宽字体，确保方块等字符显示为正方形 */
+            font-family: 'Courier New', Courier, monospace;
+            line-height: 1;
+            letter-spacing: 0.5px;
+            white-space: pre;
+            min-height: 20rem;
+        }
+    </style>
+    <style>
+        :root { --tool-color: #F59E0B; }
+        /* 统一按钮和滑块主色调 */
+        .btn-primary, .action-btn, .bg-tool-image2ascii {
+            background-color: var(--tool-color) !important;
+            color: #fff !important;
+        }
+        /* range 基础样式 */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px; /* track 高度 */
+            background: rgba(0,0,0,0.12);
+            border-radius: 999px;
+            padding: 0;
+            margin: 0.5rem 0;
+            cursor: pointer;
+        }
+        input[type="range"]:focus { outline: none; }
+
+        /* Webkit 浏览器轨道 */
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 6px;
+            background: rgba(0,0,0,0.12);
+            border-radius: 999px;
+        }
+        /* Webkit 拇指 */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            margin-top: -6px; /* 将拇指垂直居中于轨道 */
+            background: var(--tool-color);
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+        }
+
+        /* Firefox */
+        input[type="range"]::-moz-range-track {
+            height: 6px;
+            background: rgba(0,0,0,0.12);
+            border-radius: 999px;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: var(--tool-color);
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+        }
+
+        /* IE / Edge Legacy */
+        input[type="range"]::-ms-track {
+            height: 6px;
+            background: transparent;
+            border-color: transparent;
+            color: transparent;
+        }
+        input[type="range"]::-ms-fill-lower {
+            background: rgba(0,0,0,0.12);
+            border-radius: 999px;
+        }
+        input[type="range"]::-ms-fill-upper {
+            background: rgba(0,0,0,0.12);
+            border-radius: 999px;
+        }
+        input[type="range"]::-ms-thumb {
+            width: 18px;
+            height: 18px;
+            background: var(--tool-color);
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            margin-top: 0; /* Edge 的 thumb 已居中 */
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- 页面头部 -->
+    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="text-tool-image2ascii mr-2">
+                    <i class="fa-solid fa-image text-2xl"></i>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold text-tool-image2ascii">图片转ASCII艺术生成器</h1>
+            </div>
+            <div class="flex space-x-4">
+                <a href="https://www.hudi.site/tools"
+                    class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                    <i class="fa-solid fa-arrow-left mr-2"></i>
+                    返回工具箱
+                </a>
+                <a href="https://www.hudi.site"
+                    class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                    target="_blank" rel="noopener noreferrer">
+                    <i class="fa-solid fa-blog mr-2"></i>
+                    访问我的主页
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+        <div class="max-w-6xl mx-auto">
+            <!-- 介绍卡片 -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                <p class="text-center text-base md:text-lg text-neutral-600">
+                    上传图片并调整参数，即可生成字符化的 ASCII 艺术作品，支持缩放、亮度和字符集选择。
+                </p>
+            </div>
+            
+            <!-- 上传与设置 -->
+            <div class="input-container mb-8">
+                <h2 class="text-center text-xl font-bold text-neutral-900 mb-6 flex justify-center items-center">
+                    <i class="fa-solid fa-upload mr-2 text-tool-image2ascii"></i>
+                    上传与设置
+                </h2>
+                <div class="flex flex-col gap-4">
+                    <label for="file-input" class="btn-primary w-max cursor-pointer">
+                        <i class="fa-solid fa-file-image mr-2"></i>选择图片
+                    </label>
+                    <input type="file" id="file-input" accept="image/*" class="hidden">
+                    <div id="preview-container" class="w-full h-64 border-2 border-dashed border-neutral-300 flex items-center justify-center mb-4 overflow-hidden">
+                        <div id="preview-empty" class="text-neutral-500">未选择图片</div>
+                        <img id="preview-img" class="max-w-full max-h-full object-contain hidden">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="scale" class="block text-sm text-neutral-700 mb-1">缩放比例 (%)</label>
+                            <p class="text-xs text-gray-500 mt-1">(百分比表示输出宽度相对于可用区域的比例，系统会使用等宽字符；请避免选择宽度不一致的 emoji)</p>
+                            <input type="range" id="scale" min="10" max="100" value="50" class="w-full">
+                        </div>
+                        <div>
+                            <label for="brightness" class="block text-sm text-neutral-700 mb-1">亮度调整</label>
+                            <input type="range" id="brightness" min="0.5" max="2" step="0.1" value="1" class="w-full">
+                        </div>
+                        <div>
+                            <label for="charset" class="block text-sm text-neutral-700 mb-1">字符集</label>
+                            <select id="charset" class="w-full border border-neutral-300 rounded p-2 bg-white">
+                                <option value=" .,:;ox%#@">默认 (渐变)</option>
+                                <option value=" ░▒▓█">方块 (密集)</option>
+                                <option value=" -+=*#">简单 (稀疏)</option>
+                                <option value=" 01">二进制</option>
+                                <option value=" .oO">圆点</option> <!-- 使用点而非 emoji 以保持等宽 -->
+                            </select>
+                        </div>
+                        <div>
+                            <label for="font-size" class="block text-sm text-neutral-700 mb-1">字符大小 (px)</label>
+                            <input type="number" id="font-size" min="6" max="16" value="8" class="w-full border border-neutral-300 rounded p-2 bg-white">
+                        </div>
+                    </div>
+                    <button id="generate-btn" class="btn-primary mt-4">
+                        <i class="fa-solid fa-magic mr-2"></i>生成 ASCII 艺术
+                    </button>
+                    <div id="loading" class="text-center text-tool-image2ascii mt-2 hidden">正在生成中...</div>
+                </div>
+            </div>
+
+            <!-- 结果显示 -->
+            <div class="result-container mb-8">
+                <h2 class="text-center text-xl font-bold text-neutral-900 mb-6 flex justify-center items-center">
+                    <i class="fa-solid fa-terminal mr-2 text-tool-image2ascii"></i>
+                    生成结果
+                </h2>
+                <div id="ascii-result" class="ascii-result bg-neutral-900 text-neutral-100 p-4 rounded-lg overflow-auto whitespace-pre text-xs"></div>
+                <div class="actions flex gap-4 mt-4">
+                    <button id="copy-btn" class="action-btn copy-btn bg-tool-image2ascii text-white py-2 px-4 rounded">复制结果</button>
+                    <button id="download-btn" class="action-btn download-btn bg-tool-image2ascii text-white py-2 px-4 rounded">下载文本</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400 mt-1">图片转ASCII艺术生成器</p>
+            <div class="mt-2 text-xs text-gray-500">
+                <span id="busuanzi_container_site_uv">
+                    <i class="fa-solid fa-user mr-1"></i>
+                    <span id="busuanzi_value_site_uv"></span> 访客
+                </span>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <span id="busuanzi_container_site_pv">
+                    <i class="fa-solid fa-eye mr-1"></i>
+                    <span id="busuanzi_value_site_pv"></span> 访问
+                </span>
+            </div>
+            <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn">皖ICP备18002386号-1</a>
+        </div>
+    </footer>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</body>
+</html>
