@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flash播放器</title>
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?767e3ea52a6b4f3c656cdd4119c87e62";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        flash: '#FF4500'
+                    },
+                    fontFamily: {
+                        inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- 页面头部 -->
+    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="text-flash mr-2">
+                    <i class="fa-solid fa-bolt text-2xl"></i>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold text-flash">Flash播放器</h1>
+            </div>
+            <div class="flex space-x-4">
+                <a href="https://www.hudi.site/tools"
+                    class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                    <i class="fa-solid fa-arrow-left mr-2"></i>
+                    返回工具箱
+                </a>
+                <a href="https://www.hudi.site"
+                    class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                    target="_blank" rel="noopener noreferrer">
+                    <i class="fa-solid fa-blog mr-2"></i>
+                    访问我的主页
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
+        <div class="max-w-6xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                <p class="text-center text-base md:text-lg text-gray-600">
+                    使用 Ruffle 在浏览器中播放本地或网络 SWF 文件。拖拽或选择文件，或输入 URL。
+                </p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <!-- 上传SWF文件区域 -->
+                <div class="upload-area border-dashed border-2 border-gray-300 rounded-lg p-6 text-center cursor-pointer"
+                    id="upload-area">
+                    <p>点击或拖拽SWF文件到此处播放</p>
+                    <input type="file" id="file-input" accept=".swf" class="hidden">
+                </div>
+                <div class="mt-4 flex items-center space-x-2">
+                    <input type="text" id="url-input" placeholder="请输入SWF文件URL" class="flex-1 border border-gray-300 rounded px-3 py-2">
+                    <button id="load-url" class="bg-flash text-white px-4 py-2 rounded hover:bg-flash/90 transition">
+                        加载URL
+                    </button>
+                    <button id="reset-btn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition">
+                        清除播放器
+                    </button>
+                </div>
+                <div id="file-info" class="mt-2 text-sm text-gray-500"></div>
+
+                <!-- Flash播放容器 -->
+                <div id="flash-player" class="mt-6 border border-gray-200 rounded" style="height:600px"></div>
+            </div>
+        </div>
+    </main>
+        <!-- 页脚 -->
+        <footer class="bg-gray-900 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-sm text-gray-400 mt-1">基于 Ruffle 的开源 Flash 播放器</p>
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn" one-link-mark="yes">皖ICP备18002386号-1</a>
+            </div>
+        </footer>
+
+    <!-- 引入Ruffle开源库 (使用CDN方式，无需本地部署) -->
+    <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+    <script src="./js/flash.js"></script>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</body>
+</html>
