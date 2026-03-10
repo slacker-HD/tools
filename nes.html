@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>在线红白机试玩</title>
+        <!-- 百度统计 -->
+        <script>
+            var _hmt = _hmt || [];
+            (function () {
+                var hm = document.createElement("script");
+                hm.src = "//hm.baidu.com/hm.js?767e3ea52a6b4f3c656cdd4119c87e62";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();
+        </script>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="./css/nes.css">
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            tool: {
+                                fc: '#C40010',
+                                light: '#f5d0d0',
+                                dim: '#f0c8c8'
+                            }
+                        },
+                        fontFamily: {
+                            inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
+                        },
+                    }
+                }
+            }
+        </script>
+    </head>
+
+    <body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+        <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="text-tool-fc mr-2">
+                        <i class="fa-solid fa-gamepad text-2xl"></i>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-bold text-tool-fc">在线红白机试玩</h1>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="https://www.hudi.site/tools"
+                        class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        返回工具箱
+                    </a>
+                    <a href="https://www.hudi.site"
+                        class="bg-tool-eat hover:bg-tool-eat/90 text-tool-eat font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+                        target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-blog mr-2"></i>
+                        访问我的主页
+                    </a>
+                </div>
+            </div>
+        </header>
+        <main class="flex-grow container mx-auto px-4 py-6 md:py-10 max-w-6xl">
+            <div class="max-w-6xl mx-auto space-y-6">
+
+                <div class="bg-white rounded-2xl overflow-hidden shadow-xl mb-10 p-4 border border-gray-100">
+                    <div class="rom-list mb-3">
+                        <h3 class="section-title"><i class="fa-solid fa-list"></i>游戏列表</h3>
+                        <select id="romSelect" class="rom-select mb-3">
+                            <option value="">请选择游戏...</option>
+                            <option value="__local__">📁 本地 ROM 文件</option>
+                            <option value="__server__" disabled>⏳ 加载中...</option>
+                        </select>
+                        <div class="drop-zone" id="dropZone">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <p>拖拽 ROM 文件到此处 或 <span class="highlight">点击上传</span></p>
+                            <p style="font-size: 12px; margin-top: 6px; color: #94a3b8;">支持 .nes 格式文件</p>
+                        </div>
+                        <input type="file" id="localRomInput" accept=".nes" style="display: none;">
+                        <div class="local-rom-info" id="localRomInfo">
+                            <span class="rom-name" id="localRomName"></span>
+                            <button class="remove-btn" id="removeLocalRomBtn"><i class="fa-solid fa-times"></i>
+                                移除</button>
+                        </div>
+                        <div class="basic-controls">
+                            <div class="flex flex-wrap gap-2 items-center">
+                                <button class="btn btn-primary" id="startBtn"><i
+                                        class="fa-solid fa-play mr-2"></i>启动选中游戏</button>
+                                <button class="btn btn-primary" id="pauseBtn"><i
+                                        class="fa-solid fa-pause mr-2"></i>暂停</button>
+                                <button class="btn btn-primary" id="fullscreenBtn"><i
+                                        class="fa-solid fa-expand mr-2"></i>全屏</button>
+                                <button class="settings-toggle-btn ml-2" id="keySettingsBtn"><i
+                                        class="fa-solid fa-keyboard mr-2"></i>键位设置</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="emulator-container mb-4">
+                        <div id="nes" class="crt-curve scanlines screen-glow">
+                            <canvas id="nes-canvas"></canvas>
+                        </div>
+                        <div class="game-info-bar">
+                            <div class="game-status">
+                                <div class="status-dot" id="statusDot" style="background: #6b6b7a"></div>
+                                <span id="statusText">等待加载 ROM</span>
+                            </div>
+                            <div class="fps-counter" id="fpsCounter">-- FPS</div>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <button class="btn btn-primary" id="fullscreenBtn2"><i
+                                    class="fa-solid fa-expand mr-2"></i>全屏模式</button>
+                        </div>
+                    </div>
+
+                    <div class="modal-overlay" id="keyConfigModal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3><i class="fa-solid fa-keyboard text-tool-fc"></i>键位配置</h3>
+                                <button class="modal-close-btn" id="modalCloseBtn"><i
+                                        class="fa-solid fa-times"></i></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="repeat-settings-section">
+                                    <h4><i class="fa-solid fa-bolt text-tool-fc"></i>连发频率设置</h4>
+                                    <div class="repeat-settings-grid">
+                                        <div class="repeat-setting-item">
+                                            <span class="player-label text-sm"><i class="fa-solid fa-user mr-2"></i>1P
+                                                连发:</span>
+                                            <input type="number" id="repeatRate1" value="10" min="1" max="30"
+                                                class="w-16">
+                                            <span class="text-gray-500 text-xs">次/秒</span>
+                                        </div>
+                                        <div class="repeat-setting-item">
+                                            <span class="player2-label text-sm"><i class="fa-solid fa-users mr-2"></i>2P
+                                                连发:</span>
+                                            <input type="number" id="repeatRate2" value="10" min="1" max="30"
+                                                class="w-16">
+                                            <span class="text-gray-500 text-xs">次/秒</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="key-config-grid">
+                                    <!-- 1P -->
+                                    <div class="key-config">
+                                        <h3 class="section-title"><span class="player-label text-sm"><i
+                                                    class="fa-solid fa-user mr-2"></i>1P 键位配置</span></h3>
+                                        <div class="key-item"><span>上</span>
+                                            <div class="key-btn" data-key="up" data-player="1">W</div>
+                                        </div>
+                                        <div class="key-item"><span>下</span>
+                                            <div class="key-btn" data-key="down" data-player="1">S</div>
+                                        </div>
+                                        <div class="key-item"><span>左</span>
+                                            <div class="key-btn" data-key="left" data-player="1">A</div>
+                                        </div>
+                                        <div class="key-item"><span>右</span>
+                                            <div class="key-btn" data-key="right" data-player="1">D</div>
+                                        </div>
+                                        <div class="key-item"><span>A 键</span>
+                                            <div class="key-btn" data-key="a" data-player="1">U</div>
+                                        </div>
+                                        <div class="key-item"><span>B 键</span>
+                                            <div class="key-btn" data-key="b" data-player="1">I</div>
+                                        </div>
+                                        <div class="key-item"><span>开始</span>
+                                            <div class="key-btn" data-key="start" data-player="1">1</div>
+                                        </div>
+                                        <div class="key-item"><span>选择</span>
+                                            <div class="key-btn" data-key="select" data-player="1">2</div>
+                                        </div>
+                                        <div class="key-item"><span class="repeat-key-label">A 连发</span>
+                                            <div class="key-btn" data-key="repeatA" data-player="1">J</div>
+                                        </div>
+                                        <div class="key-item"><span class="repeat-key-label">B 连发</span>
+                                            <div class="key-btn" data-key="repeatB" data-player="1">K</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 2P -->
+                                    <div class="key-config">
+                                        <h3 class="section-title"><span class="player2-label"><i
+                                                    class="fa-solid fa-users mr-2"></i>2P 键位配置</span></h3>
+                                        <div class="key-item"><span>上</span>
+                                            <div class="key-btn" data-key="up" data-player="2">↑</div>
+                                        </div>
+                                        <div class="key-item"><span>下</span>
+                                            <div class="key-btn" data-key="down" data-player="2">↓</div>
+                                        </div>
+                                        <div class="key-item"><span>左</span>
+                                            <div class="key-btn" data-key="left" data-player="2">←</div>
+                                        </div>
+                                        <div class="key-item"><span>右</span>
+                                            <div class="key-btn" data-key="right" data-player="2">→</div>
+                                        </div>
+                                        <div class="key-item"><span>A 键</span>
+                                            <div class="key-btn" data-key="a" data-player="2">Numpad1</div>
+                                        </div>
+                                        <div class="key-item"><span>B 键</span>
+                                            <div class="key-btn" data-key="b" data-player="2">Numpad2</div>
+                                        </div>
+                                        <div class="key-item"><span>开始</span>
+                                            <div class="key-btn" data-key="start" data-player="2">Numpad7</div>
+                                        </div>
+                                        <div class="key-item"><span>选择</span>
+                                            <div class="key-btn" data-key="select" data-player="2">Numpad8</div>
+                                        </div>
+                                        <div class="key-item"><span class="repeat-key-label">A 连发</span>
+                                            <div class="key-btn" data-key="repeatA" data-player="2">Numpad4</div>
+                                        </div>
+                                        <div class="key-item"><span class="repeat-key-label">B 连发</span>
+                                            <div class="key-btn" data-key="repeatB" data-player="2">Numpad5</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="modal-cancel-btn" id="modalCancelBtn"><i
+                                            class="fa-solid fa-undo mr-2"></i>取消</button>
+                                    <button class="modal-save-btn" id="modalSaveBtn"><i
+                                            class="fa-solid fa-check"></i>完成</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+        <footer class="bg-gray-900 text-white py-6">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-sm text-gray-400 mt-1">基于JSNES模拟器开发，重温经典游戏</p>
+                <!-- 不蒜子统计 -->
+                <div class="mt-2 text-xs text-gray-500">
+                    <span id="busuanzi_container_site_uv">
+                        <i class="fa-solid fa-user mr-1"></i>
+                        <span id="busuanzi_value_site_uv"></span> 访客
+                    </span>
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                    <span id="busuanzi_container_site_pv">
+                        <i class="fa-solid fa-eye mr-1"></i>
+                        <span id="busuanzi_value_site_pv"></span> 访问
+                    </span>
+                </div>
+                <a rel="nofollow" target="_blank" href="https://beian.miit.gov.cn" one-link-mark="yes">皖 ICP 备 18002386
+                    号 -1</a>
+            </div>
+        </footer>
+
+        <script src="https://unpkg.com/jsnes@2/dist/jsnes.min.js"></script>
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <script src="js/nes.js"></script>
+    </body>
+
+</html>
