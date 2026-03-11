@@ -66,12 +66,23 @@
                 </p>
             </div>
             <div class="bg-white rounded-2xl shadow-lg p-6">
-                <!-- 上传SWF文件区域 -->
-                <div class="upload-area border-dashed border-2 border-gray-300 rounded-lg p-6 text-center cursor-pointer"
+                <!-- 上传 SWF 文件区域 -->
+                <div class="drop-zone border-dashed border-2 border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-flash/50 transition-colors"
                     id="upload-area">
-                    <p>点击或拖拽SWF文件到此处播放</p>
+                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 mb-3"></i>
+                    <p class="text-gray-600">拖拽 SWF 文件到此处 或 <span class="text-flash font-semibold">点击上传</span></p>
+                    <p style="font-size: 12px; margin-top: 6px; color: #94a3b8;">支持 .swf 格式文件</p>
                     <input type="file" id="file-input" accept=".swf" class="hidden">
                 </div>
+                
+                <!-- 本地文件信息显示 -->
+                <div class="local-rom-info mt-3 flex items-center justify-between bg-gray-50 rounded-lg px-4 py-2" id="local-rom-info" style="display: none;">
+                    <span class="rom-name text-sm text-gray-700" id="local-rom-name"></span>
+                    <button class="remove-btn text-red-500 hover:text-red-700 text-sm flex items-center" id="remove-local-rom-btn">
+                        <i class="fa-solid fa-times mr-1"></i>移除
+                    </button>
+                </div>
+                
                 <div class="mt-4 flex items-center space-x-2">
                     <input type="text" id="url-input" placeholder="请输入SWF文件URL" class="flex-1 border border-gray-300 rounded px-3 py-2">
                     <button id="load-url" class="bg-flash text-white px-4 py-2 rounded hover:bg-flash/90 transition">

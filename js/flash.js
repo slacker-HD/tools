@@ -11,6 +11,9 @@ const fileInfo = document.getElementById('file-info');
 const urlInput = document.getElementById('url-input');
 const loadUrlBtn = document.getElementById('load-url');
 const resetBtn = document.getElementById('reset-btn');
+const localRomInfo = document.getElementById('local-rom-info');
+const localRomName = document.getElementById('local-rom-name');
+const removeLocalRomBtn = document.getElementById('remove-local-rom-btn');
 
 // 上传区域点击事件
 uploadArea.addEventListener('click', () => {
@@ -80,12 +83,20 @@ function clearPlayer() {
     playerContainer.innerHTML = '';
     showFileInfo('');
     urlInput.value = '';
+    
+    // 隐藏本地文件信息区域
+    localRomInfo.style.display = 'none';
 }
 
-// 播放SWF文件核心函数
+// 播放 SWF 文件核心函数
 function playSwfFile(file) {
     clearPlayer();
-    showFileInfo(`文件: ${file.name} (${(file.size/1024).toFixed(1)} KB)`);
+    showFileInfo(`文件：${file.name} (${(file.size/1024).toFixed(1)} KB)`);
+    
+    // 显示本地文件信息区域
+    localRomInfo.style.display = 'flex';
+    localRomName.textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+    
     const swfUrl = URL.createObjectURL(file);
     rufflePlayer = ruffle.createPlayer({
         autoplay: true,
@@ -104,6 +115,10 @@ function playSwfFile(file) {
 function loadSwfFromUrl(url) {
     clearPlayer();
     showFileInfo(`URL: ${url}`);
+    
+    // 隐藏本地文件信息区域
+    localRomInfo.style.display = 'none';
+    
     rufflePlayer = ruffle.createPlayer({
         autoplay: true,
         loop: false,
@@ -117,6 +132,12 @@ function loadSwfFromUrl(url) {
         alert('加载失败：' + error.message);
     });
 }
+
+// 移除本地文件
+removeLocalRomBtn.addEventListener('click', () => {
+    clearPlayer();
+    fileInput.value = '';
+});
 
 // 错误处理
 window.addEventListener('error', (e) => {
