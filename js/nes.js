@@ -92,6 +92,8 @@ function setStatus(status, color) {
 // ==========================================
 // 4. 帧率控制主循环 (修复游戏速度过快)
 // ==========================================
+let frameAccumulator = 0;
+
 function tick(timestamp) {
     // 初始化时间基准
     if (!lastEmulatorTime) lastEmulatorTime = timestamp;
@@ -99,15 +101,22 @@ function tick(timestamp) {
 
     // 计算自上一帧以来经过的时间
     const elapsed = timestamp - lastEmulatorTime;
+    lastEmulatorTime = timestamp;
 
-    // 帧率限制逻辑：只有当经过的时间超过一帧的时间时才运行模拟器
+    // 帧率限制逻辑：使用累加器确保稳定的 60 FPS
     if (nes && isRunning && !isPaused) {
-        // 如果经过的时间大于一帧的时间 (约 16.6ms)，则执行一帧
-        // 这可以防止在 144Hz 显示器上运行过快
-        if (elapsed >= NES_FRAME_DURATION) {
+        frameAccumulator += elapsed;
+        
+        // 当累积时间超过一帧的时间时，执行模拟器帧
+        // 这确保无论显示器刷新率如何，游戏速度都保持稳定的 60 FPS
+        while (frameAccumulator >= NES_FRAME_DURATION) {
             nes.frame();
-            // 更新基准时间。使用减法而不是赋值 timestamp 可以防止时间漂移
-            lastEmulatorTime = timestamp - (elapsed % NES_FRAME_DURATION);
+            frameAccumulator -= NES_FRAME_DURATION;
+        }
+        
+        // 防止累积器过大导致帧跳跃（例如标签页切换后）
+        if (frameAccumulator > NES_FRAME_DURATION * 5) {
+            frameAccumulator = 0;
         }
     }
 
