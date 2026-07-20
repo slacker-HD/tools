@@ -16,12 +16,16 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <link href="./css/styles.css" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        flash: '#FF4500'
+                        primary: '#FF4500',
+                        tool: {
+                            flash: '#FF4500'
+                        }
                     },
                     fontFamily: {
                         inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
@@ -37,10 +41,10 @@
     <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center">
-                <div class="text-flash mr-2">
+                <div class="text-tool-flash mr-2">
                     <i class="fa-solid fa-bolt text-2xl"></i>
                 </div>
-                <h1 class="text-xl md:text-2xl font-bold text-flash">Flash播放器</h1>
+                <h1 class="text-xl md:text-2xl font-bold text-tool-flash">Flash播放器</h1>
             </div>
             <div class="flex space-x-4">
                 <a href="https://www.hudi.site/tools"
@@ -59,7 +63,7 @@
     </header>
 
     <main class="flex-grow container mx-auto px-4 py-6 md:py-10">
-        <div class="max-w-6xl mx-auto">
+        <div class="max-w-4xl mx-auto">
             <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
                 <p class="text-center text-base md:text-lg text-gray-600">
                     使用 Ruffle 在浏览器中播放本地或网络 SWF 文件。拖拽或选择文件，或输入 URL。
@@ -74,7 +78,7 @@
                 </div>
                 <div class="mt-4 flex items-center space-x-2">
                     <input type="text" id="url-input" placeholder="请输入SWF文件URL" class="flex-1 border border-gray-300 rounded px-3 py-2">
-                    <button id="load-url" class="bg-flash text-white px-4 py-2 rounded hover:bg-flash/90 transition">
+                    <button id="load-url" class="bg-tool-flash text-white px-4 py-2 rounded hover:bg-tool-flash/90 transition">
                         加载URL
                     </button>
                     <button id="reset-btn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition">

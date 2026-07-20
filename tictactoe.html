@@ -7,6 +7,7 @@
         <title>井字棋</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+        <link href="./css/styles.css" rel="stylesheet">
         <script>
             tailwind.config = {
                 theme: {
@@ -14,9 +15,11 @@
                         colors: {
                             primary: '#0E7490',
                             accent: '#38BDF8',
-                            ttt: '#0E7490',
                             board: '#f3f4f6',
                             boardLine: '#0E7490',
+                            tool: {
+                                tictactoe: '#0E7490'
+                            }
                         },
                         fontFamily: {
                             inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
@@ -159,10 +162,10 @@
         <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
             <div class="container mx-auto px-4 py-4 flex justify-between items-center">
                 <div class="flex items-center">
-                    <div class="text-ttt mr-2">
-                        <i class="fa-solid fa-table-cells-large text-ttt text-2xl"></i>
+                    <div class="text-tool-tictactoe mr-2">
+                        <i class="fa-solid fa-table-cells-large text-tool-tictactoe text-2xl"></i>
                     </div>
-                    <h1 class="text-xl md:text-2xl font-bold text-ttt">井字棋</h1>
+                    <h1 class="text-xl md:text-2xl font-bold text-tool-tictactoe">井字棋</h1>
                 </div>
                 <div class="flex space-x-4">
                     <a href="https://www.hudi.site/tools"
@@ -180,15 +183,15 @@
             </div>
         </header>
         <!-- 主内容区 -->
-        <main class="flex-grow container mx-auto px-4 py-6 md:py-10 max-w-6xl">
+        <main class="flex-grow container mx-auto px-4 py-6 md:py-10 max-w-4xl">
             <!-- 介绍卡片 -->
             <div
-                class="max-w-6xl mx-auto bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
+                class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300">
                 <p class="text-center text-base md:text-lg text-gray-600">
                     经典井字棋游戏，支持双人对战和人机对战，三子连线即胜！
                 </p>
             </div>
-            <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-xl p-6">
+            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-xl p-6">
                 <!-- 游戏模式选择 -->
                 <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <h3 class="font-medium text-gray-700 mb-3">游戏模式：</h3>

@@ -24,6 +24,9 @@
                     extend: {
                         colors: {
                             primary: '#1E3A8A',
+                            tool: {
+                                hanzi: '#1E3A8A'
+                            }
                         },
                         fontFamily: {
                             inter: ['"微软雅黑"', '"Microsoft YaHei"', '"华文苹方"', 'PingFang', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
@@ -62,8 +65,8 @@
         <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
             <div class="container mx-auto px-4 py-4 flex justify-between items-center">
                 <div class="flex items-center space-x-2">
-                    <i class="fa fa-th text-primary text-2xl"></i>
-                    <h1 class="text-xl md:text-2xl font-bold text-primary">汉字点阵生成工具</h1>
+                    <i class="fa fa-th text-tool-hanzi text-2xl"></i>
+                    <h1 class="text-xl md:text-2xl font-bold text-tool-hanzi">汉字点阵生成工具</h1>
                 </div>
                 <div class="flex space-x-4">
                     <a href="https://www.hudi.site/tools"
@@ -82,7 +85,7 @@
         </header>
 
         <!-- 主内容区 -->
-        <main class="flex-grow container mx-auto px-4 py-8 max-w-6xl">
+        <main class="flex-grow container mx-auto px-4 py-8 max-w-4xl">
             <!-- 介绍卡片 -->
             <div class="bg-white rounded-xl p-6 mb-8 card-shadow">
                 <h2 class="text-xl font-semibold mb-2">点阵字体生成器</h2>

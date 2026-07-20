@@ -1,14 +1,17 @@
-/* 精简后的自定义样式 */
-.content-auto { 
-    content-visibility: auto; 
+/* 统一自定义样式 */
+
+/* 内容懒加载 */
+.content-auto {
+    content-visibility: auto;
 }
 
+/* 淡入动画 */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* 通用组件样式 */
+/* 通用卡片悬浮效果 */
 .card-hover {
     transition: all 0.3s ease;
 }
@@ -17,7 +20,17 @@
     box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
 }
 
-/* 动画效果 */
+/* 阴影卡片 */
+.shadow-card {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+}
+
+/* 柔和阴影 */
+.shadow-soft {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* 脉冲动画 */
 @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
@@ -31,19 +44,36 @@
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+.pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* 过渡动画 */
+.transition-custom {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* 摄像头组件样式 */
 .camera-shadow {
     box-shadow: 0 10px 25px -5px rgba(22, 93, 255, 0.1), 0 8px 10px -6px rgba(22, 93, 255, 0.1);
 }
 
-/* 统一主内容宽度：针对 PC 大屏调整，确保页面 main 元素具有较大最小宽度 */
-main {
-    width: 100%;
-    /* 给出一个较高的最小宽度，避免在大屏上显得过窄 */
-    min-width: 64rem; /* 1024px */
+/* 按钮脉冲 */
+.btn-hover {
+    transition: all 0.2s ease;
 }
-@media (min-width: 1280px) {
-    main {
-        min-width: 80rem; /* 1280px */
-    }
+.btn-hover:hover {
+    transform: scale(1.05);
+}
+.btn-hover:active {
+    transform: scale(0.95);
+}
+
+/* 滚动条隐藏 */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }

@@ -7,6 +7,7 @@
     <title>数独游戏</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <link href="./css/styles.css" rel="stylesheet">
     <script>
       // 配置Tailwind自定义颜色
       tailwind.config = {
@@ -18,9 +19,12 @@
               accent: '#F59E0B',     // 强调色：琥珀色
               danger: '#EF4444',     // 危险色：红色
               dark: '#1E293B',       // 深色
+              tool: {
+                sudoku: '#4F46E5'
+              }
             },
             fontFamily: {
-              inter: ['Inter', 'system-ui', 'sans-serif'],
+              inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
             },
           },
         }
@@ -165,10 +169,10 @@
     <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
       <div class="container mx-auto px-4 py-4 flex justify-between items-center">
         <div class="flex items-center">
-          <div class="text-primary mr-2">
-            <i class="fa-solid fa-table-cells-large text-2xl text-primary"></i>
+          <div class="text-tool-sudoku mr-2">
+            <i class="fa-solid fa-table-cells-large text-2xl text-tool-sudoku"></i>
           </div>
-          <h1 class="text-xl md:text-2xl font-bold text-primary">数独游戏</h1>
+          <h1 class="text-xl md:text-2xl font-bold text-tool-sudoku">数独游戏</h1>
         </div>
         <div class="flex space-x-4">
           <a href="https://www.hudi.site/tools"
@@ -187,16 +191,16 @@
     </header>
 
     <!-- 主内容区 -->
-    <main class="flex-grow container mx-auto px-4 py-6 md:py-10 max-w-6xl">
+    <main class="flex-grow container mx-auto px-4 py-6 md:py-10 max-w-4xl">
       <!-- 增加主容器的内边距，使内容与边缘更协调 -->
-      <div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-sm p-6 md:p-8 mb-8">
+      <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm p-6 md:p-8 mb-8">
         <p class="text-center text-base md:text-lg text-gray-600">
           选择难度，挑战你的数独解谜能力！
         </p>
       </div>
 
       <!-- 游戏主容器 -->
-      <div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-sm p-6 md:p-8 mb-8">
+      <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm p-6 md:p-8 mb-8">
         <!-- 控制面板 -->
         <div class="flex flex-wrap justify-between items-center mb-8 bg-gray-50 p-4 rounded-xl shadow">
           <div class="flex items-center gap-4 mb-4 sm:mb-0">

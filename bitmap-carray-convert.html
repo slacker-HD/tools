@@ -7,14 +7,18 @@
         <title>图像转C数组工具</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+        <link href="./css/styles.css" rel="stylesheet">
         <script>
             tailwind.config = {
                 theme: {
                     extend: {
                         colors: {
-                            primary: '#3B82F6',
+                            primary: '#F43F5E',
                             secondary: '#10B981',
                             accent: '#6366F1',
+                            tool: {
+                                bitmap: '#F43F5E'
+                            }
                         },
                         fontFamily: {
                             inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
@@ -69,8 +73,8 @@
             <div class="container mx-auto px-4 py-4 flex justify-between items-center">
                 <div class="flex items-center">
                     <div class="flex items-center space-x-2">
-                        <i class="fas fa-image text-primary text-2xl"></i>
-                        <h1 class="text-xl md:text-2xl font-bold text-primary">图像转C数组工具</h1>
+                        <i class="fas fa-image text-tool-bitmap text-2xl"></i>
+                        <h1 class="text-xl md:text-2xl font-bold text-tool-bitmap">图像转C数组工具</h1>
                     </div>
                 </div>
                 <div class="flex space-x-4">
@@ -87,7 +91,7 @@
             </div>
         </header>
         <!-- 主内容区 -->
-        <main class="flex-grow container mx-auto px-4 py-8">
+        <main class="flex-grow container max-w-4xl mx-auto px-4 py-8">
             <!-- 介绍卡片 -->
             <div class="bg-white rounded-xl shadow-soft p-6 mb-8 transform hover:translate-y-[-4px] transition-custom">
                 <h2 class="text-xl font-semibold mb-3 flex items-center">

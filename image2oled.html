@@ -7,6 +7,7 @@
         <title>OLED单色图像转换工具</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+        <link href="./css/styles.css" rel="stylesheet">
         <script>
             var _hmt = _hmt || [];
             (function () {
@@ -24,6 +25,9 @@
                             primary: '#3B82F6',
                             secondary: '#10B981',
                             accent: '#6366F1',
+                            tool: {
+                                image2oled: '#3B82F6'
+                            }
                         },
                         fontFamily: {
                             inter: ['"华文苹方"', 'PingFang', '"微软雅黑"', '"Source Code Pro"', 'Tahoma', '"Helvetica Neue"', 'Helvetica', '"Hiragino Sans GB"', '"Microsoft YaHei Light"', '"Microsoft YaHei"', '"Source Han Sans CN"', '"WenQuanYi Micro Hei"', 'Arial', 'sans-serif'],
@@ -69,8 +73,8 @@
             <div class="container mx-auto px-4 py-4 flex justify-between items-center">
                 <div class="flex items-center">
                     <div class="flex items-center space-x-2">
-                        <i class="fas fa-microchip text-primary text-2xl"></i>
-                        <h1 class="text-xl md:text-2xl font-bold text-primary">OLED单色图像转换工具</h1>
+                        <i class="fas fa-microchip text-tool-image2oled text-2xl"></i>
+                        <h1 class="text-xl md:text-2xl font-bold text-tool-image2oled">OLED单色图像转换工具</h1>
                     </div>
                 </div>
                 <div class="flex space-x-4">
@@ -88,7 +92,7 @@
         </header>
 
         <!-- 主内容区 -->
-        <main class="flex-grow container mx-auto px-4 py-8 max-w-6xl">
+        <main class="flex-grow container mx-auto px-4 py-8 max-w-4xl">
             <!-- 介绍卡片 -->
             <div class="bg-white rounded-xl shadow-soft p-6 mb-8 transform hover:translate-y-[-4px] transition-custom">
                 <h2 class="text-xl font-semibold mb-3 flex items-center">

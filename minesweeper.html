@@ -7,12 +7,13 @@
         <title>网页版扫雷</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+        <link href="./css/styles.css" rel="stylesheet">
         <script>
             tailwind.config = {
                 theme: {
                     extend: {
                         colors: {
-                            primary: '#4F46E5',
+                            primary: '#D97706',
                             secondary: '#10B981',
                             danger: '#EF4444',
                             warning: '#F59E0B',
@@ -20,7 +21,7 @@
                             dark: '#1F2937',
                             light: '#F3F4F6',
                             tool: {
-                                poem: '#D97706'
+                                minesweeper: '#D97706'
                             }
                         },
                         fontFamily: {
@@ -104,10 +105,10 @@
         <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
             <div class="container mx-auto px-4 py-4 flex justify-between items-center">
                 <div class="flex items-center">
-                    <div class="text-tool-poem mr-2">
+                    <div class="text-tool-minesweeper mr-2">
                         <i class="fa-solid fa-bomb text-2xl"></i>
                     </div>
-                    <h1 class="text-xl md:text-2xl font-bold text-tool-poem">网页版扫雷</h1>
+                    <h1 class="text-xl md:text-2xl font-bold text-tool-minesweeper">网页版扫雷</h1>
                 </div>
                 <div class="flex space-x-4">
                     <a href="https://www.hudi.site/tools"
@@ -126,14 +127,14 @@
         </header>
 
         <!-- 主内容区 -->
-        <main class="flex-grow container mx-auto px-4 py-6 md:py-10 max-w-6xl">
+        <main class="flex-grow container mx-auto px-4 py-6 md:py-10 max-w-4xl">
             <!-- 介绍卡片 -->
-            <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300 max-w-6xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 transform hover:shadow-md transition-all duration-300 max-w-4xl mx-auto">
                 <p class="text-center text-base md:text-lg text-gray-600">
                     点击方块揭示数字，右键标记地雷，数字格上同时按下左右键可探测周围
                 </p>
             </div>
-            <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-xl p-6">
+            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-xl p-6">
 
 
                 <div class="mb-6 flex flex-wrap gap-4 justify-center items-center">

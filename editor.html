@@ -14,10 +14,13 @@
                 theme: {
                     extend: {
                         colors: {
-                            primary: '#059669',  // 使用清新的绿色作为主题色
+                            primary: '#059669',
                             secondary: '#34D399',
                             dark: '#1E293B',
-                            light: '#F8FAFC'
+                            light: '#F8FAFC',
+                            tool: {
+                                editor: '#059669'
+                            }
                         },
                         fontFamily: {
                             code: ['Consolas', 'Monaco', 'monospace'],
@@ -62,12 +65,12 @@
         <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all duration-300">
             <div class="container mx-auto px-4 py-3 flex items-center justify-between">
                 <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-terminal text-primary text-2xl"></i>
-                    <h1 class="text-2xl font-bold text-primary">代码编辑器</h1>
+                    <i class="fa-solid fa-terminal text-tool-editor text-2xl"></i>
+                    <h1 class="text-2xl font-bold text-tool-editor">代码编辑器</h1>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div id="currentFileName"
-                        class="px-4 py-2 bg-primary/10 text-primary rounded-lg flex items-center font-medium">
+                        class="px-4 py-2 bg-tool-editor/10 text-primary rounded-lg flex items-center font-medium">
                         <i class="fa fa-file-code-o mr-2"></i>
                         <span>main.js</span>
                     </div>
