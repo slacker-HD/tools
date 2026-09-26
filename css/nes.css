@@ -1,0 +1,604 @@
+:root {
+    --bg: #f8fafc;
+    --bg-card: #ffffff;
+    --fg: #1f2937;
+    --muted: #6b7280;
+    --accent: #C40010;
+    --accent-dim: #C4001033;
+    --border: #e5e7eb;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+}
+
+#nes {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-radius: 8px;
+    margin: 0 auto;
+    display: block;
+    position: relative;
+    overflow: hidden;
+}
+
+#nes-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* CRT 弯曲效果 */
+.crt-curve {
+    border-radius: 8px;
+    box-shadow: 
+        inset 0 0 60px rgba(0, 0, 0, 0.4),
+        0 0 40px rgba(0, 212, 170, 0.15),
+        0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* 扫描线效果 */
+.scanlines::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.15) 2px,
+        rgba(0, 0, 0, 0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* 屏幕发光 */
+.screen-glow {
+    animation: screenGlow 3s ease-in-out infinite;
+}
+
+@keyframes screenGlow {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.05); }
+}
+
+/* 状态指示器 */
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.basic-controls {
+    background: var(--bg-card);
+    color: var(--fg);
+    padding: 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+}
+
+.rom-list {
+    background: var(--bg-card);
+    color: var(--fg);
+    padding: 0.75rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+    width: 100%;
+}
+
+.rom-list h3 {
+    margin-top: 0;
+    border-bottom: 2px solid var(--accent-dim);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--fg);
+}
+
+.rom-select {
+    width: 100%;
+    padding: 12px 16px;
+    background: #ffffff;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #0f172a;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.rom-select:focus {
+    border-color: #3b82f6;
+    background: #eff6ff;
+    box-shadow: 0 0 0 3px rgba(59, 132, 246, 0.1);
+}
+
+.btn {
+    background-color: #165DFF;
+    color: white;
+    font-weight: 600;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(22, 93, 255, 0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    font-size: 14px;
+}
+
+.btn:hover {
+    background-color: #144ECC;
+    box-shadow: 0 6px 12px rgba(22, 93, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #C40010 0%, #A0000D 100%);
+    color: white;
+    font-weight: 600;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(196, 0, 16, 0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    border: none;
+    font-size: 14px;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 6px 12px rgba(196, 0, 16, 0.3);
+    transform: translateY(-1px);
+}
+
+.key-config {
+    background: var(--bg-card);
+    color: var(--fg);
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+    min-width: 280px;
+    font-size: 14px;
+}
+
+.key-config h3 {
+    margin-top: 0;
+    border-bottom: 2px solid var(--accent-dim);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.key-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 6px 0;
+    padding: 6px 10px;
+    background: #f8fafc;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.key-item:hover {
+    background: #f1f5f9;
+}
+
+.key-btn {
+    width: 100px;
+    padding: 10px;
+    background: #ffffff;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    color: #111827;
+    font-weight: 500;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.key-btn:hover {
+    border-color: #C40010;
+    background: #fef0f0;
+}
+
+.key-btn.pressing {
+    background: #fce4e4;
+    border-color: #C40010;
+    color: #8b0008;
+    box-shadow: 0 0 0 3px rgba(196, 0, 16, 0.2);
+}
+
+input[type="number"] {
+    width: 70px;
+    padding: 8px 12px;
+    background: #ffffff;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    color: #111827;
+    outline: none;
+    transition: border-color 0.2s;
+    text-align: center;
+    font-weight: 500;
+}
+
+input[type="number"]:focus {
+    border-color: #3b82f6;
+}
+
+.player-label {
+    color: #C40010;
+    font-weight: 600;
+}
+
+.player2-label {
+    color: #A0000D;
+    font-weight: 600;
+}
+
+.repeat-key-label {
+    color: #8b5cf6;
+    font-weight: 600;
+}
+
+.emulator-container {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-info-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 512px;
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: #f8fafc;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+.game-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.fps-counter {
+    color: #C40010;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--fg);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title i {
+    color: #C40010;
+}
+
+.control-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.key-config-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 768px) {
+    .key-config-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.key-config-grid.hidden {
+    display: none;
+}
+
+.settings-toggle-btn {
+    background: linear-gradient(135deg, #C40010 0%, #A0000D 100%);
+    color: white;
+    font-weight: 600;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(196, 0, 16, 0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    font-size: 14px;
+    font-family: "华文苹方", PingFang, "微软雅黑", "Source Code Pro", Tahoma, "Helvetica Neue", Helvetica, "Hiragino Sans GB", "Microsoft YaHei Light", "Microsoft YaHei", "Source Han Sans CN", "WenQuanYi Micro Hei", Arial, sans-serif;
+}
+
+.settings-toggle-btn:hover {
+    box-shadow: 0 6px 12px rgba(196, 0, 16, 0.3);
+    transform: translateY(-1px);
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border);
+    max-width: 900px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    transform: scale(0.95) translateY(-20px);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.modal-overlay.active .modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 2px solid #C4001033;
+    background: var(--bg);
+    border-radius: 1rem 1rem 0 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--fg);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal-close-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 18px;
+}
+
+.modal-close-btn:hover {
+    background: #dc2626;
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.repeat-settings-section {
+    background: #f8fafc;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+.repeat-settings-section h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--fg);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.repeat-settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 640px) {
+    .repeat-settings-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.repeat-setting-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #ffffff;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    background: #f8fafc;
+    border-radius: 0 0 1rem 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.modal-save-btn {
+    background: linear-gradient(135deg, #C40010 0%, #A0000D 100%);
+    color: white;
+    font-weight: 600;
+    padding: 0.625rem 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal-save-btn:hover {
+    box-shadow: 0 6px 12px rgba(196, 0, 16, 0.3);
+    transform: translateY(-1px);
+}
+
+.modal-cancel-btn {
+    background: #f1f5f9;
+    color: #475569;
+    font-weight: 600;
+    padding: 0.625rem 1.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-cancel-btn:hover {
+    background: #e2e8f0;
+}
+
+.drop-zone {
+    border: 2px dashed #cbd5e1;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s;
+    background: #f8fafc;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.drop-zone:hover {
+    border-color: #C40010;
+    background: #fef0f0;
+}
+
+.drop-zone.drag-over {
+    border-color: #C40010;
+    background: #fce4e4;
+    transform: scale(1.02);
+}
+
+.drop-zone i {
+    font-size: 2rem;
+    color: #C40010;
+    margin-bottom: 0.5rem;
+}
+
+.drop-zone p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.drop-zone .highlight {
+    color: #C40010;
+    font-weight: 600;
+}
+
+.local-rom-info {
+    background: #fef0f0;
+    border: 1px solid #f5c0c0;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    margin-top: 0.75rem;
+    display: none;
+}
+
+.local-rom-info.show {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.local-rom-info .rom-name {
+    color: #8b0008;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.local-rom-info .remove-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.local-rom-info .remove-btn:hover {
+    background: #dc2626;
+}
